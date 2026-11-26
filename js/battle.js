@@ -169,9 +169,9 @@
   B.ask = render => new Promise(res => B.card(() => { const c = render(); const on = {}; for (const id in c.on) on[id] = () => { B.closeCard(); res(c.on[id]()); }; return { cls: c.cls, html: c.html, on }; }));
   B.showRules = function () {
     B.card(() => ({ html: `<h2>${pick(DEF.title)}</h2><h1>${tx('規則', 'Rules')}</h1>${M.rules(G)}
-      <p class="note">${tx('這些回合與數值是為了好玩而做的簡化。', 'These turns and numbers are simplifications made for play.')} <a href="#notes" id="rNotes">${tx('這款遊戲簡化了什麼', 'What this game simplifies')}</a></p>
+      <p class="note">${tx('這些回合與數值是為了好玩而做的簡化。', 'These turns and numbers are simplifications made for play.')} ${tx('主選單的「這款遊戲簡化了什麼」有完整說明。', 'See “What this game simplifies” on the menu for the full list.')}</p>
       <div class="btns"><button class="pill pri" id="rBack">${tx('回到戰場', 'Back to the battle')}</button>${DEF.stages.length > 1 ? `<button class="pill sm" id="rPrac">${tx('重玩練習', 'Replay the practice')}</button>` : ''}</div>`,
-      on: { rBack: B.closeCard, rPrac: () => B.go(0), rNotes: () => { } } }));
+      on: { rBack: B.closeCard, rPrac: () => B.go(0) } }));
   };
   const stars = n => '★'.repeat(n) + '<i>' + '★'.repeat(3 - n) + '</i>';
   B.stars = stars;

@@ -231,7 +231,7 @@
   /* ---------------- 結算 ---------------- */
   const rec = G => ({ turn: G.turn, hp: Math.round(AW.health(G) * 100), delay: G.delay || 0, secs: G.ln ? +G.ln.secs.toFixed(1) : null, mem: !!G.mem, ag: G.ag, win: !!(G.result && G.result.win) });
   M.summary = function (G, st) {
-    const r = G.result, hp = Math.round(AW.health(G) * 100), stars = hp >= 50 ? 3 : hp >= 28 ? 2 : 1, key = G.scn.key, h = IW.save.hist;
+    const r = G.result, hp = Math.round(AW.health(G) * 100), stars = hp >= 60 ? 3 : hp >= 35 ? 2 : 1, key = G.scn.key, h = IW.save.hist;
     let insight = !G.ag ? tx('這一局偵察兵沒有把情報送到淋巴結，後援始終沒有啟動。巨噬細胞只能吞細胞外的病毒，碰不到躲在細胞裡的。', 'The scout never delivered intel to the lymph node this time, so backup never started. Macrophages can only engulf viruses outside cells; they cannot reach the ones hiding inside.')
       : tx(`第 ${G.ag} 回合取得情報。淋巴結花了 <b>${G.ln.secs.toFixed(1)} 秒</b>找到吻合的 T 細胞，後援 <b>${G.delay} 回合後</b>抵達。`, `Intel collected on turn ${G.ag}. The lymph node took <b>${G.ln.secs.toFixed(1)} s</b> to find the matching T cell, and backup arrived <b>${G.delay} turn${G.delay > 1 ? 's' : ''} later</b>.`)
       + (G.mem ? tx('這次有記憶細胞，所以幾乎不用找。', ' With memory cells present, there was hardly any searching to do.') : tx('第一次遇到這種病毒，要從一大群 T 細胞裡把認得它的那一個找出來，所以慢。', ' On a first encounter the one T cell that recognizes the virus has to be found among many, which is why it is slow.'));

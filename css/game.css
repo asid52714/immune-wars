@@ -116,6 +116,12 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--gold);outline-offse
   .act,#bEnd{min-height:44px}
 }
 
+@media (max-height:500px) and (orientation:landscape){
+  .ln{display:none;grid-template:"c h" auto "c p" 1fr "c b" auto / auto 1fr;gap:6px 14px;align-items:start}
+  .ln.on{display:grid}
+  .ln .lnw{grid-area:c;width:auto;height:calc(100vh - 20px);height:calc(100dvh - 20px);aspect-ratio:390/500}
+  .ln h3{grid-area:h;width:auto} .ln p{grid-area:p;width:auto} .ln .btns{grid-area:b;width:auto}
+}
 /* ---------------- 主選單與書頁 ---------------- */
 .menu{max-width:980px;margin:0 auto;padding:22px max(16px,env(safe-area-inset-right,0px)) 60px max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:22px}
 .menu header{display:flex;align-items:flex-start;gap:10px}
@@ -137,7 +143,7 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--gold);outline-offse
 .album div.q{border-style:dashed;color:var(--dim);background:transparent}
 .album b{font-size:15.5px} .album em{font-style:normal;font-size:12px;font-weight:700;color:var(--ok)} .album canvas{width:104px;height:42px}
 .links{display:flex;gap:8px;flex-wrap:wrap}
-.links .pill{font-weight:400;font-size:15px}
+.links .pill{font-weight:400;font-size:15px;color:var(--ink)}
 .menu footer{font-size:12.5px;color:var(--dim);line-height:1.7}
 .menu footer a{color:var(--hema)}
 .page{max-width:720px;margin:0 auto;padding:18px max(16px,env(safe-area-inset-right,0px)) 60px max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:14px;font-size:16px;line-height:1.75}
@@ -147,6 +153,6 @@ button:focus-visible,a:focus-visible{outline:3px solid var(--gold);outline-offse
 .cx{border:1.5px solid var(--ink);border-radius:14px;background:var(--surface);padding:12px 14px;display:grid;grid-template-columns:76px 1fr;gap:4px 12px;font-size:14.5px;line-height:1.6}
 .cx canvas{width:76px;height:76px;grid-row:1/3}
 .cx b{font-size:16.5px;line-height:1.3} .cx b small{display:block;font-size:12.5px;font-weight:400;color:var(--dim)}
-.cx p{margin:0} .cx details{grid-column:1/3;font-size:13.5px;color:var(--dim)} .cx summary{cursor:pointer;color:var(--hema)}
+.cx{align-content:start} .cx p{margin:0;grid-column:2} .cx details{grid-column:1/3;font-size:13.5px;color:var(--dim)} .cx summary{cursor:pointer;color:var(--hema)}
 .cx.q{border-style:dashed;color:var(--dim);background:transparent}
 @media (prefers-reduced-motion:reduce){#bEnd.pulse{animation:none}}
