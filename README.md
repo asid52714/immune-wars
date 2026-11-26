@@ -47,6 +47,19 @@ v0.10 是一次完整的產品改版，取代 v0.9 成為之後的開發基線�
 
 進度與記憶冊只存在這台裝置的瀏覽器（localStorage），不使用帳號、Cookie 或任何連線。主選單有「清除進度」。
 
+## 第 4 章（v0.11 候選版本）｜Chapter 4 (v0.11 candidate)
+
+> **這個分支是候選版本，尚未發布。** 線上的正式版本仍是 v0.10（三章）。第 4 章還沒有經過維護者試玩驗收，也沒有任何外部玩家玩過。
+> *This branch is a release candidate. The live game is still v0.10 (three chapters). Chapter 4 has not yet been playtested or accepted by the maintainer.*
+
+**第 4 章｜漏網之魚：抗生素與抗藥性。** 傷口太深，細菌多到巨噬細胞忙不過來，這次有抗生素幫忙。按下去，怕藥的細菌一次死光，但總有幾隻不怕它。藥沒有改變細菌，只決定了誰留下來。第 1 章畫在皮膚外面的那一排細菌，在這一章成為這個身體的一部分：每用藥一回合，皮膚上就有一個怕藥的細菌被不怕藥的取代，而下一次闖進傷口的細菌，就是從那裡來的。
+
+這一章和第 2 章的淋巴結是同一個原理的兩個方向：淋巴結裡，病毒的特徵把認得它的 T 細胞挑出來複製；這裡，抗生素把不怕它的細菌留下來複製。設計理由、平衡數字、測試證據、科學查證與自我批判見 [docs/CHAPTER-04.md](docs/CHAPTER-04.md)。
+
+**遊戲裡的用藥不是用藥建議。** 什麼時候按下抗生素由玩家決定，是為了讓後果看得見。真實世界裡，要不要用抗生素、用哪一種、用多久，由醫療人員判斷；請照指示使用，不要自己停藥或加藥，也不要吃別人的或上次剩下的藥。
+
+*__Chapter 4 | The Ones That Slip Through: antibiotics and resistance.__ A deep wound, more bacteria than the macrophages can handle, and an antibiotic to help. One press kills everything the drug works on, but a few are never affected. The drug does not change the bacteria; it decides which ones are left. The row of bacteria that Chapter 1 drew outside the skin becomes part of this body: every turn on the drug replaces one drug-sensitive bacterium on the skin with a resistant one, and that is where the next wound's bacteria come from. __Using the drug in the game is not advice about taking medicine:__ in real life, whether to use an antibiotic, which one and for how long are decisions for a health professional. See [docs/CHAPTER-04.md](docs/CHAPTER-04.md).*
+
 ## 內容｜What is in it
 
 整個遊戲是同一個身體的三段經歷，大約 20 到 30 分鐘可以玩完一輪。每一章先用幾個半分鐘的小練習帶出規則，一次只多一條，然後才是正式戰鬥。沒有需要先看完的教學影片。
@@ -56,6 +69,7 @@ v0.10 是一次完整的產品改版，取代 v0.9 成為之後的開發基線�
 | **第 1 章｜皮膚防線** | 傷口讓細菌進來。巨噬細胞吞不完，於是用發炎求援，嗜中性球從血管趕來。發炎拖太久，連正常組織都受損。 | 吞噬作用；發炎是幫手也有代價；最先大量趕到的是嗜中性球 |
 | **第 2 章｜病毒來了** | 病毒鑽進細胞，巨噬細胞碰不到。偵察兵把情報送到淋巴結，由你在一群 T 細胞裡找出受體吻合的那一個。找得越久，後援越晚到。 | 病毒要進細胞才能複製；株系選擇；毒殺 T 細胞與抗體各管一種任務 |
 | **第 3 章｜捲土重來** | 同一種病毒又來了，這次淋巴結裡有你上次留下的記憶細胞。接著是另一種病毒，你要決定先不先接種疫苗。 | 免疫記憶是專一的；疫苗是在沒有損失的時候先準備 |
+| **第 4 章｜漏網之魚**（候選版本） | 很深的傷口，抗生素一次殺光怕它的細菌，剩下幾隻不怕的要靠巨噬細胞。感冒時室友遞來抗生素，吃或不吃。幾個月後又一道傷口。 | 抗生素對細菌有效、對病毒無效；抗藥性是篩選出來的，不是細菌學會的；變得有抗藥性的是細菌不是人；抗生素也會殺到無害的常在菌 |
 
 *One body, three episodes, about 20–30 minutes for a full run. Each chapter opens with a few half-minute practice stages that add one rule at a time, then the real battle. There is no tutorial video to sit through.*
 
@@ -84,9 +98,11 @@ js/battle.js          戰鬥外殼：版面、輸入、回合流程、提示、�
 js/lymph.js           淋巴結小玩法
 js/mode-skin.js       第 1 章的畫面、操作與練習關卡
 js/mode-airway.js     第 2、3 章的畫面、操作、練習關卡與流程
+js/mode-abx.js        第 4 章的畫面、操作、練習關卡與流程（候選版本）
 js/app.js             主選單、記憶冊、圖鑑、說明頁與頁面切換
 levels/*.html         舊版關卡網址的轉址頁
 docs/REDESIGN.md      v0.10 改版的設計報告：理由、測試結果、畫面與已知限制
+docs/CHAPTER-04.md    第 4 章候選版本的設計報告：理由、平衡、測試、科學查證與自我批判
 ```
 
 全部用傳統 `<script>` 標籤載入，沒有建置步驟。
@@ -132,6 +148,19 @@ v0.10 新增或改寫的敘述（嗜中性球與膿、白血球的細胞核形�
 - H&E 染色的顏色（細胞核藍紫、細胞質粉紅）只查了維基百科條目 *H&E stain*，沒有找到教科書層級的公開來源。
 
 這一批是由 AI 助手開啟原始頁面逐條比對的結果（16 條敘述：13 條有直接支持、3 條加註後採用），**不是醫學專業審查**。Janeway *Immunobiology* 的線上版本這次沒有讀到。
+
+第 4 章（抗生素與抗藥性，候選版本）另外對照：
+
+- OpenStax, *Microbiology* — 11.5 Mutations；14.1 History of Chemotherapy and Antimicrobial Discovery；14.2；14.3 Mechanisms of Antibacterial Drugs；14.5 Drug Resistance；21.1 Anatomy and Normal Microbiota of the Skin and Eyes。
+- U.S. Centers for Disease Control and Prevention — *About Antimicrobial Resistance* <https://www.cdc.gov/antimicrobial-resistance/about/index.html>；*Antibiotic Do's and Don'ts* <https://www.cdc.gov/antibiotic-use/about/index.html>；*About Microbial Ecology* <https://www.cdc.gov/antimicrobial-resistance/about/about-microbial-ecology.html>；*Staphylococcus aureus Basics* <https://www.cdc.gov/staphylococcus-aureus/about/index.html>。
+- World Health Organization — *Antimicrobial resistance*（現行事實說明）<https://www.who.int/news-room/fact-sheets/detail/antimicrobial-resistance>；*Antibiotic resistance*（2020 年 7 月版，已下架，讀的是網頁存檔）用來對照「變得有抗藥性的是細菌，不是人」與個人用藥原則。
+- Buffie CG, Pamer EG. *Microbiota-mediated colonization resistance against intestinal pathogens.* Nat Rev Immunol. 2013. PMCID: PMC4194195 — 常在菌的保護作用。這篇談的是腸道，遊戲用皮膚上的一排細菌代表。
+- Ankomah P, Levin BR. *Exploring the collaboration between antibiotics and the immune response in the treatment of acute, self-limiting infections.* PNAS. 2014. PMCID: PMC4060691 — 抗生素與免疫反應合作。這是數學模型，不是臨床資料；它的結論不能用來支持任何關於療程長短的說法。
+- Andersson DI, Hughes D. *Antibiotic resistance and its cost: is it possible to reverse resistance?* Nat Rev Microbiol. 2010（只讀摘要）— 抗藥性的代價與逆轉緩慢。
+- Kohanski MA, DePristo MA, Collins JJ. *Sublethal antibiotic treatment leads to multidrug resistance via radical-induced mutagenesis.* Mol Cell. 2010（只讀摘要）— 用來修正「藥完全不影響突變」這種過度簡化的說法。
+- Martinez JL, Baquero F. *Mutation frequencies and antibiotic resistance.* Antimicrob Agents Chemother. 2000. PMCID: PMC89960 — 真實的抗藥突變有多罕見。
+
+這一批同樣由 AI 助手開啟原始頁面逐條比對（19 條敘述：9 條有直接支持、10 條調整措辭後採用、沒有被判為錯誤的），**不是醫學專業審查**。CDC 的頁面是透過摘要工具讀取，引文沒有逐字核對。
 
 若遊戲內容與上述資料或現行醫學共識不一致，以專業資料為準，並請[告訴我們](https://github.com/asid52714/immune-wars/issues)。
 

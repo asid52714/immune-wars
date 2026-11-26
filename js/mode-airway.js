@@ -326,7 +326,7 @@
       const k = G.scn.key;
       if (!G.result.win) return [{ label: tx('再試一次（同一戰場）', 'Try again (same battle)'), pri: 1, fn: () => { if (k === 'variant' && !G.scn.vax) { /* 沒接種：保持沒有記憶 */ } B.go(B.stage, G.seed); } }, { label: tx('換一個戰場', 'New battle'), sm: 1, fn: () => B.go(B.stage) }, menuBtn()];
       if (k === 'again') return [{ label: tx('繼續：新的消息 ▸', 'Continue: news ▸'), pri: 1, fn: () => B.go(1) }, menuBtn()];
-      return [{ label: tx('回主選單看記憶冊', 'Back to the menu and your album'), pri: 1, fn: () => { location.hash = '#menu'; } }, { label: tx('回到選擇點再打一次', 'Go back to the choice and replay'), sm: 1, fn: () => { delete IW.save.mem.B; IW.store(); B.go(1); } }];
+      return [{ label: tx('第 4 章：漏網之魚 ▸', 'Chapter 4: The ones that slip through ▸'), pri: 1, fn: () => { location.hash = '#abx'; } }, { label: tx('回主選單看記憶冊', 'Back to the menu and your album'), sm: 1, fn: () => { location.hash = '#menu'; } }, { label: tx('回到選擇點再打一次', 'Go back to the choice and replay'), sm: 1, fn: () => { delete IW.save.mem.B; IW.store(); B.go(1); } }];
     }
   };
 })(window.IW);

@@ -128,12 +128,17 @@
   };
 
   /* ---------------- 病原體 ---------------- */
-  A.rod = function (x, y, rot, s, mood, ph, alpha) {           // 桿菌。mood 預設 evil：戰場上的都是正在造成感染的細菌
+  A.rod = function (x, y, rot, s, mood, ph, alpha, res) {      // 桿菌。mood 預設 evil：戰場上的都是正在造成感染的細菌。res＝帶抗藥基因（第 4 章，畫成條紋）
     s = s || 1; ph = ph || 0; c.save(); c.translate(x, y); c.rotate(rot || 0); c.scale(s, s); c.globalAlpha = alpha === undefined ? 1 : alpha;
     c.strokeStyle = P.bacDk; c.lineWidth = 1.2; c.lineCap = 'round'; c.beginPath(); c.moveTo(-11, 0);
     for (let i = 1; i <= 6; i++) c.lineTo(-11 - i * 2.4, Math.sin(ph + i * 1.3) * 2.6); c.stroke();          // 鞭毛
     c.beginPath(); c.roundRect(-11, -5.6, 22, 11.2, 5.6); c.fillStyle = P.bac; c.fill(); c.strokeStyle = P.bacDk; c.lineWidth = 1.5; c.stroke();
     c.fillStyle = 'rgba(255,255,255,.35)'; c.beginPath(); c.roundRect(-7, -4, 12, 3, 1.5); c.fill();
+    if (res) {                                                /* 條紋與金色外圈：辨識不只靠顏色。真實的抗藥細菌外觀看不出差別 */
+      c.save(); c.beginPath(); c.roundRect(-11, -5.6, 22, 11.2, 5.6); c.clip(); c.fillStyle = P.ink;
+      for (const bx of [-9.6, -6.4, 4.6, 7.8]) c.fillRect(bx, -6, 1.9, 12); c.restore();
+      c.beginPath(); c.roundRect(-12.6, -7.2, 25.2, 14.4, 7.2); c.strokeStyle = P.gold; c.lineWidth = 1.7; c.stroke();
+    }
     c.rotate(-(rot || 0)); A.face(0, -.6, .58, mood || 'evil', '#0f3325');
     c.restore();
   };
@@ -145,6 +150,22 @@
     c.beginPath(); c.arc(0, 0, 7.4 * p, 0, TAU); c.fillStyle = P.vir; c.fill(); c.strokeStyle = '#1c2460'; c.lineWidth = 1.4; c.stroke();
     A.face(0, -1, .56, mood || 'evil', '#101746');
     c.restore();
+  };
+
+  // 住戶菌（常在菌）：成對的球菌，平靜的表情。牠們不是敵人
+  A.coccus = function (x, y, s, ph, alpha) {
+    s = s || 1; c.save(); c.translate(x, y); c.scale(s, s); c.globalAlpha = alpha === undefined ? 1 : alpha;
+    const w = Math.sin(ph || 0) * .5; c.fillStyle = '#8fc1ea'; c.strokeStyle = '#2c5c8c'; c.lineWidth = 1.4;
+    for (const d of [-1, 1]) { c.beginPath(); c.arc(d * 4.6, w * d, 6, 0, TAU); c.fill(); c.stroke(); }
+    c.fillStyle = 'rgba(255,255,255,.4)'; c.beginPath(); c.arc(-6, -2.4, 1.8, 0, TAU); c.fill();
+    A.face(0, -.4, .52, 'calm', '#173a5e'); c.restore();
+  };
+  // 抗生素：膠囊只是記號。真實的抗生素是溶在血液與組織液裡的小分子
+  A.pill = function (x, y, rot, s, alpha) {
+    c.save(); c.translate(x, y); c.rotate(rot || 0); c.scale(s || 1, s || 1); c.globalAlpha = alpha === undefined ? 1 : alpha;
+    c.beginPath(); c.roundRect(-8, -3.8, 16, 7.6, 3.8); c.fillStyle = '#fff'; c.fill();
+    c.save(); c.clip(); c.fillStyle = '#2f7fc1'; c.fillRect(0, -4, 8, 8); c.restore();
+    c.strokeStyle = P.ink; c.lineWidth = 1.2; c.stroke(); c.restore();
   };
 
   /* ---------------- 免疫細胞 ---------------- */
