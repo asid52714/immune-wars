@@ -12,11 +12,13 @@ A free, open-source, turn-based strategy game for learning how the human immune 
 
 ## 線上遊玩｜Play online
 
-🚧 網站準備中（預定網址：<https://asid52714.github.io/immune-wars/>）
-🚧 The website is being prepared. Until then, see [本機執行｜Run locally](#本機執行run-locally).
+**[免費開始遊玩｜Play for free](https://asid52714.github.io/immune-wars/)**
 
-用電腦瀏覽器、滑鼠操作；目前沒有手機版。
-Desktop browser with a mouse; there is no mobile version yet. The game text is currently in Traditional Chinese only.
+不需要安裝任何軟體，也不需要註冊帳號。使用電腦瀏覽器及滑鼠即可開始遊戲。
+*No installation or account required. Open the game in a desktop browser and start playing.*
+
+目前遊戲介面為繁體中文，尚未提供手機版。
+*The game text is currently in Traditional Chinese only; there is no mobile version yet.*
 
 ## 這個專案想做什麼｜Goals
 
