@@ -7,8 +7,8 @@
 
 A free, open-source, turn-based strategy game for learning how the human immune system works. Command immune cells, defend the body, and see for yourself what immunity can do, what it cannot, and what it costs.
 
-這是個人發起的公益科普專案，目前是**早期原型**（三個關卡，可以一關接一關連續遊玩，電腦與手機瀏覽器都能玩）。網站目前提供的是 **v0.9 繁體中文／英文雙語公開測試版**；最近一個經維護者正式驗收的版本是 v0.8。歡迎試玩，也歡迎指正醫學內容與英文用語。
-*A personal, non-profit science-education project. This is an **early prototype** (three levels that can be played back to back, on desktop and phone browsers). The site currently serves the **v0.9 bilingual (Traditional Chinese / English) public preview**; the last version formally accepted by the maintainer is v0.8. Playtesting and corrections — including to the English — are welcome.*
+這是個人發起的公益科普專案，目前是**早期原型**（Prototype v0.9，三個關卡，可以一關接一關連續遊玩，繁體中文與英文雙語，電腦與手機瀏覽器都能玩）。歡迎試玩，也歡迎指正醫學內容與英文用語。
+*A personal, non-profit science-education project. This is an **early prototype** (v0.9: three levels that can be played back to back, in Traditional Chinese and English, on desktop and phone browsers). Playtesting and corrections — including to the English — are welcome.*
 
 ## 線上遊玩｜Play online
 
@@ -17,15 +17,17 @@ A free, open-source, turn-based strategy game for learning how the human immune 
 不需要安裝任何軟體，也不需要註冊帳號。用電腦瀏覽器（滑鼠）或手機瀏覽器（觸控）即可開始遊戲。
 *No installation or account required. Open the game in a desktop or phone browser and start playing.*
 
-**語言（v0.9 公開測試版）**：主選單與三個關卡都可以在「繁體中文｜English」之間切換，包含戰前教學動畫、規則與進階選讀、戰鬥中的提示、結算畫面，以及第三關的轉場與比較畫面。
+**語言（v0.9 起）**：主選單與三個關卡全面支援繁體中文與英文，可以隨時在「繁體中文｜English」之間切換，包含戰前教學動畫、規則與進階選讀、戰鬥中的提示、結算畫面，以及第三關的轉場與比較畫面。
 
 - 第一次開啟時依瀏覽器語言決定（中文瀏覽器顯示繁體中文，其餘顯示英文）；切換後會記在這台裝置的瀏覽器裡，也可以在網址加上 `?lang=en` 或 `?lang=zh` 指定。不使用帳號或 Cookie。
-- 戰鬥中切換語言不會重新開始，也不影響回合、行動點數、戰場與目前的選取；教學動畫會停在原本的步驟。
 - 兩種語言使用完全相同的遊戲規則與數值；三個關卡的規則和 v0.8 相同。
-- 英文內容已完成技術驗證（自動化檢查：沒有遺漏的中文、切換不影響戰局、電腦與手機模擬的版面），**尚待維護者人工試玩驗收**，也**尚未經英語母語人士審查**；英文用語若有不自然或不精確的地方，歡迎到 [Issues](https://github.com/asid52714/immune-wars/issues) 指正。
-- 手機上的英文版只在電腦的 Chromium 手機模擬裡檢查過，還沒有實機驗收。
+- 戰鬥中切換語言不會重新開始，也不影響回合、行動點數、戰場與目前的選取；教學動畫會停在原本的步驟。
+- 英文字幕有自己的閱讀時間設定（依英文單字數計算），不是直接套用中文字幕的時間。
+- 維護者以 12 個檢核項目親自試玩驗收：**11 項符合、1 項未評估、沒有不符合的項目**。唯一未評估的是「語言切換按鈕是否容易找到」；切換功能本身已通過自動化檢查。
+- 英文內容**尚未經英語母語人士審查**。英文用語或醫學內容若有不自然、不精確的地方，歡迎到 [Issues](https://github.com/asid52714/immune-wars/issues) 指正。
+- 手機上的英文版通過了維護者的試玩（沒有逐一記錄機型與瀏覽器），自動化檢查只在電腦的 Chromium 手機模擬裡做過；沒有驗證過所有手機型號與瀏覽器。
 
-*__Languages (v0.9 public preview):__ the main menu and all three levels can be switched between Traditional Chinese and English — briefing animations, rules and optional reading, in-battle hints, result screens, and Level 3's transition and comparison screens. The first visit follows your browser language (Chinese browsers get Traditional Chinese, all others English); your choice is remembered in the browser on that device, and you can also add `?lang=en` or `?lang=zh` to the address. No account or cookie is used. Switching language during a battle does not restart it or change the turn, action points, battlefield or current selection, and a briefing animation stays on the step it was on. Both languages use exactly the same rules and numbers, and the level rules are unchanged from v0.8. The English text has passed automated technical checks (no leftover Chinese, switching does not affect the battle, desktop and emulated-phone layout) but is __still awaiting the maintainer's own playtest and acceptance__, and has __not been reviewed by a native English speaker__; corrections are welcome in [Issues](https://github.com/asid52714/immune-wars/issues). On phones, the English version has only been checked in Chromium's phone emulation on a computer, not on a real device.*
+*__Languages (since v0.9):__ the main menu and all three levels fully support Traditional Chinese and English, and you can switch at any time — briefing animations, rules and optional reading, in-battle hints, result screens, and Level 3's transition and comparison screens. The first visit follows your browser language (Chinese browsers get Traditional Chinese, all others English); your choice is remembered in the browser on that device, and you can also add `?lang=en` or `?lang=zh` to the address. No account or cookie is used. Both languages use exactly the same rules and numbers, and the level rules are unchanged from v0.8. Switching language during a battle does not restart it or change the turn, action points, battlefield or current selection, and a briefing animation stays on the step it was on. English captions have their own reading-time setting (based on word count) rather than reusing the Chinese timing. The maintainer playtested the bilingual version against a 12-item checklist: __11 items met, 1 not evaluated, none failed__; the one item not evaluated is whether the language switch is easy to find (the switch itself passed automated checks). The English text has __not been reviewed by a native English speaker__; corrections to the English or the medical content are welcome in [Issues](https://github.com/asid52714/immune-wars/issues). On phones, the English version passed the maintainer's playtest (device and browser were not individually recorded) and automated checks were run only in Chromium's phone emulation; not every phone model or browser has been verified.*
 
 **手機支援（v0.8 起）**：v0.8 調整了手機瀏覽器上的版面與觸控操作（直向、橫向都能玩），三個關卡的規則與內容和 v0.7 相同，電腦上的玩法也沒有改變。目前驗證過的範圍有限，如實說明如下：
 
@@ -114,8 +116,8 @@ A free, open-source, turn-based strategy game for learning how the human immune 
 
 每一關的結算畫面都可以直接前往下一關（不會自動跳轉，也沒有關卡解鎖或存檔）；也可以隨時從主選單任選關卡。
 
-三個關卡都已由專案維護者親自試玩驗收；v0.7 的教學與角色改版，維護者以 15 個檢核項目試玩評估，15 項全部符合。這是維護者個人的試玩結果：尚未做過大規模的外部試玩，沒有找國小學生驗證，也沒有做過針對學生族群的教育成效研究。
-*All three levels have been playtested and accepted by the maintainer (the v0.7 tutorial and character update met all 15 of the maintainer's checklist items). No large-scale external playtesting, no testing with primary-school pupils, and no study of educational effectiveness has been done yet.*
+三個關卡都已由專案維護者親自試玩驗收；v0.7 的教學與角色改版，維護者以 15 個檢核項目試玩評估，15 項全部符合。v0.9 的雙語版，維護者以 12 個檢核項目試玩評估，11 項符合、1 項未評估（語言切換按鈕是否容易找到）。這是維護者個人的試玩結果：尚未做過大規模的外部試玩，沒有找國小學生驗證，也沒有做過針對學生族群的教育成效研究。
+*All three levels have been playtested and accepted by the maintainer (the v0.7 tutorial and character update met all 15 of the maintainer's checklist items; the v0.9 bilingual version met 11 of 12, with one item not evaluated). No large-scale external playtesting, no testing with primary-school pupils, and no study of educational effectiveness has been done yet.*
 
 ## 未來可能的主題｜Possible future topics
 

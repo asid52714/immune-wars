@@ -31,6 +31,9 @@
   .lang button{background:none;border:0;padding:6px 8px;color:var(--dim);font:inherit;cursor:pointer;border-radius:10px}
   .lang button.on{color:#fff;font-weight:600}
   .lang button:hover,.lang button:focus-visible{color:#9ff;outline:none}
+  .fb{margin:14px 0 0;font-size:12.5px;color:var(--dim);text-align:center;line-height:1.9;max-width:720px}
+  .fb a{color:#aaf6e6;text-decoration:none;border-bottom:1px dotted rgba(170,246,230,.6);margin:0 8px;white-space:nowrap}
+  .fb a:hover,.fb a:focus-visible{color:#fff;border-bottom-color:#fff;outline:none}
   html:lang(en) .en{display:none}
   html:lang(en) h1{letter-spacing:.1em}
   @media (max-width:540px){                                  /* 手機直向：單欄，卡片依可用寬度伸縮 */
@@ -46,6 +49,7 @@
     .lv p{font-size:15px;min-height:0}
     .lv span{display:block;height:46px;line-height:46px;font-size:16px;text-align:center;border-radius:23px}
     footer{font-size:13px}
+    .fb{font-size:14px} .fb a{display:inline-block;padding:9px 4px;margin:0 6px}
   }
 </style>
 </head>
@@ -79,6 +83,8 @@
     </a>
   </div>
   <footer data-en="Prototype | Plays offline, nothing to install. Turns and numbers in the game are simplified for fun; they are not real physiological values, and this is not medical advice. The characters’ faces are only a visual aid: cells, bacteria and viruses have no emotions or awareness.">Prototype｜離線單機、無需安裝。遊戲中的回合與數值是為了好玩而做的簡化，不代表真實的生理數值，也不是醫療建議。角色的表情只是幫助辨認的比喻：細胞、細菌與病毒沒有情緒或意識。</footer>
+  <p class="fb"><span data-en="Enjoyed the game? Give us a star on GitHub or share your feedback.">如果你喜歡這款遊戲，歡迎在 GitHub 給予 Star，或提供改善建議。</span><br>
+    <a href="https://github.com/asid52714/immune-wars" target="_blank" rel="noopener" data-en="Star on GitHub">在 GitHub 給予 Star</a><a href="https://github.com/asid52714/immune-wars/issues" target="_blank" rel="noopener" data-en="Share Feedback">意見回饋</a></p>
 </main>
 <script>
 /* 語言（繁體中文／English）。優先順序：網址 ?lang= 或玩家按的切換鈕 → 先前儲存的偏好（iw_lang）→ 瀏覽器語言。不用 Cookie、不連網。 */
