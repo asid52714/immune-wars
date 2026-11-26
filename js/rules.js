@@ -41,7 +41,7 @@
      ===================================================================== */
   const SK = IW.skin = { unitAt, areaOf, moveTargets };
   SK.CFG = { AP: 5, TURNS: 12, CAP: 3, DIGEST: 2, MOVE: 2, CALM: 2, INFLUX: 5, INFLUX_N: 1, WOUND_BAC: 3, EXTRA: [2, 3], EXTRA2: .5,
-    LOAD_MAX: 26, SAFE: 2, BUDGET: 30, MACS: 2, REINF: [3, 6], NEU_N: 2, CAPN: 3, NEU_LIFE: 3 };
+    LOAD_MAX: 26, SAFE: 2, BUDGET: 30, INF_MAX: 3, MACS: 2, REINF: [3, 6], NEU_N: 2, CAPN: 3, NEU_LIFE: 3 };
   SK.load = S => S.tiles.reduce((n, t) => n + t.bac, 0);
   SK.health = S => Math.max(0, 1 - S.dmg / S.cfg.BUDGET);
   SK.cap = (S, u) => u.kind === 'neu' ? S.cfg.CAPN : S.cfg.CAP;
@@ -131,7 +131,7 @@
   SK.phaseInflame = function (S) {                            // 還有細菌的發炎區會持續升級；清乾淨的會消退
     const ev = [];
     for (const t of S.tiles) if (t.inf > 0) {
-      if (t.bac > 0) { if (t.inf < 3) { t.inf++; ev.push({ i: t.i, up: true }); } }
+      if (t.bac > 0) { if (t.inf < S.cfg.INF_MAX) { t.inf++; ev.push({ i: t.i, up: true }); } }
       else { t.inf--; ev.push({ i: t.i, up: false }); }
     }
     return ev;

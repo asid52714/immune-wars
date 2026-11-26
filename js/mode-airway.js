@@ -38,7 +38,7 @@
     B.fly({ x0: from.x, y0: from.y, x1: W - 30, y1: H + 30, dur: .9, draw: (x, y) => A.dc(x, y, 1, { ph: B.T, card: code }) });
     B.ftext(from.x, from.y - 44, tx('帶著情報前往淋巴結', 'Taking the intel to the lymph node'), '#8a5a12');
     B.busy = true; B.hud(); await IW.wait(950); if (B.G !== G) return;
-    const res = await IW.lymph.run($('ln'), { virus: G.scn.virus, pressure: true }); if (B.G !== G) return;
+    const res = await IW.lymph.run($('ln'), { virus: G.scn.virus, pressure: true, borrow: G.scn.borrow }); if (B.G !== G) return;
     AW.setDelay(G, res.delay, res.mem); G.ln = res; B.busy = false; IW.sfx('ok');
     B.hint('agdone', [`毒殺 T 細胞第 ${G.tAt} 回合抵達，抗體第 ${G.abAt} 回合就緒。在那之前，靠巨噬細胞守住。`, `Cytotoxic T cells arrive on turn ${G.tAt}; antibodies are ready on turn ${G.abAt}. Until then, hold the line with macrophages.`], true);
     B.afterAction();
@@ -76,6 +76,7 @@
     if (!sel) { if (t.vir || t.st === 1) B.hint('needsel', ['先點選一個免疫細胞，再下達指令。', 'Select an immune cell first, then give the order.'], true); return; }
     if (sel.kind === 'dc' && AW.agTargets(G, sel).includes(i) && i !== sel.tile) { if (IW.touch && pend !== i) { pend = i; return; } return doAntigen(G, sel); }
     if (sel.kind === 'mac' && AW.eatTargets(G, sel).includes(i)) return doEat(G, sel, i);
+    if (sel.kind === 'mac' && t.vir && sel.stomach >= G.cfg.CAP && AW.areaOf(G, sel.tile).includes(i)) { IW.sfx('deny'); return B.hint('full', ['這個巨噬細胞吃飽了，要等回合結束消化後才能再吞。', 'This macrophage is full; it must digest at the end of the turn before engulfing again.'], true); }
     if (u === sel) { if (sel.kind === 'dc' && AW.agTargets(G, sel).length) { if (IW.touch && pend !== i) { pend = i; return; } return doAntigen(G, sel); } return; }
     const prev = AW.moveTargets(G, sel); if (prev.has(i)) { pend = -1; return doMove(G, sel, i, prev); }
     IW.sfx('deny');
@@ -94,7 +95,7 @@
     else if (aim === 'ctl') L.push(t.st === 1 ? tx(`<b>${IW.touch && pend === i ? '再點一次：' : ''}清除這個受感染的細胞</b>（1 點，組織 −1）`, `<b>${IW.touch && pend === i ? 'Tap again: ' : ''}clear this infected cell</b> (1 AP, tissue −1)`) : tx('毒殺 T 細胞只對付受感染的細胞。', 'Cytotoxic T cells only deal with infected cells.'));
     else if (sel && G.phase === 'player' && !(u && u !== sel)) {
       if (sel.kind === 'dc' && AW.agTargets(G, sel).includes(i)) L.push(tx(`<b>${IW.touch && pend === i ? '再點一次' : '點一下'}：取得情報，前往淋巴結</b>（1 點，偵察兵會離開戰場）`, `<b>${IW.touch && pend === i ? 'Tap again' : 'Tap'}: collect intel and go to the lymph node</b> (1 AP; the scout leaves the field)`));
-      else if (sel.kind === 'mac' && AW.eatTargets(G, sel).includes(i)) L.push(tx(`<b>點一下：吞噬 ${AW.eatCount(G, sel, i)} 個病毒</b>（1 點）`, `<b>Tap: engulf ${AW.eatCount(G, sel, i)}</b> (1 AP)`));
+      else if (sel.kind === 'mac' && AW.eatTargets(G, sel).includes(i)) L.push(tx(`<b>點一下：吞噬 ${AW.eatCount(G, sel, i)} 個病毒</b>（1 點）`, `<b>Tap: engulf ${AW.eatCount(G, sel, i)} virus${AW.eatCount(G, sel, i) > 1 ? 'es' : ''}</b> (1 AP)`));
       else if (AW.moveTargets(G, sel).has(i)) L.push(tx('<b>點一下：移動到這裡</b>（1 點）', '<b>Tap: move here</b> (1 AP)'));
     }
     if (u) L.push(u.kind === 'dc' ? tx('<b>樹突細胞（偵察兵）</b>　不戰鬥。走到病毒或受感染細胞旁邊取樣，把情報送到淋巴結。', '<b>Dendritic cell (scout)</b>  Does not fight. Move next to a virus or an infected cell to sample it, then carry the intel to the lymph node.')
@@ -107,8 +108,8 @@
   };
   M.guide = function (G, st) {
     const sel = selU(G), c = IW.save.ch.airway || {};
-    if (aim === 'ab') return tx('抗體：點一片有細胞外病毒的區域（金色外框）。', 'Antibodies: tap an area with free viruses (gold outlines).') + (IW.touch ? tx('點一下預覽，再點一次執行。', ' Tap once to preview, again to do it.') : '');
-    if (aim === 'ctl') return tx('毒殺 T 細胞：點一個受感染的細胞。', 'Cytotoxic T cell: tap an infected cell.') + (IW.touch ? tx('點一下預覽，再點一次執行。', ' Tap once to preview, again to do it.') : '');
+    if (aim === 'ab') return tx('抗體：點一片有細胞外病毒的區域（金色外框）。', 'Antibodies: tap an area with free viruses (gold outlines).') + tx('再按一次按鈕可以取消。', ' Press the button again to cancel.') + (IW.touch ? tx('點一下預覽，再點一次執行。', ' Tap once to preview, again to do it.') : '');
+    if (aim === 'ctl') return tx('毒殺 T 細胞：點一個受感染的細胞。', 'Cytotoxic T cell: tap an infected cell.') + tx('再按一次按鈕可以取消。', ' Press the button again to cancel.') + (IW.touch ? tx('點一下預覽，再點一次執行。', ' Tap once to preview, again to do it.') : '');
     if (G.ap === 0) return tx('行動點數用完了：按「結束回合」。', 'Out of action points: press “End turn”.');
     if (st.kind !== 'practice' && (c.done || G.scn.key !== 'first')) return '';
     if (st.kind !== 'practice') {
@@ -249,14 +250,14 @@
       insight, extra, series: [{ key: 'inf', name: tx('受感染細胞', 'Infected cells'), color: P.sickEdge }, { key: 'vir', name: tx('細胞外病毒', 'Free virus'), color: P.vir }],
       marks: { antigen: [tx('情報', 'Intel'), '#b77a12'], tcell: ['T', P.hema], ab: [tx('抗體', 'Ab'), '#8a5a12'] } };
   };
-  M.rules = function (G) {
-    const c = G.cfg, rows = [
+  M.rules = function (G, st) {
+    const c = st && st.kind === 'practice' ? AW.CFG : G.cfg, rows = [
       [tx('病毒', 'Virus'), tx(`細胞外的病毒，回合結束會鑽進所在的細胞，把它變成工廠。工廠每回合往箭頭方向釋放 ${c.REL_N} 個，共 ${c.REL_TURNS} 回合，然後死亡。`, `A free virus enters the cell it sits on at end of turn, turning it into a factory. A factory releases ${c.REL_N} per turn along its arrows for ${c.REL_TURNS} turns, then dies.`)],
       [tx('巨噬細胞', 'Macrophage'), tx(`吞掉身邊細胞外的病毒（1 點吞到容量上限 ${c.CAP}，回合結束消化 ${c.DIGEST} 個）。站在箭頭落點可以攔截。碰不到細胞裡的病毒。`, `Engulfs adjacent free viruses (1 AP fills it up to ${c.CAP}; digests ${c.DIGEST} at end of turn). Standing where an arrow lands intercepts. Cannot reach viruses inside cells.`)],
       [tx('偵察兵', 'Scout'), tx('樹突細胞走到病毒或受感染細胞旁邊取樣（1 點），然後離開戰場，把情報送到淋巴結。', 'The dendritic cell samples next to a virus or infected cell (1 AP), then leaves to deliver the intel to the lymph node.')],
       [tx('淋巴結', 'Lymph node'), tx('找出受體和情報卡吻合的 T 細胞。找得越快，後援越早到（第一次 2～4 回合；有記憶細胞 1～2 回合）。', 'Find the T cell whose receptor matches the intel card. The faster you find it, the sooner backup arrives (2–4 turns on a first encounter; 1–2 with memory cells).')],
       [tx('毒殺 T 細胞', 'Cytotoxic T'), tx(`抵達後每回合 ${c.CTL_N} 次：清除一個受感染的細胞（組織 −1）。`, `Once here, ${c.CTL_N} uses per turn: clear one infected cell (tissue −1).`)],
-      [tx('抗體', 'Antibodies'), tx(`就緒後每回合次數逐步增加（最多 ${c.AB_MAX}）：中和一格與相鄰格的細胞外病毒。`, `Once ready, uses per turn build up (max ${c.AB_MAX}): neutralize free viruses on one tile and its neighbors.`)],
+      [tx('抗體', 'Antibodies'), tx(`比 T 細胞晚 1 回合就緒（有記憶時同時；這是遊戲設定）。之後每回合次數逐步增加（最多 ${c.AB_MAX}）：中和一格與相鄰格的細胞外病毒。`, `Ready 1 turn after the T cells (at the same time with memory; a game rule). Uses per turn then build up (max ${c.AB_MAX}): neutralize free viruses on one tile and its neighbors.`)],
       [tx('勝敗', 'Win / lose'), tx(`清光受感染的細胞與病毒就贏。死亡的細胞達 ${c.BUDGET} 個，或 ${c.TURNS} 回合用完就輸。`, `Clear every infected cell and virus to win. Lose at ${c.BUDGET} dead cells or after ${c.TURNS} turns.`)]];
     return `<div class="rules">${rows.map(r => `<b>${r[0]}</b><span>${r[1]}</span>`).join('')}</div>`;
   };
@@ -284,7 +285,7 @@
         next: ['開始正式戰鬥 ▸', 'Start the real battle ▸'], lost: ['按「抗體」再點病毒聚集的地方；按「毒殺 T 細胞」再點灰紫色的細胞。', 'Press “Antibodies” and tap where viruses cluster; press “T cells” and tap a grey-violet cell.'],
         guide: G => { if (G.ap === 0 || aim) return ''; return AW.nVir(G) && G.ab ? tx('按下方的「抗體」，再點病毒最密的地方：一次中和一整片。', 'Press “Antibodies” below, then tap where the viruses are densest: one use clears a whole area.') : AW.nInf(G) && G.ctl ? tx('按「毒殺 T 細胞」，再點受感染的細胞。', 'Press “T cells”, then tap an infected cell.') : ''; } },
       { kind: 'battle', cfg: {}, scn: { virus: 'A', key: 'first' } }],
-    onBattleEnd(G, s) { const c = IW.save.ch.airway = IW.save.ch.airway || {}; c.plays = (c.plays || 0) + 1; unlock(); if (G.result.win) { c.done = true; c.stars = Math.max(c.stars || 0, s.stars); if (!IW.save.mem.A || IW.save.mem.A.from === 'borrowed') IW.save.mem.A = { from: 'infection' }; if (!IW.save.hist.first || !IW.save.hist.first.win) IW.save.hist.first = rec(G); IW.sfx('card'); } IW.store(); },
+    onBattleEnd(G, s) { const c = IW.save.ch.airway = IW.save.ch.airway || {}; c.plays = (c.plays || 0) + 1; unlock(); if (G.result.win) { c.done = true; c.stars = Math.max(c.stars || 0, s.stars); if (!IW.save.mem.A) IW.save.mem.A = { from: 'infection' }; if (!IW.save.hist.first || !IW.save.hist.first.win) IW.save.hist.first = rec(G); IW.sfx('card'); } IW.store(); },
     endButtons(G) {
       return G.result.win ? [{ label: tx('第 3 章：它又來了 ▸', 'Chapter 3: It comes back ▸'), pri: 1, fn: () => { location.hash = '#return'; } }, { label: tx('再玩一局', 'New battle'), sm: 1, fn: () => B.go(B.stage) }, menuBtn()]
         : [{ label: tx('再試一次（同一戰場）', 'Try again (same battle)'), pri: 1, fn: () => B.go(B.stage, G.seed) }, { label: tx('換一個戰場', 'New battle'), sm: 1, fn: () => B.go(B.stage) }, { label: tx('重玩練習', 'Replay practice'), sm: 1, fn: () => B.go(0) }, menuBtn()];
@@ -296,20 +297,20 @@
     resume: () => (IW.save.ch.return || {}).again ? 1 : 0,
     stages: [
       { kind: 'battle', cfg: {}, scn: { virus: 'A', key: 'again' },
-        pre: B => { const borrowed = !IW.save.mem.A; if (borrowed) { IW.save.mem.A = { from: 'borrowed' }; IW.store(); }
+        pre: (B, G) => { const borrowed = !IW.save.mem.A; G.scn = { virus: 'A', key: 'again', borrow: borrowed ? 'A' : null };   // 沒打過第 2 章：只在這一局假設有記憶，不寫進存檔
           return B.ask(() => ({ html: `<h2>${tx('幾個月後', 'Months later')}</h2><h1>${tx('同一種病毒又來了', 'The same virus is back')}</h1>
-            <p>${IW.save.mem.A.from === 'borrowed' ? tx('你還沒打過第 2 章，所以這裡先假設這個身體以前得過「病毒 甲」，淋巴結裡留有記憶細胞。之後回去打第 2 章，可以親自比較第一次有多辛苦。', 'You have not played Chapter 2 yet, so let us assume this body has had Virus A before and still keeps memory cells in the lymph node. Play Chapter 2 later to feel how hard the first time is.') : tx('上次打贏「病毒 甲」之後，一部分 T 細胞和 B 細胞留了下來，成為記憶細胞。戰場的規則和上次完全一樣，不同的只有你的身體。', 'After you beat Virus A, some T and B cells stayed behind as memory cells. The rules of the battle are exactly the same as last time. The only thing that changed is your body.')}</p>
+            <p>${borrowed ? tx('你還沒打過第 2 章，所以這裡先假設這個身體以前得過「病毒 甲」，淋巴結裡留有記憶細胞。之後回去打第 2 章，可以親自比較第一次有多辛苦。', 'You have not played Chapter 2 yet, so let us assume this body has had Virus A before and still keeps memory cells in the lymph node. Play Chapter 2 later to feel how hard the first time is.') : tx('上次打贏「病毒 甲」之後，一部分 T 細胞和 B 細胞留了下來，成為記憶細胞。戰場的規則和上次完全一樣，不同的只有你的身體。', 'After you beat Virus A, some T and B cells stayed behind as memory cells. The rules of the battle are exactly the same as last time. The only thing that changed is your body.')}</p>
             <div class="btns"><button class="pill pri" id="go">${tx('開始 ▸', 'Begin ▸')}</button></div>`, on: { go: () => 1 } })); } },
       { kind: 'battle', cfg: {}, scn: { virus: 'B', key: 'variant' },
         pre: async (B, G) => {
           if (IW.save.mem.B) { const keep = await B.ask(() => ({ html: `<h2>${tx('病毒 乙', 'Virus B')}</h2><h1>${tx('你的身體已經記得它', 'Your body already remembers it')}</h1><p>${tx('記憶冊裡已經有「病毒 乙」。要沿用這份記憶，還是回到還沒遇過它的時候重新選擇？', 'Virus B is already in your memory album. Keep that memory, or go back to before you met it and choose again?')}</p>
-            <div class="btns"><button class="pill pri" id="re">${tx('回到選擇點', 'Go back to the choice')}</button><button class="pill" id="keep">${tx('沿用記憶', 'Keep the memory')}</button></div>`, on: { re: () => 0, keep: () => 1 } })); if (keep) { G.scn = { virus: 'B', key: 'variant', vax: IW.save.mem.B.from === 'vaccine' }; return; } delete IW.save.mem.B; IW.store(); }
+            <div class="btns"><button class="pill pri" id="re">${tx('回到選擇點', 'Go back to the choice')}</button><button class="pill" id="keep">${tx('沿用記憶', 'Keep the memory')}</button></div>`, on: { re: () => 0, keep: () => 1 } })); if (keep) { G.scn = { virus: 'B', key: 'variant', vax: IW.save.mem.B.from === 'vaccine', borrow: IW.save.mem.A ? null : 'A' }; return; } delete IW.save.mem.B; IW.store(); }
           const vax = await B.ask(() => ({ html: `<h2>${tx('新的消息', 'News')}</h2><h1>${tx('另一種病毒正在流行', 'A different virus is going around')}</h1>
             <p>${tx('「病毒 乙」的情報卡形狀不一樣。你為「甲」留下的記憶細胞認不得它：記憶只對同一種形狀有效。', 'Virus B has a different intel card. The memory cells you kept for Virus A do not recognize it: memory only fits the same shape.')}</p>
-            <p>${tx('在它來之前，你可以先接種疫苗。疫苗只送情報卡進來，沒有會複製的病毒。', 'Before it arrives, you can get vaccinated. A vaccine delivers only the intel card, with no virus that can multiply.')}</p>
+            <p>${tx('在它來之前，你可以先接種疫苗。疫苗讓身體先看到這張情報卡，但不會讓你得到這場病。', 'Before it arrives, you can get vaccinated. A vaccine shows the body this intel card without giving you the disease.')}</p>
             <div class="btns"><button class="pill pri" id="vax">${tx('先接種疫苗', 'Get vaccinated first')}</button><button class="pill" id="no">${tx('不接種，直接面對', 'Skip it and face the virus')}</button></div>`, on: { vax: () => 1, no: () => 0 } }));
-          G.scn = { virus: 'B', key: 'variant', vax: !!vax };
-          if (vax) { await IW.lymph.run($('ln'), { virus: 'B', pressure: false, vaccine: true }); IW.save.mem.B = { from: 'vaccine' }; IW.save.codex.vaccine = 1; IW.store(); IW.sfx('card');
+          G.scn = { virus: 'B', key: 'variant', vax: !!vax, borrow: IW.save.mem.A ? null : 'A' };
+          if (vax) { await IW.lymph.run($('ln'), { virus: 'B', pressure: false, vaccine: true, borrow: G.scn.borrow }); IW.save.mem.B = { from: 'vaccine' }; IW.save.codex.vaccine = 1; IW.store(); IW.sfx('card');
             await B.ask(() => ({ html: `<h2>${tx('幾週後', 'Weeks later')}</h2><h1>${tx('真的病毒來了', 'The real virus arrives')}</h1><p>${tx('接種時留下的記憶細胞已經在淋巴結裡等著。', 'The memory cells left by the vaccine are already waiting in the lymph node.')}</p><div class="btns"><button class="pill pri" id="go">${tx('開始 ▸', 'Begin ▸')}</button></div>`, on: { go: () => 1 } })); }
         } }],
     onBattleEnd(G, s, st) {

@@ -12,13 +12,13 @@
   const same = (a, b) => a[0] === b[0] && a[1] === b[1] && a[2] === b[2];
   const SLOTS = []; for (let r = 0; r < 4; r++) for (let c = 0; c < 5; c++) SLOTS.push({ x: 63 + c * 66, y: 150 + r * 62 });
   // 這個身體的 T 細胞庫與兩種病毒的情報卡
-  L.body = function () {
+  L.body = function (borrow) {                                // borrow：這一局暫時假設有的記憶（不寫進存檔）
     const rnd = IW.rng(IW.save.bodySeed), all = [];
     for (let a = 0; a < 3; a++) for (let b = 0; b < 3; b++) for (let c = 0; c < 3; c++) all.push([a, b, c]);
     IW.shuffle(all, rnd);
     const VA = all[0], VB = all.find(c => c.filter((v, i) => v !== VA[i]).length >= 2), rest = all.filter(c => c !== VA && c !== VB).slice(0, 18);
     const cells = [VA, VB, ...rest].map((code, id) => ({ id, code: code.slice(), mem: null }));
-    const m = IW.save.mem;                                   // 記憶細胞：原本那一個，加上複製後留下來的三個
+    const m = Object.assign({}, IW.save.mem, borrow ? { [borrow]: 1 } : {});   // 記憶細胞：原本那一個，加上複製後留下來的三個
     if (m.A) { cells[0].mem = 'A'; for (const k of [2, 3, 4]) { cells[k].code = VA.slice(); cells[k].mem = 'A'; } }
     if (m.B) { cells[1].mem = 'B'; for (const k of [5, 6, 7]) { cells[k].code = VB.slice(); cells[k].mem = 'B'; } }
     return { virus: { A: VA, B: VB }, cells };
@@ -30,16 +30,17 @@
   /* opts：{virus:'A'|'B', pressure:布林（有沒有前線在等）, vaccine:布林}；回傳 Promise<{secs,wrong,n0,mem,delay}> */
   L.run = function (el, opts) {
     return new Promise(resolve => {
-      host = el; const body = L.body(), target = body.virus[opts.virus], order = IW.shuffle(SLOTS.map((_, i) => i), Math.random);
+      host = el; const body = L.body(opts.borrow), target = body.virus[opts.virus], order = IW.shuffle(SLOTS.map((_, i) => i), Math.random);
       const cells = body.cells.map((c, i) => Object.assign(c, { slot: order[i], x: SLOTS[order[i]].x, y: SLOTS[order[i]].y, ph: Math.random() * 9, shake: 0, born: 0 }));
       const n0 = cells.filter(c => same(c.code, target)).length;
       S = { opts, target, cells, n0, mem: n0 > 1, phase: 'intro', time: 0, wrong: 0, check: null, clones: [], n: 0, dt: 0, t: 0, lastDelay: 0, resolve };
-      el.innerHTML = `<h3><b>${tx('淋巴結', 'The lymph node')}</b><span id="lnSub"></span></h3><div class="lnw"><canvas id="lnCv" width="780" height="1000"></canvas></div><p id="lnCap" aria-live="polite"></p><div class="btns" id="lnBtns"></div>`;
+      el.innerHTML = `<h3><b id="lnTtl"></b><span id="lnSub"></span><button class="ic" id="lnLang"></button></h3><div class="lnw"><canvas id="lnCv" width="780" height="1000"></canvas></div><p id="lnCap" aria-live="polite"></p><div class="btns" id="lnBtns"></div>`;
       el.classList.add('on'); cv = IW.$('lnCv'); ctx = cv.getContext('2d');
       cv.onpointerdown = e => {
         if (S.phase !== 'search' || S.check) return; const b = cv.getBoundingClientRect(), x = (e.clientX - b.left) * W / b.width, y = (e.clientY - b.top) * H / b.height;
         let best = null, bd = 34; for (const c of S.cells) { const d = Math.hypot(c.x - x, c.y - 9 - y); if (d < bd) { bd = d; best = c; } } if (best) L.tap(best.id);
       };
+      IW.$('lnLang').onclick = () => IW.setLang(IW.lang() === 'en' ? 'zh' : 'en');
       ui(); last = 0; cancelAnimationFrame(raf); raf = requestAnimationFrame(loop);
     });
   };
@@ -53,9 +54,10 @@
   function btns(b) { btnNow = b; IW.$('lnBtns').innerHTML = b.map((x, i) => `<button class="pill${x.pri ? ' pri' : ''}" data-i="${i}">${pick(x.t)}</button>`).join(''); IW.$('lnBtns').querySelectorAll('button').forEach(e => e.onclick = () => btnNow[+e.dataset.i].f()); }
   function ui() {
     if (!S) return; const o = S.opts, first = !IW.save.tips.ln;
+    IW.$('lnTtl').textContent = tx('淋巴結', 'The lymph node'); IW.$('lnLang').textContent = IW.lang() === 'en' ? '中文' : 'EN';
     IW.$('lnSub').textContent = o.vaccine ? tx('接種疫苗', 'Vaccination') : S.mem ? tx('這種病毒以前見過', 'This virus has been seen before') : tx('第一次遇到這種病毒', 'First encounter with this virus');
     if (S.phase === 'intro') {
-      say(o.vaccine ? ['疫苗只把<b>情報卡</b>送進來，沒有會複製的病毒，前線很平靜。慢慢找出受體三格都吻合的 T 細胞。', 'A vaccine delivers only the <b>intel card</b>, with no virus that can multiply. The front is calm. Take your time finding the T cell whose three receptor shapes all match.']
+      say(o.vaccine ? ['疫苗讓身體先看到<b>情報卡</b>，但不會造成這場感染，前線很平靜。慢慢找出受體三格都吻合的 T 細胞。', 'A vaccine shows the body the <b>intel card</b> without causing this infection. The front is calm. Take your time finding the T cell whose three receptor shapes all match.']
         : S.mem ? ['偵察兵帶回情報卡。看看淋巴結裡多了什麼：綁著緞帶的<b>記憶細胞</b>，上次留下來的。', 'The scout is back with the intel card. Look what the lymph node has now: <b>memory cells</b> wearing ribbons, left over from last time.']
           : first ? ['偵察兵（樹突細胞）帶回一張<b>情報卡</b>。每個 T 細胞天生帶著一組形狀不同的受體。找出<b>三格都吻合</b>的那一個。找得越久，前線等後援的回合越多。', 'The scout (a dendritic cell) has brought back an <b>intel card</b>. Every T cell is born with its own set of receptor shapes. Find the one where <b>all three match</b>. The longer it takes, the more turns the front waits for backup.']
             : ['新的情報卡。舊的記憶細胞認不得這個形狀，要從頭找出三格都吻合的 T 細胞。', 'A new intel card. The old memory cells do not recognize this shape, so find a T cell whose three shapes all match.']);
@@ -67,7 +69,7 @@
     } else if (S.phase === 'done') {
       const d = S.res.delay, sec = S.res.secs.toFixed(1);
       say(o.vaccine ? [`找到了（${sec} 秒）。前線沒有任何細胞受損。一部分複製出來的細胞留下來成為<b>記憶細胞</b>：下次真的病毒來，就不必從頭找。`, `Found it (${sec} s). Nothing at the front was harmed. Some of the copies stay behind as <b>memory cells</b>: when the real virus comes, the search will not start from scratch.`]
-        : [`花了 <b>${sec} 秒</b>。毒殺 T 細胞 <b>${d} 回合後</b>抵達戰場${S.mem ? '，抗體也同時就緒' : '，抗體再晚 1 回合'}。${S.mem ? '' : '打贏之後，一部分複製出來的細胞會留下來成為記憶細胞。'}`, `It took <b>${sec} s</b>. Cytotoxic T cells reach the battle <b>in ${d} turn${d > 1 ? 's' : ''}</b>${S.mem ? ', and antibodies are ready at the same time' : ', with antibodies 1 turn later'}.${S.mem ? '' : ' After the infection is cleared, some of the copies will stay behind as memory cells.'}`]);
+        : [`花了 <b>${sec} 秒</b>。毒殺 T 細胞 <b>${d} 回合後</b>抵達戰場${S.mem ? '，抗體也同時就緒' : '，抗體再晚 1 回合'}（遊戲設定）。${S.mem ? '' : '打贏之後，一部分複製出來的細胞會留下來成為記憶細胞。'}`, `It took <b>${sec} s</b>. Cytotoxic T cells reach the battle <b>in ${d} turn${d > 1 ? 's' : ''}</b>${S.mem ? ', and antibodies are ready at the same time' : ', with antibodies 1 turn later'} (a game rule).${S.mem ? '' : ' After the infection is cleared, some of the copies will stay behind as memory cells.'}`]);
       btns([{ t: o.vaccine ? ['完成接種 ▸', 'Finish vaccination ▸'] : ['回到戰場 ▸', 'Back to the battle ▸'], pri: 1, f: finish }]);
     }
   }
@@ -110,7 +112,7 @@
     const o = S.opts; ctx.fillStyle = '#fdf0f3'; ctx.fillRect(0, 0, W, 86); ctx.strokeStyle = P.ink; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(0, 86); ctx.lineTo(W, 86); ctx.stroke();
     ctx.font = A.font(12.5, 600); ctx.textAlign = 'left'; ctx.fillStyle = P.ink;
     if (!o.pressure) {
-      ctx.fillText(tx('前線平靜', 'The front is calm'), 12, 22); ctx.font = A.font(12); ctx.fillStyle = P.ok; ctx.textAlign = 'right'; ctx.fillText(tx('疫苗裡沒有會複製的病毒', 'A vaccine has no virus that multiplies'), W - 12, 22);
+      ctx.fillText(tx('前線平靜', 'The front is calm'), 12, 22); ctx.font = A.font(12); ctx.fillStyle = P.ok; ctx.textAlign = 'right'; ctx.fillText(tx('疫苗不會造成這場感染', 'A vaccine does not cause this infection'), W - 12, 22);
       for (let i = 0; i < 9; i++) { ctx.fillStyle = P.eosin; ctx.strokeStyle = P.eosinEdge; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.roundRect(22 + i * 39, 36, 32, 38, 8); ctx.fill(); ctx.stroke(); ctx.fillStyle = P.nucleus; ctx.globalAlpha = .8; ctx.beginPath(); ctx.ellipse(38 + i * 39, 62, 6, 5, 0, 0, 6.283); ctx.fill(); ctx.globalAlpha = 1; }
       return;
     }
@@ -137,8 +139,8 @@
     ctx.globalAlpha = 1;
     A.card(DOCK.x, DOCK.y, 1, S.target);
     if (S.check && S.check.t > .28 && S.check.t < .8) for (let i = 0; i < 3; i++) { const ok = S.check.c.code[i] === S.target[i]; ctx.font = A.font(15, 700); ctx.textAlign = 'center'; ctx.fillStyle = ok ? P.ok : P.danger; ctx.fillText(ok ? '✓' : '✕', DOCK.x - 30 + i * 30, DOCK.y - 27); }
-    ctx.font = A.font(12); ctx.textAlign = 'center'; ctx.fillStyle = P.dim; ctx.fillText(tx('情報卡（病毒的特徵）', 'Intel card'), DOCK.x, DOCK.y + 38);
-    A.dc(DOCK.x - 96, DOCK.y, .95, { ph: S.t }); ctx.font = A.font(12); ctx.fillStyle = P.dim; ctx.fillText(tx('偵察兵', 'Scout'), DOCK.x - 96, DOCK.y + 42);
+    ctx.font = A.font(12); ctx.textAlign = 'center'; ctx.fillStyle = P.dim; ctx.fillText(tx('情報卡（病毒的特徵）', 'Intel card (virus features)'), DOCK.x, DOCK.y + 38);
+    A.dc(DOCK.x - 96, DOCK.y, .95, { ph: S.t }); ctx.font = A.font(12); ctx.fillStyle = P.dim; ctx.fillText(tx('偵察兵', 'Scout'), DOCK.x - 96, DOCK.y - 34);
     if (!IW.save.relax && S.phase !== 'intro') { ctx.font = A.font(19, 600); ctx.fillStyle = P.ink; ctx.fillText((S.phase === 'search' ? S.time : S.found).toFixed(1), DOCK.x + 98, DOCK.y + 5); ctx.font = A.font(12); ctx.fillStyle = P.dim; ctx.fillText(tx('秒', 'seconds'), DOCK.x + 98, DOCK.y + 38); }
     if (S.check) A.lymph(S.check.c.x, S.check.c.y, 19, { code: S.check.c.code, mem: S.check.c.mem, t: S.t, shake: S.check.c.shake, mood: S.check.t > .3 ? (S.check.ok ? 'happy' : 'sad') : 'o', glow: S.check.ok && S.check.t > .3 });
     if (S.phase === 'expand' || S.phase === 'done') {

@@ -9,7 +9,7 @@
   const W = 470, H = 610, R = 40, HW = Math.sqrt(3) * R, OX = (W - HW * 6.5) / 2 + HW / 2, OY = 102, ROWH = 60;
   const B = IW.battle = { W, H, R, HW, OY, ROWH };
   let root = null, cv = null, ctx = null, G = null, M = null, DEF = null, ST = null, stageK = 0, T = 0, raf = 0, last = 0;
-  let infoUntil = 0, fx = [], parts = [], hover = -1, armed = null, hoverAct = null, hq = [], hCur = null, hMin = 0, hEnd = 0, hShown = null, cardView = null, lastInfo = -2;
+  let infoUntil = 0, hoverMute = false, fx = [], parts = [], hover = -1, armed = null, hoverAct = null, hq = [], hCur = null, hMin = 0, hEnd = 0, hShown = null, cardView = null, lastInfo = -2;
   const seen = new Set();
   Object.defineProperties(B, { G: { get: () => G }, T: { get: () => T }, ST: { get: () => ST }, DEF: { get: () => DEF }, stage: { get: () => stageK },
     hover: { get: () => hover }, preview: { get: () => armed || hoverAct }, armed: { get: () => armed }, root: { get: () => root } });
@@ -27,15 +27,19 @@
       <div class="ov" id="ov"><div class="card" id="card"></div></div><div class="ln" id="ln"></div>`;
     $('app').innerHTML = ''; document.body.appendChild(root);
     cv = $('cv'); ctx = cv.getContext('2d');
-    $('bBack').onclick = () => { location.hash = '#menu'; };
-    $('bHelp').onclick = () => B.showRules();
+    $('bBack').onclick = e => {                                // 戰鬥進行中：要再按一次才離開（這一場不會保存）
+      const b = e.currentTarget, mid = G && G.phase !== 'over' && (G.turn > 1 || G.ap < G.cfg.AP);
+      if (!mid || b.dataset.sure) { location.hash = '#menu'; return; }
+      b.dataset.sure = 1; b.style.width = 'auto'; b.style.padding = '0 10px'; b.textContent = tx('離開？', 'Leave?'); setTimeout(() => { if (b.isConnected) { delete b.dataset.sure; b.style.width = ''; b.style.padding = ''; b.textContent = '◂'; } }, 3000);
+    };
+    $('bHelp').onclick = () => { if (!B.busy) B.showRules(); };
     $('bSpeed').onclick = () => { IW.save.speed = IW.save.speed > 1 ? 1 : 2; IW.store(); chrome(); };
     $('bMute').onclick = () => { IW.setMute(!IW.save.mute); chrome(); };
     $('bLang').onclick = () => IW.setLang(IW.lang() === 'en' ? 'zh' : 'en');
     $('bEnd').onclick = () => B.endTurn();
     $('acts').addEventListener('click', e => { const b = e.target.closest('.act'); if (b && !b.disabled) tapAct(b.dataset.id); });
-    $('acts').addEventListener('mouseover', e => { const b = e.target.closest('.act'); if (b && !IW.touch) { hoverAct = b.dataset.id; } });
-    $('acts').addEventListener('mouseleave', () => { hoverAct = null; });
+    $('acts').addEventListener('mouseover', e => { const b = e.target.closest('.act'); if (b && !IW.touch && !hoverMute) { hoverAct = b.dataset.id; } });
+    $('acts').addEventListener('mouseleave', () => { hoverAct = null; hoverMute = false; });
     cv.addEventListener('mousemove', e => { if (!IW.touch) { hover = tileAt(e); showInfo(); } });
     cv.addEventListener('mouseleave', () => { hover = -1; showInfo(); });
     cv.addEventListener('click', e => {
@@ -142,7 +146,7 @@
   function tapAct(id) {
     if (!G || G.phase !== 'player' || B.busy) return;
     if (IW.touch && M.needArm && M.needArm(G, id) && armed !== id) { armed = id; hoverAct = null; hud(); return; }
-    disarm(); hoverAct = null; M.act(G, id);
+    disarm(); hoverAct = null; hoverMute = true; M.act(G, id);   // 按下去之後不再顯示「再按一次」的預覽，滑鼠移開再回來才恢復
   }
   /* ---------------- 提示：每句至少停留一段時間，不會被下一句立刻蓋掉 ---------------- */
   B.hint = function (key, text, force) {
@@ -158,8 +162,10 @@
     if (!hCur && hq.length) { hCur = hq.shift(); hMin = now + 2600; hEnd = now + 7000; infoUntil = 0; }
     const pv = (armed || hoverAct) && G.phase === 'player' && M.preview ? M.preview(G, armed || hoverAct) : null;
     const txt = pv ? pv + (armed ? tx(' <b>再點一次執行</b>，點別處取消。', ' <b>Tap again to do it</b>, elsewhere to cancel.') : '')
-      : hCur && now < hMin ? pick(hCur.text) : narrow() && now < infoUntil && hover >= 0 && G.phase === 'player' ? (M.info(G, hover) || '') : hCur ? pick(hCur.text) : (G.phase === 'player' && !G.result && !B.busy ? ((ST.guide && ST.guide(G)) || M.guide(G, ST) || '') : '');
-    if (txt !== hShown) { hShown = txt; $('hint').innerHTML = txt; }
+      : hCur ? pick(hCur.text) : (G.phase === 'player' && !G.result && !B.busy ? ((ST.guide && ST.guide(G)) || M.guide(G, ST) || '') : '');
+    let out = txt;                                            // 手機直向：格子說明接在提示後面（提示優先，不被蓋掉）
+    if (!pv && narrow() && now < infoUntil && hover >= 0 && G.phase === 'player') { const inf = M.info(G, hover) || ''; out = txt ? txt + '<span class="inf">' + inf.split('<br>')[0] + '</span>' : inf; }
+    if (out !== hShown) { hShown = out; $('hint').innerHTML = out; $('hint').scrollTop = 0; }
   }
 
   /* ---------------- 卡片 ---------------- */
@@ -170,9 +176,10 @@
   B.closeCard = () => { cardView = null; if (root) $('ov').classList.remove('on'); };
   B.ask = render => new Promise(res => B.card(() => { const c = render(); const on = {}; for (const id in c.on) on[id] = () => { B.closeCard(); res(c.on[id]()); }; return { cls: c.cls, html: c.html, on }; }));
   B.showRules = function () {
-    B.card(() => ({ html: `<h2>${pick(DEF.title)}</h2><h1>${tx('規則', 'Rules')}</h1>${M.rules(G)}
-      <p class="note">${tx('這些回合與數值是為了好玩而做的簡化。', 'These turns and numbers are simplifications made for play.')} ${tx('主選單的「這款遊戲簡化了什麼」有完整說明。', 'See “What this game simplifies” on the menu for the full list.')}</p>
-      <div class="btns"><button class="pill pri" id="rBack">${tx('回到戰場', 'Back to the battle')}</button>${DEF.stages.length > 1 ? `<button class="pill sm" id="rPrac">${tx('重玩練習', 'Replay the practice')}</button>` : ''}</div>`,
+    B.card(() => ({ html: `<h2>${pick(DEF.title)}</h2><h1>${tx('規則', 'Rules')}</h1>
+      <div class="btns"><button class="pill pri" id="rBack">${tx('回到戰場', 'Back to the battle')}</button>${DEF.stages.length > 1 ? `<button class="pill sm" id="rPrac">${tx('重玩練習', 'Replay the practice')}</button>` : ''}</div>
+      ${ST.kind === 'practice' ? `<p class="note">${tx('下面是正式戰鬥的完整規則。練習關卡只用到其中一部分。', 'These are the full rules of the real battle. The practice stages use only part of them.')}</p>` : ''}${M.rules(G, ST)}
+      <p class="note">${tx('這些回合與數值是為了好玩而做的簡化。', 'These turns and numbers are simplifications made for play.')} ${tx('主選單的「這款遊戲簡化了什麼」有完整說明。', 'See “What this game simplifies” on the menu for the full list.')}</p>`,
       on: { rBack: B.closeCard, rPrac: () => B.go(0) } }));
   };
   const stars = n => '★'.repeat(n) + '<i>' + '★'.repeat(3 - n) + '</i>';

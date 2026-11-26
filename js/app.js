@@ -7,9 +7,9 @@
   const { $, tx, pick, art: A, battle: B } = IW, P = A.P, S = IW.save;
   const CH = ['skin', 'airway', 'return'];
   const INFO = {
-    skin: { n: ['第 1 章', 'CHAPTER 1'], t: ['皮膚防線', 'The Skin Barrier'], d: ['皮膚破了洞，細菌溜進來。帶領巨噬細胞吞掉它們，並拿捏發炎的力道：太弱擋不住，太強會傷到自己。', 'The skin is broken and bacteria slip in. Lead your macrophages to engulf them, and keep inflammation in balance: too weak and it cannot hold them, too strong and it hurts your own tissue.'] },
-    airway: { n: ['第 2 章', 'CHAPTER 2'], t: ['病毒來了', 'A Virus Arrives'], d: ['病毒會鑽進細胞，把它變成工廠。守衛先頂住，偵察兵把情報送到淋巴結，由你親手找出認得它的 T 細胞。', 'Viruses get inside cells and turn them into factories. Guards hold the line while a scout takes intel to the lymph node, where you find the T cell that recognizes it.'] },
-    return: { n: ['第 3 章', 'CHAPTER 3'], t: ['捲土重來', 'The Comeback'], d: ['同一種病毒又來了，這次你的身體記得它。接著是一種新的病毒，以及一個選擇：要不要先接種疫苗。', 'The same virus returns, and this time your body remembers. Then comes a new virus, and a choice: get vaccinated first, or not.'] }
+    skin: { n: ['第 1 章', 'Chapter 1'], t: ['皮膚防線', 'The Skin Barrier'], d: ['皮膚破了洞，細菌溜進來。帶領巨噬細胞吞掉它們，並拿捏發炎的力道：太弱擋不住，太強會傷到自己。', 'The skin is broken and bacteria slip in. Lead your macrophages to engulf them, and keep inflammation in balance: too weak and it cannot hold them, too strong and it hurts your own tissue.'] },
+    airway: { n: ['第 2 章', 'Chapter 2'], t: ['病毒來了', 'A Virus Arrives'], d: ['病毒會鑽進細胞，把它變成工廠。守衛先頂住，偵察兵把情報送到淋巴結，由你親手找出認得它的 T 細胞。', 'Viruses get inside cells and turn them into factories. Guards hold the line while a scout takes intel to the lymph node, where you find the T cell that recognizes it.'] },
+    return: { n: ['第 3 章', 'Chapter 3'], t: ['捲土重來', 'The Comeback'], d: ['同一種病毒又來了，這次你的身體記得它。接著是一種新的病毒，以及一個選擇：要不要先接種疫苗。', 'The same virus returns, and this time your body remembers. Then comes a new virus, and a choice: get vaccinated first, or not.'] }
   };
   function mini(cv, w, h, fn) { const d = Math.min(2.5, devicePixelRatio || 1); cv.width = w * d; cv.height = h * d; const c = cv.getContext('2d'); c.setTransform(d, 0, 0, d, 0, 0); A.use(c); fn(c); }
   const THUMB = {
@@ -22,7 +22,7 @@
   function menu() {
     B.close(); const next = CH.find(k => !(S.ch[k] || {}).done), started = CH.some(k => S.ch[k]), body = IW.lymph.body();
     const stat = k => { const c = S.ch[k]; return !c ? '' : c.done ? `<em><i>${'★'.repeat(c.stars || 1)}</i> ${tx('已完成', 'Completed')}</em>` : `<em>${tx('進行中', 'In progress')}</em>`; };
-    const memCard = v => { const m = S.mem[v]; return m ? `<div><canvas data-code="${v}"></canvas><b>${v === 'A' ? tx('病毒 甲', 'Virus A') : tx('病毒 乙', 'Virus B')}</b><em>${m.from === 'vaccine' ? tx('已接種疫苗', 'Vaccinated') : m.from === 'borrowed' ? tx('假設得過（還沒親自打過）', 'Assumed (not fought yet)') : tx('得過，已經記得', 'Had it; remembered')}</em><span>${tx('淋巴結裡有 4 個認得它的記憶細胞。', 'Four memory cells in the lymph node recognize it.')}</span></div>`
+    const memCard = v => { const m = S.mem[v]; return m ? `<div><canvas data-code="${v}"></canvas><b>${v === 'A' ? tx('病毒 甲', 'Virus A') : tx('病毒 乙', 'Virus B')}</b><em>${m.from === 'vaccine' ? tx('已接種疫苗', 'Vaccinated') : tx('得過，已經記得', 'Had it; remembered')}</em><span>${tx('淋巴結裡有 4 個認得它的記憶細胞。', 'Four memory cells in the lymph node recognize it.')}</span></div>`
       : `<div class="q"><b>？？？</b><span>${tx('還沒遇過。第一次會比較辛苦。', 'Not met yet. The first time is the hard one.')}</span></div>`; };
     $('app').innerHTML = `<div class="menu"><header><div><h1>${tx('免疫系統大作戰', 'Immune Wars')}</h1>
         <p class="sub">${tx('帶領免疫細胞守住同一個身體。打過的仗，它會記得。', 'Lead the immune cells that defend one body. What it has fought, it remembers.')}</p></div>
@@ -30,7 +30,7 @@
       <div class="hero"><button class="pill pri" id="mGo">${next ? (started ? tx('繼續：', 'Continue: ') : tx('開始：', 'Start: ')) + pick(INFO[next].n) + ' ' + pick(INFO[next].t) + ' ▸' : tx('三章都完成了。再玩一次第 1 章 ▸', 'All three chapters done. Replay Chapter 1 ▸')}</button></div>
       <div class="chs">${CH.map(k => `<button class="ch" data-ch="${k}"><canvas data-th="${k}"></canvas><div><small>${pick(INFO[k].n)}</small><b>${pick(INFO[k].t)}</b><span>${pick(INFO[k].d)}</span>${stat(k)}</div></button>`).join('')}</div>
       <h2>${tx('記憶冊', 'Memory album')}</h2>
-      <div class="album">${memCard('A')}${memCard('B')}<div class="q"><b>${tx('傷口的細菌', 'Wound bacteria')}</b><span>${tx('先天防線每次都一樣快，但不會像 T、B 細胞那樣留下專門認得某一種敵人的長期記憶。', 'The innate defenses are equally fast every time, but they do not keep the kind of specific, long-term memory that T and B cells do.')}</span></div></div>
+      <div class="album">${memCard('A')}${memCard('B')}<div class="q"><b>${tx('傷口的細菌', 'Wound bacteria')}</b><span>${tx('先天防線每次的反應方式大致相同，不會像 T、B 細胞那樣留下專門認得某一種敵人的長期記憶。', 'The innate defenses respond in much the same way each time; they do not keep the kind of specific, long-term memory that T and B cells do.')}</span></div></div>
       <div class="links"><a class="pill" href="#codex" style="text-decoration:none;display:inline-flex;align-items:center">${tx('細胞圖鑑', 'Cell guide')}</a><a class="pill" href="#notes" style="text-decoration:none;display:inline-flex;align-items:center">${tx('這款遊戲簡化了什麼', 'What this game simplifies')}</a>
         <button class="pill" id="mRelax">${tx('淋巴結計時：', 'Lymph node timer: ')}${S.relax ? tx('關（放鬆模式）', 'off (relaxed)') : tx('開', 'on')}</button><button class="pill" id="mReset">${tx('清除進度', 'Reset progress')}</button></div>
       <footer>${tx('候選版本（Redesign Candidate）｜免費、開源（MIT）的醫學科普遊戲。離線可玩，進度只存在這台裝置。這不是醫療建議；回合與數值是為了好玩而做的簡化。', 'Redesign Candidate | A free, open-source (MIT) science-education game. Plays offline; progress is stored only on this device. This is not medical advice; turns and numbers are simplified for play.')}
@@ -56,7 +56,7 @@
       m: ['不是所有細菌都有害。皮膚上住著許多無害、甚至有益的細菌。遊戲裡只有正在造成感染的才畫成反派。', 'Not all bacteria are harmful. Many harmless or even helpful ones live on the skin. Only the ones causing an infection are drawn as villains.'] },
     { id: 'mac', n: ['巨噬細胞', 'Macrophage'], a: ['守衛', 'the guard'], d: c => { A.mac(38, 40, 1.15, { ph: 1, stomach: 1 }); },
       t: ['平常就住在組織裡的大細胞。它把細菌或病毒包進體內分解，這叫吞噬作用。一次裝不了太多，要消化後才能再吞。', 'A large cell that already lives in the tissue. It wraps up bacteria or viruses and breaks them down inside: phagocytosis. It cannot hold many at once and must digest before engulfing more.'],
-      m: ['血液裡的單核球離開血管後，可以成熟為巨噬細胞。它們的細胞核常是凹陷的馬蹄形。', 'Monocytes that leave the bloodstream can mature into macrophages. Their nucleus is often indented or horseshoe-shaped.'] },
+      m: ['血液裡的單核球，細胞核常是凹陷的馬蹄形。它離開血管進入組織後，可以成熟為巨噬細胞。', 'Monocytes in the blood often have an indented, horseshoe-shaped nucleus. After leaving the bloodstream for the tissue, they can mature into macrophages.'] },
     { id: 'inflam', n: ['發炎', 'Inflammation'], a: ['求援訊號', 'the call for help'], d: c => { A.cell(38, 38, { seed: 1 }); A.inflame(38, 38, 2, 1); }, s: .78,
       t: ['受傷或感染的地方變得紅、腫、熱、痛。這是身體啟動的防禦反應，也是召集更多免疫細胞的訊號。過強或拖太久，會連正常組織一起傷到。', 'An injured or infected area turns red, swollen, warm and painful. It is a defensive response the body switches on, and a signal that recruits more immune cells. Too strong or too long, and it damages healthy tissue too.'],
       m: ['組織胺等化學訊號讓附近的血管擴張、變得比較容易通透，更多液體與白血球因此進入組織。', 'Chemical signals such as histamine widen nearby blood vessels and make them leakier, letting more fluid and white blood cells into the tissue.'] },
@@ -119,6 +119,8 @@
         ${L('「4 個記憶細胞」「複製到 16 個」是為了手感定的數字。', '“Four memory cells” and “multiply to 16” are numbers chosen for feel.')}
         ${L('被感染的細胞不一定都會死，部分可能在病毒清除後存活。遊戲把它們都算成損失。', 'Infected cells do not always die; some may survive after the virus is cleared. The game counts them all as lost.')}
         ${L('記憶細胞被再次活化的途徑不只「樹突細胞送抗原」這一種；既有的抗體也能在再次感染時立刻發揮作用。遊戲為了單純沒有呈現。', 'Memory cells can be reactivated in more ways than a dendritic cell delivering antigen, and antibodies already present can act at once on reinfection. The game leaves these out for simplicity.')}
+        ${L('疫苗有很多種：有的含減毒但仍會複製的病原體，有的只含病原體的一部分，或製造這個部分的指令。遊戲把它們都畫成「一張情報卡」。', 'There are many kinds of vaccine: some contain a weakened pathogen that can still multiply, others only a part of the pathogen or instructions for making that part. The game draws all of them as “an intel card”.')}
+        ${L('「抗體比 T 細胞晚 1 回合、有記憶時同時就緒」是遊戲設定，不是真實的時間差。', '“Antibodies are ready 1 turn after T cells, or at the same time with memory” is a game rule, not a real timing difference.')}
         ${L('疫苗的保護力因疫苗與病原體而異，也可能隨時間下降。遊戲裡「接種＝有 4 個記憶細胞」只是示意。', 'How well a vaccine protects varies by vaccine and pathogen, and can wane over time. “Vaccinated = four memory cells” in the game is only an illustration.')}</ul>
       <h2>${tx('這個版本還沒做到的', 'What this version has not done')}</h2><ul>
         ${L('沒有經過專業醫學審查，也沒有做過教育成效研究。文字敘述依據下列公開教材查證。', 'It has not had a professional medical review or any study of learning outcomes. The text was checked against the open textbooks below.')}

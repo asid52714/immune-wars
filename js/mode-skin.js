@@ -36,7 +36,8 @@
     if (u && u !== sel) { G.sel = u.id; IW.sfx('select'); return B.hud(); }
     if (!sel) { if (G.tiles[i].bac) B.hint('needsel', ['先點選一個免疫細胞，再下達指令。', 'Select an immune cell first, then give the order.'], true); return; }
     if (SK.engulfTargets(G, sel).includes(i)) return doEngulf(G, sel, i);
-    if (u === sel) { if (G.tiles[i].bac && sel.stomach >= SK.cap(G, sel)) full(sel); return; }
+    if (G.tiles[i].bac && sel.stomach >= SK.cap(G, sel) && SK.areaOf(G, sel.tile).includes(i)) return full(sel);   // 吃飽了：不要走上去浪費行動
+    if (u === sel) return;
     const prev = SK.moveTargets(G, sel); if (prev.has(i)) return doMove(G, sel, i, prev);
     IW.sfx('deny');
     if (G.ap < 1) B.hint('ap0', ['行動點數用完了。按「結束回合」，換細菌行動。', 'Out of action points. Press “End turn” to let the bacteria act.'], true);
@@ -115,7 +116,7 @@
   M.enemy = async function (G, api) {
     const dg = SK.phaseDigest(G);
     for (const e of dg.digest) { const u = G.units.find(u => u.id === e.id); B.burst(u.x, u.y, 5, '120,190,140', 40, 1.8); }
-    for (const u of dg.leave) { B.ring(u.x, u.y, '125,106,134', R, .6); B.ftext(u.x, u.y - 30, tx('功成身退', 'Job done'), P.dim); api.hint('neuleave', ['嗜中性球壽命很短，吞完細菌後自己也會死去。傷口的膿，主要就是它們和被分解的細菌。', 'Neutrophils are short-lived and die after engulfing bacteria. Pus in a wound is largely made of them and the remains of bacteria.']); }
+    for (const u of dg.leave) { B.ring(u.x, u.y, '125,106,134', R, .6); B.ftext(u.x, u.y - 30, tx('功成身退', 'Job done'), P.dim); api.hint('neuleave', ['嗜中性球壽命很短，吞完細菌後自己也會死去。傷口的膿，主要就是死去的嗜中性球、細胞殘骸與組織液。', 'Neutrophils are short-lived and die after engulfing bacteria. Pus in a wound is mostly dead neutrophils, cell debris and tissue fluid.']); }
     await api.wait(dg.digest.length || dg.leave.length ? 360 : 60); if (!api.alive()) return;
     const g = SK.growList(G), full = SK.fullList(G), sp = SK.phaseSpread(G); let any = false;
     for (const e of sp) {
@@ -160,7 +161,7 @@
     if (G.reinfEv.ids.length) {
       B.mark('reinf'); IW.sfx('arrive');
       for (const id of G.reinfEv.ids) { const u = G.units.find(u => u.id === id), t = G.tiles[u.tile]; B.placeUnit(u, { x: t.x, y: H + 10 }); B.ftext(t.x, t.y - 46, tx('援軍', 'Reinforcements'), P.hema); }
-      B.hint('reinf', ['援軍抵達！嗜中性球循著發炎訊號，從血管鑽進組織。它們來得快、吞得多，但壽命很短。', 'Reinforcements! Neutrophils follow the inflammation signal out of the blood vessel and into the tissue. They arrive fast and engulf a lot, but do not live long.'], true);
+      B.hint('reinf', ['援軍抵達！嗜中性球循著發炎訊號，從血管鑽進組織。它們來得快，但壽命很短，也不會消化後再戰。', 'Reinforcements! Neutrophils follow the inflammation signal out of the blood vessel and into the tissue. They arrive fast, but do not live long and do not digest to fight again.'], true);
     } else { IW.sfx('deny'); B.hint('noreinf', ['沒有發炎訊號，援軍不知道該往哪裡去，這次沒有來。', 'With no inflammation signal, the reinforcements did not know where to go. None came this time.'], true); }
   };
 
@@ -168,7 +169,7 @@
   M.hud = function (G) {
     const c = G.cfg, L = SK.load(G), hp = SK.health(G), I = G.tiles.reduce((n, t) => n + t.inf, 0), over = G.tiles.some(t => t.inf === 3), pl = G.phase === 'player', fl = pl && G.fc ? G.fc.load : L, u = selU(G), f = []; let bad = '';
     if (pl && G.fc) {
-      if (!G.sealed) f.push(tx(`傷口開放中：每回合結束湧入 ${c.INFLUX_N} 隻（${G.influxLeft} 回合後結痂）。`, `Wound open: +${c.INFLUX_N} at the end of each turn (scabs over in ${G.influxLeft}).`));
+      if (!G.sealed) f.push(tx(`傷口開放中：每回合結束湧入 ${c.INFLUX_N} 隻（${G.influxLeft} 回合後結痂）。`, `Wound open: +${c.INFLUX_N} at the end of each turn (scabs over in ${G.influxLeft} turn${G.influxLeft > 1 ? 's' : ''}).`));
       if (G.fc.reinf !== null) f.push(G.fc.reinf > 0 ? tx(`下回合 ${G.fc.reinf} 個嗜中性球會抵達發炎最強處。`, `Next turn ${G.fc.reinf} neutrophil(s) arrive where inflammation is strongest.`) : `<span class="w">${tx('下回合援軍可以來，但場上沒有發炎訊號。', 'Reinforcements could come next turn, but there is no inflammation signal.')}</span>`);
       const r = G.fc.res; if (r && !r.win) bad = { tissue: tx('組織會損傷殆盡', 'the tissue will be destroyed'), overrun: tx('感染會失控', 'the infection will be out of control'), timeout: tx('這是最後一回合', 'this is the last turn') }[r.why];
       if (bad) f.push(`<span class="w">${tx('就這樣結束回合：', 'If you end the turn now: ')}${bad}。</span>`);
@@ -182,8 +183,8 @@
         { label: tx('細菌', 'Bacteria'), val: (fl !== L ? `${L} <small>→ ${fl}</small>` : L) + ` <small>/ ${c.LOAD_MAX}</small>`, frac: L / c.LOAD_MAX, next: fl / c.LOAD_MAX, color: P.bac, warn: fl >= c.LOAD_MAX * .75 },
         { label: tx('發炎', 'Inflammation'), val: over ? tx('過度！', 'Excessive!') : I === 0 ? tx('沒有', 'None') : tx('適度', 'Moderate'), frac: I / 18, color: P.flame, warn: over }],
       goal: f.join(' '),
-      acts: [{ id: 'pro', label: tx('促進發炎', 'Boost'), sub: tx('1 點', 'inflammation'), color: P.flame, disabled: !(G.ap > 0) },
-        { id: 'calm', label: tx('調節發炎', 'Calm'), sub: tx('1 點', 'inflammation'), color: '#5bb5e0', disabled: !(G.ap > 0 && (!u || u.kind !== 'mac' || SK.canCalm(G, u))) }],
+      acts: [{ id: 'pro', label: tx('促進發炎', 'Boost inflammation'), sub: '', color: P.flame, disabled: !(G.ap > 0) },
+        { id: 'calm', label: tx('調節發炎', 'Calm inflammation'), sub: '', color: '#5bb5e0', disabled: !(G.ap > 0 && (!u || u.kind !== 'mac' || SK.canCalm(G, u))) }],
       endDanger: !!bad
     };
   };
@@ -255,8 +256,8 @@
       insight, series: [{ key: 'load', name: tx('細菌數量', 'Bacteria'), color: P.bacDk }, { key: 'inf', name: tx('發炎程度', 'Inflammation'), color: P.flame }],
       marks: { pro: [tx('發炎', 'Boost'), P.flame], calm: [tx('調節', 'Calm'), '#2f84b5'], reinf: [tx('援軍', 'Help'), P.hema], seal: [tx('結痂', 'Scab'), '#8a5a3c'] }, badLabel: tx('發炎傷到組織', 'Inflammation hurt tissue') };
   };
-  M.rules = function (G) {
-    const c = G.cfg, rows = [
+  M.rules = function (G, st) {
+    const c = st && st.kind === 'practice' ? SK.CFG : G.cfg, rows = [
       [tx('行動', 'Actions'), tx(`每回合 ${c.AP} 點，所有細胞共用。移動（最多 ${c.MOVE} 格）、吞噬、促進或調節發炎各 1 點。`, `${c.AP} AP per turn, shared by all cells. Moving (up to ${c.MOVE} tiles), engulfing, boosting or calming inflammation cost 1 AP each.`)],
       [tx('細菌', 'Bacteria'), tx('每回合結束，每個菌落 +1 隻（一格最多 3 隻）。滿 3 隻的菌落會往箭頭方向擴散，並損傷所在組織。', 'At the end of each turn every colony gains 1 (max 3 per tile). A colony of 3 spreads along its arrow and damages its tile.')],
       [tx('巨噬細胞', 'Macrophage'), tx(`吞噬身邊的細菌，1 點吞 1 隻；體內最多 ${c.CAP} 隻，回合結束消化 ${c.DIGEST} 隻。`, `Engulfs adjacent bacteria, 1 per AP; holds up to ${c.CAP} and digests ${c.DIGEST} at end of turn.`)],
@@ -275,11 +276,12 @@
     stages: [
       { kind: 'practice', seed: 1, cfg: PC, hide: { pro: 1, calm: 1 }, preset: { wounds: [2], sealed: true, units: [['mac', 20]], bac: { 14: 1, 15: 1, 9: 1 } },
         goal: ['練習 1：讓巨噬細胞吞掉 3 隻細菌', 'Practice 1: have the macrophage engulf all 3 bacteria'], won: ['吞噬作用', 'Phagocytosis'],
-        say: ['皮膚破了，細菌溜進來。平常就住在組織裡的「巨噬細胞」把它們包進體內分解。它一次最多裝 3 隻，每回合結束消化 2 隻。', 'The skin broke and bacteria slipped in. Macrophages, which already live in the tissue, wrap them up and break them down. One holds up to 3 at a time and digests 2 at the end of each turn.'],
+        say: G => tx(`皮膚破了，細菌溜進來。平常就住在組織裡的「巨噬細胞」把它們包進體內分解。它一次最多裝 ${G.cfg.CAP} 隻，每回合結束消化 ${G.cfg.DIGEST} 隻。`, `The skin broke and bacteria slipped in. Macrophages, which already live in the tissue, wrap them up and break them down. One holds up to ${G.cfg.CAP} at a time and digests ${G.cfg.DIGEST} at the end of each turn.`),
         next: ['細菌變多了 ▸', 'Now there are more ▸'], lost: ['細菌分裂得比吞噬快。先點巨噬細胞，再點標著「吞」的細菌。', 'The bacteria divided faster than they were engulfed. Select the macrophage, then tap bacteria marked “Eat”.'] },
-      { kind: 'practice', seed: 1, cfg: Object.assign({}, PC, { REINF: [2, 3] }), hide: { calm: 1 }, preset: { wounds: [2], sealed: true, units: [['mac', 20]], bac: { 14: 3, 15: 3, 21: 1 } },
+      { kind: 'practice', seed: 1, cfg: Object.assign({}, PC, { REINF: [2, 3], INF_MAX: 2 }), hide: { calm: 1 },   // 這一關發炎最高 2 級：代價留到下一關再教
+        preset: { wounds: [2], sealed: true, units: [['mac', 20]], bac: { 14: 3, 15: 3, 21: 1 } },
         goal: ['練習 2：細菌太多，一個守衛吃不完', 'Practice 2: too many for one guard'], won: ['發炎是求援訊號', 'Inflammation is a call for help'],
-        say: ['紅、腫、熱、痛的「發炎」，是身體啟動的防禦反應。它讓吞噬細胞一口吞下整個菌落，也讓血液裡的「嗜中性球」循著訊號趕來。', 'Inflammation (redness, swelling, heat and pain) is a defensive response the body switches on. It lets phagocytes engulf a whole colony in one bite, and guides neutrophils in from the blood.'],
+        say: ['紅、腫、熱、痛的「發炎」，是身體啟動的防禦反應，也是求援訊號：血液裡的「嗜中性球」循著它趕來。（在遊戲裡，發炎區的吞噬細胞還能一口吞下整個菌落。）', 'Inflammation (redness, swelling, heat and pain) is a defensive response the body switches on, and a call for help: neutrophils in the blood follow it in. (In the game, phagocytes in an inflamed area can also engulf a whole colony in one bite.)'],
         next: ['但發炎有代價 ▸', 'But inflammation has a cost ▸'], lostTitle: ['一個守衛吃不完', 'One guard is not enough'], lost: ['這次先點巨噬細胞，按「促進發炎」，再吞細菌。看看下一回合誰會來。', 'This time select the macrophage, press “Boost inflammation”, then engulf. See who shows up next turn.'],
         guide: G => { const u = selU(G); if (G.ap === 0) return ''; if (!u) return tx('點選巨噬細胞。', 'Select the macrophage.'); if (!G.nPro && G.turn === 1) return tx('細菌聚在一起：按「促進發炎」。' + (IW.touch ? '第一下先看範圍，再點一次才執行。' : '滑鼠移上去可以先看範圍。'), 'The bacteria are clustered: press “Boost inflammation”. ' + (IW.touch ? 'The first tap previews the area; tap again to do it.' : 'Hover first to preview the area.')); return ''; } },
       { kind: 'practice', seed: 1, cfg: Object.assign({}, PC, { TURNS: 5 }), preset: { wounds: [2], sealed: true, units: [['mac', 20], ['mac', 28]], bac: { 14: 1, 15: 1, 10: 2, 11: 2 }, inf: { 14: 2, 15: 2, 10: 2, 11: 2 } },
