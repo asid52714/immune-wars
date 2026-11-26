@@ -264,17 +264,22 @@
      第 4 章｜漏網之魚：抗生素與抗藥性
      組織裡的細菌一隻一隻記錄：b 是陣列，0＝怕藥、1＝帶抗藥基因（畫成條紋）。
      皮膚表面另有一排菌群 flora（12 個位子）：C＝無害的住戶、S＝怕藥的伺機菌、R＝不怕藥的伺機菌。
-     抗生素一旦開始就持續到這一場結束（療程不可分割，遊戲設定）：
-       當下殺死組織裡所有怕藥的細菌；用藥的每一回合，皮膚上緊鄰條紋菌的一個怕藥細菌死掉，由條紋菌補位。
+     抗生素不是玩家的按鈕：它是醫師開的藥，在第 DRUG_AT 回合開始時自動送到，療程長度固定（COURSE 回合）。
+     玩家不能提早、延後、縮短、延長或中途停止（刻意的設計：遊戲不讓「何時用藥、用多久」變成可以最佳化的操作）：
+       開始的當下殺死組織裡所有怕藥的細菌；療程的每一回合，皮膚上緊鄰條紋菌的一個怕藥細菌死掉，由條紋菌補位。
+       提早打贏，剩下的療程也照樣吃完（settle）。所以一個療程對皮膚的代價是固定的，和打得快慢、何時開始無關；
+       玩家唯一能改變的，是要不要多一個不必要的療程。沒有用藥的幾個月裡，皮膚會恢復一格（recover）。
      抗藥性不是藥「教」出來的：突變在分裂時隨機發生（MU），有沒有用藥都一樣；藥只決定誰留下來。
      ===================================================================== */
   const AX = IW.abx = { unitAt, areaOf, moveTargets };
-  AX.CFG = { AP: 5, TURNS: 10, CAP: 3, DIGEST: 2, MOVE: 2, MACS: 2, BUDGET: 20, LOAD_MAX: 28, START: 13, MIN_R: 2, MU: .03, BITE: 1, DRUG_FROM: 1, PILLS: 3 };
-  AX.flora0 = seed => IW.shuffle('CCCCCCCSSSSR'.split(''), IW.rng((seed ^ 0x5bd1e995) | 0));       // 這個身體皮膚上的菌群：由 bodySeed 決定，條紋菌從一開始就在
+  AX.CFG = { AP: 5, TURNS: 10, CAP: 3, DIGEST: 2, MOVE: 2, MACS: 2, BUDGET: 20, LOAD_MAX: 30, START: 16, MIN_R: 4, MU: .03, BITE: 1, DRUG_AT: 2, COURSE: 2 };
+  AX.flora0 = seed => IW.shuffle('CCCCCCSSSSSR'.split(''), IW.rng((seed ^ 0x5bd1e995) | 0));       // 這個身體皮膚上的菌群：由 bodySeed 決定，條紋菌從一開始就在
   AX.census = f => { const n = { C: 0, S: 0, R: 0 }; for (const k of f) n[k]++; return n; };
   AX.share = f => { const n = AX.census(f); return n.R + n.S ? n.R / (n.R + n.S) : 0; };            // 伺機菌裡不怕藥的比例：決定闖進傷口的細菌組成
   AX.nextDose = f => f.map((k, i) => i).filter(i => f[i] !== 'R' && (f[i - 1] === 'R' || f[i + 1] === 'R'));   // 下一個會被補位的位子（緊鄰條紋菌的怕藥細菌）
   AX.floraTick = function (f, rng) { const c = AX.nextDose(f); if (!c.length) return null; const i = c[Math.floor(rng() * c.length)], was = f[i]; f[i] = 'R'; return { i, was }; };
+  // 幾個月沒有用藥：最晚被條紋菌佔走的位子之一，由原本怕藥的細菌長回來（抗藥性有代價；真實的恢復通常很慢）
+  AX.recover = function (f, f0) { const c = f.map((k, i) => i).filter(i => f[i] === 'R' && f0[i] !== 'R' && (f[i - 1] !== 'R' || f[i + 1] !== 'R')); if (!c.length) return null; const i = c[c.length - 1]; f[i] = f0[i]; return { i }; };
   AX.load = S => S.tiles.reduce((n, t) => n + t.b.length, 0);
   AX.nR = S => S.tiles.reduce((n, t) => n + t.b.filter(x => x).length, 0);
   AX.health = S => Math.max(0, 1 - S.dmg / S.cfg.BUDGET);
@@ -282,8 +287,8 @@
   AX.setup = function (seed, cfg, preset, flora) {
     cfg = Object.assign({}, AX.CFG, cfg || {});
     const rng = IW.rng(seed), tiles = buildTiles(() => ({ hp: 3, b: [], scab: false, spreadTo: -1 }));
-    const S = { mode: 'abx', seed, cfg, rng, tiles, units: [], turn: 1, ap: cfg.AP, sel: -1, phase: 'player', flora: (flora || AX.flora0(1)).slice(), drug: 0, drugAt: 0, expo: 0,
-      dmg: 0, eaten: 0, eatenR: 0, killed: 0, mut: 0, mutAt: 0, rMax: 0, nextId: 1, result: null, script: (preset && preset.mutate) || null };
+    const S = { mode: 'abx', seed, cfg, rng, tiles, units: [], turn: 1, ap: cfg.AP, sel: -1, phase: 'player', flora: (flora || AX.flora0(1)).slice(), drug: 0, drugAt: 0, doses: 0,
+      dmg: 0, eaten: 0, eatenR: 0, killed: 0, mut: 0, mutAt: 0, rMax: 0, nextId: 1, result: null, drugEv: null, script: (preset && preset.mutate) || null };
     S.flora0 = S.flora.slice();
     const ri = (a, b) => a + Math.floor(rng() * (b - a + 1));
     if (preset) {
@@ -295,9 +300,8 @@
       for (const i of scabs) tiles[i].scab = true;
       const order = scabs.concat(IW.shuffle(tiles.filter(t => !t.scab && scabs.some(w => hexDist(t, tiles[w]) <= 2)).map(t => t.i), rng)), all = [];
       for (let k = 0, left = cfg.START; left > 0 && k < order.length; k++) { const n = Math.min(left, k < 2 ? 3 : k < 5 ? 2 : 1), t = tiles[order[k]]; for (let j = 0; j < n; j++) { t.b.push(0); all.push(t); } left -= n; }
-      const share = AX.share(S.flora), idx = IW.shuffle(all.map((_, i) => i), rng);                // 每一隻的來源都是皮膚：皮膚上條紋菌佔多少，進來的就大約佔多少
-      let nr = 0; idx.forEach(i => { if (rng() < share) { all[i].b[all[i].b.indexOf(0)] = 1; nr++; } });
-      for (let k = 0; nr < cfg.MIN_R && k < idx.length; k++) { const t = all[idx[k]], j = t.b.indexOf(0); if (j >= 0 && !t.b.includes(1)) { t.b[j] = 1; nr++; } }
+      const used = IW.shuffle(tiles.filter(t => t.b.length), rng), nr = Math.min(all.length, Math.max(cfg.MIN_R, Math.round(AX.share(S.flora) * all.length)));   // 來源是皮膚：伺機菌裡條紋的佔多少，進來的就佔多少
+      for (let k = 0, j = 0; k < nr && j < 99; j++) { const t = used[j % used.length], x = t.b.indexOf(0); if (x >= 0) { t.b[x] = 1; k++; } }                    // 條紋菌盡量分散在不同格
       const infected = tiles.filter(t => t.b.length > 0);
       let cand = tiles.filter(t => t.r >= 2 && t.r <= 5 && infected.every(b => hexDist(t, b) >= 2));
       for (let k = 0; k < cfg.MACS; k++) {
@@ -325,13 +329,14 @@
     const t = S.tiles[i], n = AX.eatCount(S, u, i); t.b.sort((a, b) => b - a);
     const r = t.b.splice(0, n).filter(x => x).length; u.stomach += n; S.eaten += n; S.eatenR += r; S.ap--; return { n, r };
   };
-  AX.canDrug = S => S.ap > 0 && !S.drug && S.turn >= S.cfg.DRUG_FROM;
   AX.drugKills = S => AX.load(S) - AX.nR(S);
-  AX.dose = S => { S.expo++; return S.cfg.NO_FLORA ? null : AX.floraTick(S.flora, S.rng); };
+  AX.onCourse = S => !!S.drug && S.doses < S.cfg.COURSE;
+  AX.dose = S => { S.doses++; return AX.floraTick(S.flora, S.rng); };
+  AX.settle = S => { const ev = []; while (AX.onCourse(S)) ev.push(AX.dose(S)); return ev; };   // 提早打贏：剩下的療程照樣吃完
   AX.actDrug = function (S) {
     const ev = { kill: [] };
     for (const t of S.tiles) { const n = t.b.filter(x => !x).length; if (n) { t.b = t.b.filter(x => x); ev.kill.push({ i: t.i, n }); S.killed += n; } }
-    S.drug = 1; S.drugAt = S.turn; S.ap--; ev.flora = AX.dose(S); return ev;
+    S.drug = 1; S.drugAt = S.turn; return ev;
   };
   // ---- 細菌階段 ----
   AX.phaseDigest = S => { const ev = []; for (const u of S.units) if (u.stomach > 0) { const n = Math.min(S.cfg.DIGEST, u.stomach); u.stomach -= n; ev.push({ id: u.id, n }); } return ev; };
@@ -364,7 +369,7 @@
   AX.runEnemy = function (S) {
     const ev = {}; ev.digest = AX.phaseDigest(S); const g = AX.growList(S), full = AX.fullList(S);
     ev.spread = AX.phaseSpread(S); ev.grow = AX.phaseGrow(S, g); ev.damage = AX.phaseDamage(S, full);
-    ev.flora = S.drug ? AX.dose(S) : null; S.rMax = Math.max(S.rMax, AX.nR(S)); return ev;
+    ev.flora = AX.onCourse(S) ? AX.dose(S) : null; S.rMax = Math.max(S.rMax, AX.nR(S)); return ev;
   };
   AX.verdict = S => AX.load(S) === 0 ? { win: true } : null;
   AX.advance = function (S) {
@@ -372,7 +377,9 @@
     const L = AX.load(S); if (L === 0) return S.result = { win: true };
     if (L >= S.cfg.LOAD_MAX) return S.result = { win: false, why: 'overrun' };
     if (S.turn >= S.cfg.TURNS) return S.result = { win: false, why: 'timeout' };
-    S.turn++; S.ap = S.cfg.AP; AX.plan(S); return null;
+    S.turn++; S.ap = S.cfg.AP; S.drugEv = null;
+    if (!S.drug && S.turn === S.cfg.DRUG_AT) { S.drugEv = AX.actDrug(S); if (AX.load(S) === 0) return S.result = { win: true }; }   // 醫師開的抗生素送到：不花行動點數，也不由玩家決定時機
+    AX.plan(S); return null;
   };
   AX.clone = S => Object.assign({}, S, { tiles: S.tiles.map(t => Object.assign({}, t, { b: t.b.slice() })), units: S.units.map(u => Object.assign({}, u)), flora: S.flora.slice(), rng: () => .5, result: null });
   AX.forecast = function (S) {

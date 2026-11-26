@@ -213,7 +213,7 @@
     hist.forEach((h, k) => { if (h.bad) out += `<rect x="${X(k) - (X(1) - X(0)) / 2}" y="20" width="${X(1) - X(0)}" height="88" fill="rgba(192,48,79,.13)"/>`; });
     out += `<line x1="38" y1="104" x2="490" y2="104" stroke="rgba(58,41,71,.3)"/>`;
     s.series.forEach((se, i) => {
-      const mx = Math.max(1, ...hist.map(h => h[se.key]));
+      const mx = Math.max(1, ...hist.map(h => s.sameScale ? Math.max(...s.series.map(x => h[x.key])) : h[se.key]));   /* sameScale：兩條線共用刻度（一條是另一條的子集時） */
       out += `<polyline fill="none" stroke="${se.color}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"${i ? ' stroke-dasharray="7 5"' : ''} points="${hist.map((h, k) => X(k).toFixed(1) + ',' + Y(h[se.key] / mx).toFixed(1)).join(' ')}"/>`;
       out += `<text x="${46 + i * 150}" y="14" font-size="12" fill="${se.color}" font-weight="600">${i ? '┅' : '━'} ${se.name}</text>`;
     });
