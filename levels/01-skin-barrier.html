@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>免疫系統大作戰 Immune Wars · 第 1 關 · Prototype v0.8</title>
+<title>免疫系統大作戰 Immune Wars · 第 1 關 · Prototype v0.9</title>
 <style>
   :root{
     --ink:#e6f4f4; --dim:#8fb3ba; --line:rgba(150,220,225,.22);
@@ -153,6 +153,21 @@
   .btns button.pri{background:linear-gradient(180deg,#3fb9c2,#23808d);border-color:#aef;color:#04161c;font-weight:600}
   .btns button:hover{filter:brightness(1.15)}
 
+  /* ---------- 語言切換（v0.9）：繁體中文｜English ---------- */
+  .lang{display:inline-flex;align-items:center;gap:1px;font-size:12.5px;color:var(--dim);white-space:nowrap;flex:0 0 auto}
+  .lang button{background:none;border:0;padding:4px 6px;color:var(--dim);font:inherit;cursor:pointer;border-radius:8px}
+  .lang button.on{color:#fff;font-weight:600}
+  .lang button:hover{color:#9ff}
+  .lang i{font-style:normal;opacity:.6}
+  #top .lang{position:absolute;right:0;top:44px;height:28px;padding:0 6px;border-radius:14px;border:1px solid var(--line);background:var(--panel)}
+  .lgm{display:none}
+  .card{position:relative} .lrow{position:absolute;right:20px;top:12px}
+  .brief .bh .lang{margin-left:4px}
+  html:lang(en) .rules{line-height:1.45} html:lang(en) .rules b{flex-basis:100px} html:lang(en) .rules div{padding:4px 0}
+  html:lang(en) .brief .body{max-height:516px;overflow-y:auto}
+  html:lang(en) .card h1{letter-spacing:.06em} html:lang(en) .card:not(.brief){width:820px}
+  html:lang(en) .btns button{letter-spacing:.03em;padding:0 20px}
+
   /* ---------- 手機版面（v0.8）：戰場與 UI 分開縮放；條件不成立時（桌面）完全不生效 ---------- */
   #field{display:none}
   #stage{touch-action:manipulation}
@@ -175,6 +190,7 @@
     #hint span{margin:auto;padding:4px 12px;visibility:hidden} #hint.on span{visibility:visible}
     #tip{grid-area:tip;display:block!important;left:auto!important;top:auto!important;white-space:normal;font-size:13px;line-height:1.5;overflow-y:auto;pointer-events:auto;padding:5px 10px}
     #tip:empty::before{content:"點戰場上的格子，這裡會顯示它的說明。";color:var(--dim)}
+    html:lang(en) #tip:empty::before{content:"Tap a tile on the battlefield to see its details here."}
     #bottom{grid-area:bottom;display:grid;grid-template-columns:1fr 1fr;gap:6px 8px}
     .acts{grid-area:1/1/2/3;display:grid;grid-template-columns:1fr 1fr;gap:8px} #ap{grid-area:2/1} #bEnd{grid-area:2/2}
     #ap{min-width:0;gap:6px;font-size:13px}
@@ -205,6 +221,10 @@
     .btns{gap:8px} .brief .btns{justify-content:center}
     .btns button{height:46px;flex:1 1 44%;padding:0 10px;font-size:15px;letter-spacing:.04em}
     .dif{overflow-x:auto} .cmp .hb{width:44px} table.cmp{font-size:14px}
+    #top .lang{display:none} .lgm{display:grid;font-size:14px;font-weight:600} .xw{display:none}
+    .lang{font-size:14px} .lang button{min-height:44px;padding:4px 8px}
+    .lrow{position:static;display:flex;justify-content:flex-end;margin:-8px 0 0}
+    html:lang(en) .brief .body{max-height:none;overflow:visible} html:lang(en) .card:not(.brief){width:100%}
   }
   @media (max-width:540px){                                   /* 手機直向：狀態在上、戰場在中、資訊與操作在下 */
     #stage{grid-template-columns:minmax(0,1fr);grid-template-rows:auto 37px minmax(0,1fr) 82px 80px auto;
@@ -213,6 +233,7 @@
     .lvl b span{display:block;margin:2px 0 0}
     #pips{order:8;flex:0 0 100%;margin-top:11px} #pips i{flex:1 1 0;width:auto}
     .bctl::after{content:"把手機轉成橫向，動畫會比較大。";flex:1 0 100%;order:6}
+    html:lang(en) .bctl::after{content:"Turn your phone sideways for a larger animation."}
     .gauges{order:9;flex:0 0 100%}
   }
   @media (max-height:540px) and (min-width:541px){            /* 手機橫向：戰場在左並盡量放大，資訊與操作在右欄 */
@@ -230,6 +251,7 @@
     .brief .body:has(#bcv){display:grid;grid-template-columns:minmax(0,1fr) 250px;grid-template-rows:minmax(0,1fr) auto;gap:6px 12px}
     #bcv{grid-row:1/3;align-self:center} #bcap{min-height:0;margin:0;font-size:16px;line-height:1.45} .bctl .t{display:none}
     .btns button{flex:0 1 auto;padding:0 18px}
+    html:lang(en) .tabs button{font-size:13px} html:lang(en) .brief .body:has(#bcv){grid-template-columns:minmax(0,1fr) 300px} html:lang(en) #bcap{font-size:15px;line-height:1.4}
   }
   @media (max-height:540px) and (min-width:541px) and (max-width:780px){   /* 較窄的橫向（小螢幕手機）：頂列再精簡 */
     #top{gap:6px} #pips{display:none}
@@ -262,9 +284,11 @@
         <div class="bar"><s></s></div>
       </div>
     </div>
-    <a href="../index.html" title="返回主選單" style="height:34px;padding:0 14px;border-radius:17px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font-size:13px;letter-spacing:.05em;display:flex;align-items:center;text-decoration:none;white-space:nowrap">◂ 主選單</a>
+    <a id="aMenu" href="../index.html" title="返回主選單" style="height:34px;padding:0 14px;border-radius:17px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font-size:13px;letter-spacing:.05em;display:flex;align-items:center;text-decoration:none;white-space:nowrap">◂ 主選單</a>
     <button class="ic" id="bHelp" title="規則說明">?</button>
     <button class="ic" id="bMute" title="靜音（M）">♪</button>
+    <div class="lang"><button data-lang="zh">繁體中文</button><i>｜</i><button data-lang="en">English</button></div>
+    <button class="ic lgm" id="bLang" title="English">EN</button>
   </div>
   <div id="fore"></div>
 
@@ -287,7 +311,7 @@
 <script>
 'use strict';
 /* =====================================================================
-   免疫系統大作戰 Immune Wars — Prototype v0.8（Level 01 皮膚防線）
+   免疫系統大作戰 Immune Wars — Prototype v0.9（Level 01 皮膚防線）
    單檔、離線、無外部相依。數值為娛樂性抽象模型，非真實生理數值。
    ===================================================================== */
 const W=1280,H=720,COLS=9,ROWS=6,R=52,HW=Math.sqrt(3)*R,HH=1.5*R;
@@ -455,6 +479,51 @@ const SFX={
   lose:()=>[330,277,220,156].forEach((f,i)=>tone(f,f*.96,.75,'sine',.14,i*.3))
 };
 
+/* ---------------- 語言（繁體中文／English）：只影響畫面文字，不碰規則層與遊戲狀態 ----------------
+   優先順序：網址 ?lang= 或玩家按的切換鈕 → 先前儲存的偏好（iw_lang）→ 瀏覽器語言。
+   寫法：tx('中文','English') 就地成對；要晚一點才顯示的文字（提示佇列、動畫字幕）存成 [中文,English]，顯示時再用 pick() 取。 */
+const langOf=v=>/^en/i.test(v||'')?'en':/^zh/i.test(v||'')?'zh':null;
+let LANG=null;
+try{LANG=langOf(new URLSearchParams(location.search).get('lang'));}catch(e){}
+if(!LANG)try{LANG=langOf(localStorage.getItem('iw_lang'));}catch(e){}
+if(!LANG)LANG=/^zh/i.test(navigator.language||'')?'zh':'en';
+const tx=(zh,en)=>LANG==='en'?en:zh;
+const pick=a=>Array.isArray(a)?a[LANG==='en'?1:0]:a;
+const lnk=u=>u+'?lang='+LANG;                 // 離線開檔時 localStorage 不一定跨頁共用，用網址把語言帶到下一頁
+const langBtn=()=>`<div class="lang"><button data-lang="zh" class="${LANG==='zh'?'on':''}">繁體中文</button><i>｜</i><button data-lang="en" class="${LANG==='en'?'on':''}">English</button></div>`;
+let ovView=null,lastEv=null;                  // ovView：目前開著的卡片怎麼重畫（切換語言時用）
+function setLang(l){
+  if(l===LANG||!langOf(l))return;LANG=l;
+  try{localStorage.setItem('iw_lang',l);}catch(e){}                                            // 存不進去也照樣切換
+  try{const u=new URL(location.href);u.searchParams.set('lang',l);history.replaceState(null,'',u);}catch(e){}
+  applyLang();
+}
+function applyLang(){                         // 只重畫文字：不動 G、回合、行動點數、選取、亂數
+  const en=LANG==='en',H=(el,h)=>{el.innerHTML=h;};
+  document.documentElement.lang=en?'en':'zh-Hant-TW';
+  document.title=tx('免疫系統大作戰 Immune Wars · 第 1 關 · Prototype v0.9','Immune Wars · Level 1 · Prototype v0.9');
+  $('turnTxt').previousSibling.nodeValue=tx('第 1 關｜皮膚防線','Level 1 | Skin Barrier');
+  $('gH').title=tx('組織健康：遊戲化的整體損傷預算，歸零即失敗；不代表實際存活的細胞比例。滿載菌落與過度發炎都會扣它。','Tissue health: a game-style overall damage budget; at zero you lose. It does not represent the actual share of surviving cells. Full colonies and excessive inflammation both reduce it.');
+  $('gB').title=tx('細菌負荷：戰場上的細菌總數。淡色部分是下回合預估。超過上限即失控。','Bacterial load: the total number of bacteria on the battlefield. The pale part is the estimate for next turn. Past the limit, the infection is out of control.');
+  $('gI').title=tx('發炎程度：尚未發炎時細菌可自由擴散、援軍不會來；適度發炎可圍堵細菌、強化吞噬、召集援軍；任何一格到 3 級即為過度，會傷害組織。','Inflammation: with none, bacteria spread freely and reinforcements do not come; moderate inflammation contains bacteria, strengthens engulfing and calls reinforcements; any tile at level 3 is excessive and damages tissue.');
+  H($('gH').querySelector('.row span'),tx('組織健康','Tissue<span class="xw"> health</span>'));
+  H($('gB').querySelector('.row span'),tx('細菌負荷','Bacteria<span class="xw">l load</span>'));
+  H($('gI').querySelector('.row span'),tx('發炎程度','Inflammation'));
+  const a=$('aMenu');a.title=tx('返回主選單','Back to main menu');a.textContent=tx('◂ 主選單','◂ Menu');a.href=lnk('../index.html');
+  $('bHelp').title=tx('規則說明','How to play');$('bMute').title=tx('靜音（M）','Mute (M)');
+  $('bPro').title=tx('1 點：選取的巨噬細胞所在與相鄰格，發炎各 +1 級','1 AP: the selected macrophage’s tile and adjacent tiles each go up 1 inflammation level');
+  $('bCalm').title=tx(`1 點：選取的巨噬細胞所在與相鄰格，發炎各 −${CFG.CALM} 級`,`1 AP: the selected macrophage’s tile and adjacent tiles each go down ${CFG.CALM} inflammation levels`);
+  H($('bPro'),'<span class="dot" style="background:var(--inf)"></span>'+tx('促進發炎<small>1 點</small>','<span>Boost<span class="xw"> inflammation</span></span><small>1 AP</small>'));
+  H($('bCalm'),'<span class="dot" style="background:#7fd0ff"></span>'+tx('調節發炎<small>1 點</small>','<span>Calm<span class="xw"> inflammation</span></span><small>1 AP</small>'));
+  H($('bEnd'),tx('結束回合<small>空白鍵</small>','End turn<small>Space</small>'));
+  document.querySelectorAll('[data-lang]').forEach(b=>b.classList.toggle('on',b.dataset.lang===LANG));
+  $('bLang').textContent=en?'中文':'EN';$('bLang').title=en?'繁體中文':'English';
+  if(G)hud();
+  if(ovView){const s=BA&&{k:BA.k,u:BA.u,play:BA.play,done:BA.done};ovView();if(s&&BA){Object.assign(BA,s);briefUi();}}   // 教學動畫：保留目前步驟、進度與播放／暫停
+  if(lastEv&&$('tip').innerHTML)onHover(lastEv);
+}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-lang]');if(b)setLang(b.dataset.lang);});
+
 /* ---------------- 畫面層 ---------------- */
 const $=id=>document.getElementById(id);
 const stage=$('stage'),cv=$('cv');let ctx=cv.getContext('2d');   // let：簡報動畫會暫時把繪圖目標換成小畫布
@@ -510,55 +579,54 @@ function guideText(){               // 依目前局面給下一步建議；不�
   if(!tut.on||!G||G.phase!=='player'||G.result)return'';
   const sel=G.macs.find(m=>m.id===G.sel);
   if(G.turn===1){
-    if(G.ap===0)return'<b>⑦</b> 行動點數用完了：按右下「結束回合」（空白鍵），換細菌行動。';
-    if(tut.last==='eat'&&G.macs.find(m=>m.id===G.sel)){}else if(G.ap<=2)return'<b>⑥</b> 結束前看預告：綠箭頭＝細菌擴散方向、紅色記號＝將受損的組織、上方「細菌負荷 a → b」＝下回合預估。點數還可以繼續用。';
-    if(!sel)return tut.acts?'再點一個巨噬細胞繼續行動，或按「結束回合」。':'<b>①</b> 點選一個巨噬細胞（淡金色的大細胞）。';
-    if(tut.last==='eat'&&sel)return`<b>⑤</b> 吞下去了！左下是剩餘行動點數；細胞上方的「${sel.stomach}/${CFG.CAP}」是體內容量，滿了要等回合結束消化。`;
-    if(engulfTargets(G,sel).length)return'<b>④</b> 標著「吞」的細菌可以吞噬：點它（1 點）。';
-    if(sel.stomach>=CFG.CAP)return'這個細胞吃飽了——換另一個巨噬細胞行動。';
-    return`<b>②</b> 青色亮格＝可移動範圍（1 點最多 ${CFG.MOVE} 格）。<b>③</b> 往細菌聚集的地方靠近。`;
+    if(G.ap===0)return tx(`<b>⑦</b> 行動點數用完了：按右下「結束回合」${touch?'':'（空白鍵）'}，換細菌行動。`,`<b>⑦</b> Out of action points: press “End turn” at the bottom right${touch?'':' (Space)'} to let the bacteria act.`);
+    if(tut.last==='eat'&&G.macs.find(m=>m.id===G.sel)){}else if(G.ap<=2)return tx('<b>⑥</b> 結束前看預告：綠箭頭＝細菌擴散方向、紅色記號＝將受損的組織、上方「細菌負荷 a → b」＝下回合預估。點數還可以繼續用。','<b>⑥</b> Before you end the turn, check the forecast: green arrows = where bacteria will spread, red marks = tissue about to be damaged, and the bacteria gauge “a → b” at the top = next turn’s estimate. You can still spend your remaining points.');
+    if(!sel)return tut.acts?tx('再點一個巨噬細胞繼續行動，或按「結束回合」。','Select another macrophage to keep going, or press “End turn”.'):tx('<b>①</b> 點選一個巨噬細胞（淡金色的大細胞）。','<b>①</b> Select a macrophage (a large, pale-gold cell).');
+    if(tut.last==='eat'&&sel)return tx(`<b>⑤</b> 吞下去了！左下是剩餘行動點數；細胞上方的「${sel.stomach}/${CFG.CAP}」是體內容量，滿了要等回合結束消化。`,`<b>⑤</b> Engulfed! Your remaining action points (AP) are at the bottom left. The “${sel.stomach}/${CFG.CAP}” above the cell shows how full it is; a full cell must wait for digestion at the end of the turn.`);
+    if(engulfTargets(G,sel).length)return tx('<b>④</b> 標著「吞」的細菌可以吞噬：點它（1 點）。','<b>④</b> Bacteria marked “Engulf” can be engulfed: choose one (1 AP).');
+    if(sel.stomach>=CFG.CAP)return tx('這個細胞吃飽了——換另一個巨噬細胞行動。','This cell is full — switch to another macrophage.');
+    return tx(`<b>②</b> 青色亮格＝可移動範圍（1 點最多 ${CFG.MOVE} 格）。<b>③</b> 往細菌聚集的地方靠近。`,`<b>②</b> Cyan tiles = where it can move (1 AP moves up to ${CFG.MOVE} tiles). <b>③</b> Move toward where the bacteria are gathering.`);
   }
   if(G.turn<=3&&!G.nPro){
     if(sel){const A=area(G,sel).map(i=>G.tiles[i]);
-      if(A.some(t=>t.bac>0&&t.inf===0)&&A.reduce((n,t)=>n+t.bac,0)>=3)return'細菌聚在一起時可以「促進發炎」——把滑鼠移到按鈕上，先看範圍與預估效果。';}
-    if(CFG.REINF.includes(G.turn+1))return'下回合援軍可以來，但需要發炎訊號指路：選一個靠近細菌的巨噬細胞，試試「促進發炎」。';
+      if(A.some(t=>t.bac>0&&t.inf===0)&&A.reduce((n,t)=>n+t.bac,0)>=3)return tx('細菌聚在一起時可以「促進發炎」——'+(touch?'點一下按鈕先看範圍與預估效果，再點一次才執行':'把滑鼠移到按鈕上，先看範圍與預估效果')+'。','When bacteria cluster together, you can “Boost inflammation” — '+(touch?'tap the button once to preview the area and estimated effect, then tap again to carry it out':'hover over the button to preview the area and estimated effect')+'.');}
+    if(CFG.REINF.includes(G.turn+1))return tx('下回合援軍可以來，但需要發炎訊號指路：選一個靠近細菌的巨噬細胞，試試「促進發炎」。','Reinforcements can come next turn, but they need an inflammation signal to follow: select a macrophage near the bacteria and try “Boost inflammation”.');
   }
   return'';
 }
-// 觸控裝置上，把提到滑鼠與鍵盤的操作說明換成觸控的說法（只換操作方式，不動教學內容）
-const tt=s=>touch?s.replace('（空白鍵）','').replace('把滑鼠移到按鈕上，先看範圍與預估效果','點一下按鈕先看範圍與預估效果，再點一次才執行'):s;
+// 觸控裝置上，提到滑鼠與鍵盤的操作說明改用觸控的說法：guideText() 直接依 touch 狀態選句子（v0.9 起不再對顯示文字做 replace，才不會依賴語言）
 function hintTick(){
   const now=performance.now();
   if(hCur&&(now>hEnd||(hq.length&&now>hMin)))hCur=null;
   if(!hCur&&hq.length){hCur=hq.shift();hMin=now+2800;hEnd=now+7500;}
-  const txt=actPrev?actPrev.html+(armed?'｜<b>再點一次按鈕執行</b>，點別處取消':''):hCur?hCur.text:tt(guideText());
+  const txt=actPrev?actPrev.html+(armed?tx('｜<b>再點一次按鈕執行</b>，點別處取消',' | <b>Tap the button again to carry it out</b>, or tap elsewhere to cancel'):''):hCur?pick(hCur.text):guideText();
   if(txt!==hShown){hShown=txt;const h=$('hint');if(txt)h.firstElementChild.innerHTML=txt;h.classList.toggle('on',!!txt);}
 }
 // 促進／調節發炎的操作前預覽：在複本上先做一次，再用同一套回合結算比較前後
 function calcActPrev(){
   actPrev=null;if(!hoverAct||!G||G.phase!=='player'||!G.fc)return;
-  const pro=hoverAct==='pro',name=pro?'促進發炎':'調節發炎',m=G.macs.find(m=>m.id===G.sel);
-  const eff=pro?'各 +1 級（最高 3）':`各 −${CFG.CALM} 級`;
-  if(!m){actPrev={html:`<b>${name}</b>｜1 點｜先點選一個巨噬細胞：作用在它所在與相鄰的格子，${eff}`};return;}
-  if(G.ap<1){actPrev={html:`<b>${name}</b>｜行動點數不足`};return;}
+  const pro=hoverAct==='pro',name=pro?tx('促進發炎','Boost inflammation'):tx('調節發炎','Calm inflammation'),SEP=tx('｜',' | '),m=G.macs.find(m=>m.id===G.sel);
+  const eff=pro?tx('各 +1 級（最高 3）','each +1 level (max 3)'):tx(`各 −${CFG.CALM} 級`,`each −${CFG.CALM} levels`);
+  if(!m){actPrev={html:tx(`<b>${name}</b>｜1 點｜先點選一個巨噬細胞：作用在它所在與相鄰的格子，${eff}`,`<b>${name}</b> | 1 AP | Select a macrophage first: it affects that cell’s tile and the adjacent tiles, ${eff}`)};return;}
+  if(G.ap<1){actPrev={html:tx(`<b>${name}</b>｜行動點數不足`,`<b>${name}</b> | Not enough action points`)};return;}
   const A=area(G,m),C=cloneState(G);(pro?actPromote:actCalm)(C,C.macs.find(o=>o.id===m.id));
-  const f=forecastOf(C),b=G.fc,lv={},T0=i=>G.tiles[i],P=[`<b>${name}</b>｜1 點｜周圍 ${A.length} 格${eff}`];
+  const f=forecastOf(C),b=G.fc,lv={},T0=i=>G.tiles[i],P=[tx(`<b>${name}</b>｜1 點｜周圍 ${A.length} 格${eff}`,`<b>${name}</b> | 1 AP | ${A.length} tiles around the cell, ${eff}`)],col=n=>n>1?'colonies':'colony';
   for(const i of A)lv[i]=[T0(i).inf,C.tiles[i].inf];
   if(pro){
     const nFull=A.filter(i=>T0(i).bac===3&&T0(i).inf===0).length,nEat=A.filter(i=>T0(i).bac>1&&T0(i).inf===0).length;
-    if(!A.some(i=>T0(i).bac>0))P.push('範圍內沒有細菌，只能當援軍的路標');
-    else{if(nFull)P.push(`圍堵 ${nFull} 個滿載菌落`);if(nEat)P.push(`${nEat} 個菌落可一次吞到容量上限`);}
-    if(b.reinf===-1&&f.reinf>=0)P.push('援軍下回合會循訊號抵達');
+    if(!A.some(i=>T0(i).bac>0))P.push(tx('範圍內沒有細菌，只能當援軍的路標','No bacteria in range — it would only be a signpost for reinforcements'));
+    else{if(nFull)P.push(tx(`圍堵 ${nFull} 個滿載菌落`,`Contains ${nFull} full ${col(nFull)}`));if(nEat)P.push(tx(`${nEat} 個菌落可一次吞到容量上限`,`${nEat} ${col(nEat)} can be engulfed up to capacity in one go`));}
+    if(b.reinf===-1&&f.reinf>=0)P.push(tx('援軍下回合會循訊號抵達','Reinforcements will follow the signal and arrive next turn'));
   }else{
-    if(!A.some(i=>T0(i).inf>0))P.push('周圍沒有發炎可調節');
+    if(!A.some(i=>T0(i).inf>0))P.push(tx('周圍沒有發炎可調節','No inflammation nearby to calm'));
     const nRel=A.filter(i=>T0(i).bac===3&&T0(i).inf>0&&C.tiles[i].inf===0).length;
-    if(nRel)P.push(`<span class="w">${nRel} 個滿載菌落將恢復擴散</span>`);
-    if(b.reinf>=0&&f.reinf===-1)P.push('<span class="w">援軍將失去路標</span>');
+    if(nRel)P.push(tx(`<span class="w">${nRel} 個滿載菌落將恢復擴散</span>`,`<span class="w">${nRel} full ${col(nRel)} will start spreading again</span>`));
+    if(b.reinf>=0&&f.reinf===-1)P.push(tx('<span class="w">援軍將失去路標</span>','<span class="w">Reinforcements will lose their signpost</span>'));
   }
-  P.push(`回合結束預估組織損傷 ${b.dB+b.dI} → ${f.dB+f.dI}`);
-  if(f.dI>b.dI)P.push(`<span class="w">⚠ 過度發炎損傷 +${f.dI-b.dI}</span>`);
-  else if(pro&&A.some(i=>T0(i).bac>0))P.push('細菌沒清掉會每回合升 1 級，到 3 級就傷組織');
-  actPrev={html:P.join('｜'),lv};
+  P.push(tx(`回合結束預估組織損傷 ${b.dB+b.dI} → ${f.dB+f.dI}`,`Estimated tissue damage at end of turn: ${b.dB+b.dI} → ${f.dB+f.dI}`));
+  if(f.dI>b.dI)P.push(tx(`<span class="w">⚠ 過度發炎損傷 +${f.dI-b.dI}</span>`,`<span class="w">⚠ Excessive-inflammation damage +${f.dI-b.dI}</span>`));
+  else if(pro&&A.some(i=>T0(i).bac>0))P.push(tx('細菌沒清掉會每回合升 1 級，到 3 級就傷組織','If bacteria remain, it rises 1 level each turn; level 3 damages tissue'));
+  actPrev={html:P.join(SEP),lv};
 }
 
 // ---- 細菌的視覺個體 ----
@@ -588,15 +656,15 @@ function refresh(){G.fc=forecastOf(G);hud();}
 function afterAction(){
   if(G.sealed&&load(G)===0){G.result={win:true};return finish();}
   refresh();
-  if(G.ap===0)hint('ap0','行動點數用完了——按「結束回合」，細菌接著行動。');
+  if(G.ap===0)hint('ap0',['行動點數用完了——按「結束回合」，細菌接著行動。','Out of action points — press “End turn” and the bacteria will act.']);
 }
 function uiEngulf(m,i){
   const t=G.tiles[i],n=actEngulf(G,m,i),rods=t.bv.splice(t.bv.length-n,n);
   const cx=rods.reduce((s,r)=>s+r.x,0)/n,cy=rods.reduce((s,r)=>s+r.y,0)/n;
-  startGulp(m,rods,cx,cy,'吞噬 ×'+n);tut.acts++;tut.last=tut.ate?'':'eat';tut.ate=1;
-  hint('engulf',`吞噬作用：巨噬細胞把細菌包進體內分解。每個細胞最多裝 ${CFG.CAP} 隻，回合結束消化 ${CFG.DIGEST} 隻。`);
-  if(n>1)hint('activated','遊戲設定：發炎區裡的巨噬細胞被活化，一次可以吞到容量上限。');
-  if(m.stomach>=CFG.CAP)hint('full','這個巨噬細胞吃飽了，要等消化後才能再吞噬。');
+  startGulp(m,rods,cx,cy,tx('吞噬 ×','Engulfed ×')+n);tut.acts++;tut.last=tut.ate?'':'eat';tut.ate=1;
+  hint('engulf',[`吞噬作用：巨噬細胞把細菌包進體內分解。每個細胞最多裝 ${CFG.CAP} 隻，回合結束消化 ${CFG.DIGEST} 隻。`,`Phagocytosis: the macrophage wraps bacteria up and breaks them down inside. Each cell holds up to ${CFG.CAP} and digests ${CFG.DIGEST} at the end of the turn.`]);
+  if(n>1)hint('activated',['遊戲設定：發炎區裡的巨噬細胞被活化，一次可以吞到容量上限。','Game rule: macrophages in an inflamed area are activated and can engulf up to their capacity in one go.']);
+  if(m.stomach>=CFG.CAP)hint('full',['這個巨噬細胞吃飽了，要等消化後才能再吞噬。','This macrophage is full; it must digest before it can engulf again.']);
   afterAction();
 }
 function uiMove(m,i,prev){
@@ -605,18 +673,18 @@ function uiMove(m,i,prev){
 }
 function uiPromote(){
   const m=G.macs.find(m=>m.id===G.sel);if(!canAct())return;
-  if(!m){SFX.deny();return hint('needsel','先點選一個巨噬細胞，再下達指令。',true);}
+  if(!m){SFX.deny();return hint('needsel',['先點選一個巨噬細胞，再下達指令。','Select a macrophage first, then give the order.'],true);}
   actPromote(G,m);G.nPro++;tut.acts++;tut.last='pro';SFX.flare();ring(m.x,m.y,'255,130,70',R*2.1,.7);
   for(const i of area(G,m))burst(G.tiles[i].x,G.tiles[i].y,4,'255,140,80',50,2);
-  hint('promote','發炎啟動：區內細菌被圍堵、吞噬更強，也是援軍的路標。但細菌沒清掉，發炎每回合升 1 級——到 3 級就會傷害組織。');
+  hint('promote',['發炎啟動：區內細菌被圍堵、吞噬更強，也是援軍的路標。但細菌沒清掉，發炎每回合升 1 級——到 3 級就會傷害組織。','Inflammation on: bacteria in the area are contained, engulfing is stronger, and reinforcements get a signpost. But while bacteria remain, inflammation rises 1 level each turn — at level 3 it damages tissue.']);
   afterAction();
 }
 function uiCalm(){
   const m=G.macs.find(m=>m.id===G.sel);if(!canAct())return;
-  if(!m){SFX.deny();return hint('needsel','先點選一個巨噬細胞，再下達指令。',true);}
-  if(!area(G,m).some(i=>G.tiles[i].inf>0)){SFX.deny();return hint('nocalm','這個巨噬細胞周圍沒有發炎可以調節。',true);}
+  if(!m){SFX.deny();return hint('needsel',['先點選一個巨噬細胞，再下達指令。','Select a macrophage first, then give the order.'],true);}
+  if(!area(G,m).some(i=>G.tiles[i].inf>0)){SFX.deny();return hint('nocalm',['這個巨噬細胞周圍沒有發炎可以調節。','There is no inflammation around this macrophage to calm.'],true);}
   actCalm(G,m);tut.acts++;tut.last='calm';SFX.calm();ring(m.x,m.y,'130,210,255',R*2.1,.8);
-  hint('calm',`調節發炎：周圍發炎降 ${CFG.CALM} 級。降到 0 級的格子，細菌又能擴散了。`);
+  hint('calm',[`調節發炎：周圍發炎降 ${CFG.CALM} 級。降到 0 級的格子，細菌又能擴散了。`,`Calm inflammation: nearby inflammation drops ${CFG.CALM} levels. On tiles that fall to level 0, bacteria can spread again.`]);
   afterAction();
 }
 const canAct=()=>G&&G.phase==='player'&&!G.result&&G.ap>0;
@@ -633,18 +701,18 @@ async function endTurn(){
   const g=growList(G),full=fullList(G),sp=phaseSpread(G);let any=false;
   for(const e of sp){
     const s=G.tiles[e.from];
-    if(e.blocked){ring(s.x,s.y,'255,150,90',R*.95,.5);Hn('blocked','遊戲設定：發炎區的細菌無法向外擴散。（真實的發炎是「有助限制」感染，不保證完全擋住。）');continue;}
+    if(e.blocked){ring(s.x,s.y,'255,150,90',R*.95,.5);Hn('blocked',['遊戲設定：發炎區的細菌無法向外擴散。（真實的發炎是「有助限制」感染，不保證完全擋住。）','Game rule: bacteria in an inflamed area cannot spread outward. (Real inflammation helps limit infection; it does not guarantee a complete block.)']);continue;}
     any=true;if(s.bv.length)s.bv[s.bv.length-1].st=1;
-    if(e.mac){const m=G.macs.find(m=>m.id===e.mac);startGulp(m,[{x:s.x,y:s.y,rot:0,ph:0,s:1,st:0}],s.x,s.y,'攔截 ×1');
-      Hn('sentinel','守在擴散路線上的巨噬細胞，會直接吞掉闖進來的細菌。');}
+    if(e.mac){const m=G.macs.find(m=>m.id===e.mac);startGulp(m,[{x:s.x,y:s.y,rot:0,ph:0,s:1,st:0}],s.x,s.y,tx('攔截 ×1','Blocked ×1'));
+      Hn('sentinel',['守在擴散路線上的巨噬細胞，會直接吞掉闖進來的細菌。','A macrophage standing in the path of the spread engulfs the bacteria that move in.']);}
     else if(!e.fail){addBv(G.tiles[e.to],{x:s.x,y:s.y});ring(G.tiles[e.to].x,G.tiles[e.to].y,'190,240,80',R*.8,.6);}
   }
-  if(any){SFX.spread();Hn('spread','滿 3 隻的菌落會向鄰近組織擴散，並損傷它所在的組織。');}
+  if(any){SFX.spread();Hn('spread',['滿 3 隻的菌落會向鄰近組織擴散，並損傷它所在的組織。','A colony of 3 spreads to nearby tissue and damages the tissue it sits on.']);}
   hud();await Wt(sp.length?620:60);if(!alive())return;
   // 分裂增殖
   const gr=phaseGrow(G,g);
   gr.forEach((i,k)=>{addBv(G.tiles[i]);if(k<4)SFX.pop(k*.05);});
-  if(gr.length)Hn('divide','細菌在條件合適的組織裡，一分為二不斷增殖。');
+  if(gr.length)Hn('divide',['細菌在條件合適的組織裡，一分為二不斷增殖。','Where conditions are right, bacteria keep multiplying by dividing in two.']);
   hud();await Wt(gr.length?560:60);if(!alive())return;
   // 傷口湧入
   if(G.influxLeft>0){
@@ -652,7 +720,7 @@ async function endTurn(){
     for(const e of iv.list){const w=G.tiles[e.from],from={x:w.x,y:92};
       if(e.mac)startGulp(G.macs.find(m=>m.id===e.mac),[{x:from.x,y:from.y,rot:1.57,ph:0,s:1,st:0}],from.x,from.y);
       else if(e.to>=0)addBv(G.tiles[e.to],from);}
-    if(iv.sealed){for(const wi of G.wounds)ftext(G.tiles[wi].x,104,'傷口結痂','230,180,140');SFX.seal();Hn('seal','血塊封住了傷口，暫時擋住新的細菌。現在把剩下的清乾淨！');}
+    if(iv.sealed){for(const wi of G.wounds)ftext(G.tiles[wi].x,104,tx('傷口結痂','Wound scabbed over'),'230,180,140');SFX.seal();Hn('seal',['血塊封住了傷口，暫時擋住新的細菌。現在把剩下的清乾淨！','A blood clot has sealed the wound, holding back new bacteria for now. Clear out the rest!']);}
     hud();await Wt(520);if(!alive())return;
   }
   // 發炎變化
@@ -665,16 +733,16 @@ async function endTurn(){
   for(const k in acc){if(k[0]==='c')continue;const t=G.tiles[k];t.flash=1;burst(t.x,t.y,7,acc['c'+k]?'255,110,70':'200,90,110',70,2.6);
     ftext(t.x,t.y-18,'−'+acc[k],acc['c'+k]?'255,150,110':'255,120,140');}
   if(dm.length){SFX.hurt();
-    if(dm.some(e=>e.cause==='inf'))Hn('over','過度發炎！免疫反應太強，連周圍的正常組織也被波及。用「調節發炎」降溫。',true);
-    else Hn('toxin','組織受損：滿載的菌落正在損傷它所在的組織。');}
+    if(dm.some(e=>e.cause==='inf'))Hn('over',['過度發炎！免疫反應太強，連周圍的正常組織也被波及。用「調節發炎」降溫。','Excessive inflammation! The immune response is too strong and is hitting the healthy tissue around it. Use “Calm inflammation” to cool it down.'],true);
+    else Hn('toxin',['組織受損：滿載的菌落正在損傷它所在的組織。','Tissue damage: a full colony is damaging the tissue it sits on.']);}
   hud();await Wt(dm.length?650:120);if(!alive())return;
   if(advance(G))return finish();
   G.phase='player';tut.last='';if(G.turn>3)tut.on=false;
   if(G.reinfEv){
     if(G.reinfEv.tile>=0){const m=G.macs.find(m=>m.id===G.reinfEv.mac);ring(m.x,m.y,'255,236,200',R*1.5,.8);
-      ftext(m.x,m.y-46,'援軍抵達','255,236,200');SFX.arrive();
-      Hn('reinf','援軍抵達！血液中的單核球循著發炎訊號進入組織，成為新的巨噬細胞。',true);}
-    else{G.reinfMiss++;SFX.deny();Hn('noreinf','沒有發炎訊號——援軍不知道該往哪裡去，這次沒有來。',true);}
+      ftext(m.x,m.y-46,tx('援軍抵達','Reinforcements!'),'255,236,200');SFX.arrive();
+      Hn('reinf',['援軍抵達！血液中的單核球循著發炎訊號進入組織，成為新的巨噬細胞。','Reinforcements have arrived! Monocytes in the blood follow the inflammation signal into the tissue and become new macrophages.'],true);}
+    else{G.reinfMiss++;SFX.deny();Hn('noreinf',['沒有發炎訊號——援軍不知道該往哪裡去，這次沒有來。','No inflammation signal — the reinforcements did not know where to go, so none came this time.'],true);}
   }
   refresh();
 }
@@ -689,35 +757,35 @@ function finish(){
 function hud(){
   if(!G)return;
   const L=load(G),hp=health(G),I=G.tiles.reduce((n,t)=>n+t.inf,0),over=G.tiles.some(t=>t.inf===3);
-  $('turnTxt').textContent=`回合 ${G.turn} / ${CFG.TURNS}`;
+  $('turnTxt').textContent=tx(`回合 ${G.turn} / ${CFG.TURNS}`,`Turn ${G.turn} / ${CFG.TURNS}`);
   $('pips').innerHTML=Array.from({length:CFG.TURNS},(_,k)=>{const n=k+1;
     return`<i class="${n<G.turn?'done':n===G.turn?'now':''}${CFG.REINF.includes(n)?' rf':''}${n===CFG.INFLUX?' sc':''}" title="${
-      CFG.REINF.includes(n)?'援軍可在此回合抵達':n===CFG.INFLUX?'此回合結束時傷口結痂':'回合 '+n}"></i>`}).join('');
+      CFG.REINF.includes(n)?tx('援軍可在此回合抵達','Reinforcements can arrive this turn'):n===CFG.INFLUX?tx('此回合結束時傷口結痂','The wound scabs over at the end of this turn'):tx('回合 ','Turn ')+n}"></i>`}).join('');
   $('vH').textContent=Math.round(hp*100)+'%';$('gH').querySelector('s').style.width=hp*100+'%';
   $('gH').classList.toggle('warn',hp<.35);
   const fl=G.fc&&G.phase==='player'?G.fc.load:L;
-  $('vB').innerHTML=G.phase==='player'&&fl!==L?`${L} <small>→ ${fl}／${CFG.LOAD_MAX}</small>`:`${L} <small>／${CFG.LOAD_MAX}</small>`;
+  $('vB').innerHTML=G.phase==='player'&&fl!==L?`${L} <small>→ ${fl}${tx('／','/')}${CFG.LOAD_MAX}</small>`:`${L} <small>${tx('／','/')}${CFG.LOAD_MAX}</small>`;
   const gb=$('gB');gb.querySelector('s').style.width=Math.min(100,L/CFG.LOAD_MAX*100)+'%';
   gb.querySelector('u').style.width=Math.min(100,fl/CFG.LOAD_MAX*100)+'%';
   gb.querySelector('b').style.left=CFG.SAFE/CFG.LOAD_MAX*100+'%';
   gb.classList.toggle('warn',fl>=CFG.LOAD_MAX*.75);
-  $('vI').textContent=over?'過度！':I===0?(L>0?'尚未發炎':'平靜'):'適度';$('gI').querySelector('s').style.width=Math.min(100,I/21*100)+'%';
+  $('vI').textContent=over?tx('過度！','Excessive!'):I===0?(L>0?tx('尚未發炎','None yet'):tx('平靜','Calm')):tx('適度','Moderate');$('gI').querySelector('s').style.width=Math.min(100,I/21*100)+'%';
   $('gI').classList.toggle('warn',over);
-  $('ap').innerHTML='<span>行動點數</span>'+Array.from({length:CFG.AP},(_,k)=>`<i class="${k<G.ap?'on':''}"></i>`).join('');
+  $('ap').innerHTML='<span>'+tx('行動點數','AP')+'</span>'+Array.from({length:CFG.AP},(_,k)=>`<i class="${k<G.ap?'on':''}"></i>`).join('');
   const pl=G.phase==='player',m=G.macs.find(m=>m.id===G.sel);
   $('bPro').disabled=!(pl&&G.ap>0);
   $('bCalm').disabled=!(pl&&G.ap>0&&(!m||area(G,m).some(i=>G.tiles[i].inf>0)));
   const be=$('bEnd');be.disabled=!pl;be.classList.toggle('pulse',pl&&G.ap===0);
   const f=[];let bad='';
   if(pl&&G.fc){
-    if(!G.sealed)f.push(`傷口開放中：回合結束再湧入 1 隻（${G.influxLeft} 回合後結痂）`);
-    if(G.fc.reinf!==null)f.push(G.fc.reinf>=0?'下回合援軍抵達發炎最強處':'<span class="w">下回合援軍可來，但目前沒有發炎訊號指路</span>');
+    if(!G.sealed)f.push(tx(`傷口開放中：回合結束再湧入 1 隻（${G.influxLeft} 回合後結痂）`,`Wound open: +1 bacterium at end of turn (scabs over in ${G.influxLeft} turn${G.influxLeft>1?'s':''})`));
+    if(G.fc.reinf!==null)f.push(G.fc.reinf>=0?tx('下回合援軍抵達發炎最強處','Reinforcements arrive next turn at the most inflamed tile'):'<span class="w">'+tx('下回合援軍可來，但目前沒有發炎訊號指路','Reinforcements can come next turn, but there is no inflammation signal to guide them')+'</span>');
     const r=G.fc.res;
-    if(r&&!r.win)bad={tissue:'組織將損傷殆盡',overrun:'感染將失控',timeout:'這是最後一回合，感染仍未受控'}[r.why];
-    if(bad)f.push(`<span class="w">⚠ 就這樣結束回合：${bad}</span>`);
+    if(r&&!r.win)bad={tissue:tx('組織將損傷殆盡','the tissue will be destroyed'),overrun:tx('感染將失控','the infection will get out of control'),timeout:tx('這是最後一回合，感染仍未受控','this is the last turn and the infection is still not under control')}[r.why];
+    if(bad)f.push(`<span class="w">${tx('⚠ 就這樣結束回合：','⚠ If you end the turn now: ')}${bad}</span>`);
   }
   be.classList.toggle('danger',!!bad);
-  $('fore').innerHTML=f.join('　·　');
+  $('fore').innerHTML=f.join(tx('　·　','  ·  '));
   calcActPrev();
 }
 
@@ -729,26 +797,26 @@ function tileAt(e){
   return{i:best,x,y};
 }
 function onHover(e){
-  const p=tileAt(e);hover=p.i;const tip=$('tip');
+  const p=tileAt(e);hover=p.i;lastEv=e;const tip=$('tip');
   if(!G||hover<0||G.phase==='over'){tip.style.display='none';tip.innerHTML='';cv.style.cursor='default';return;}
   const t=G.tiles[hover],m=macAt(G,hover),sel=G.macs.find(m=>m.id===G.sel),L=[];
   let act='';
   if(sel&&G.phase==='player'&&!(m&&m!==sel)){
     if(engulfTargets(G,sel).includes(hover)){const n=engulfCount(G,sel,hover);
-      act=`<b>吞噬 ${n} 隻</b>（1 點）`+(t.inf>0&&n<t.bac?`｜容量只剩 ${CFG.CAP-sel.stomach}`:t.inf>0&&n>1?'｜發炎區加成':'');}
-    else if(moveTargets(G,sel).has(hover))act='<b>移動</b>（1 點）';
+      act=tx(`<b>吞噬 ${n} 隻</b>（1 點）`,`<b>Engulf ${n}</b> (1 AP)`)+(t.inf>0&&n<t.bac?tx(`｜容量只剩 ${CFG.CAP-sel.stomach}`,` | only ${CFG.CAP-sel.stomach} capacity left`):t.inf>0&&n>1?tx('｜發炎區加成',' | inflamed-area bonus'):'');}
+    else if(moveTargets(G,sel).has(hover))act=tx('<b>移動</b>（1 點）','<b>Move</b> (1 AP)');
   }
   if(act)L.push(act);
-  if(m)L.push(`巨噬細胞｜體內 ${m.stomach}/${CFG.CAP}${m.stomach>=CFG.CAP?'（飽了）':''}，回合結束消化 ${CFG.DIGEST} 隻`);
-  if(t.bac)L.push(`細菌 ×${t.bac}｜`+(t.bac===3?(t.inf>0?'被發炎圍堵（遊戲設定），仍在損傷組織':'回合結束時擴散，並損傷組織'):'回合結束時分裂'));
-  if(t.inf)L.push([,'發炎 1 級｜圍堵細菌、強化吞噬','發炎 2 級｜圍堵細菌、強化吞噬','發炎 3 級（過度）｜每回合損傷這格與周圍組織'][t.inf]+
-    (t.inf<3?(t.bac>0?(t.inf===2?'；<span style="color:#ffb39a">細菌還在，回合結束升到 3 級並傷組織</span>':'；細菌還在就會升級'):'；沒有細菌，回合結束消退 1 級'):''));
-  if(t.hp<3)L.push(['組織已壞死','組織嚴重受損','組織受損'][t.hp]);
-  if(t.wound)L.push(G.sealed?'已結痂的傷口':'傷口｜細菌的入口');
+  if(m)L.push(tx(`巨噬細胞｜體內 ${m.stomach}/${CFG.CAP}${m.stomach>=CFG.CAP?'（飽了）':''}，回合結束消化 ${CFG.DIGEST} 隻`,`Macrophage | holding ${m.stomach}/${CFG.CAP}${m.stomach>=CFG.CAP?' (full)':''}, digests ${CFG.DIGEST} at end of turn`));
+  if(t.bac)L.push(tx(`細菌 ×${t.bac}｜`,`Bacteria ×${t.bac} | `)+(t.bac===3?(t.inf>0?tx('被發炎圍堵（遊戲設定），仍在損傷組織','contained by inflammation (game rule), still damaging tissue'):tx('回合結束時擴散，並損傷組織','spreads at end of turn and damages tissue')):tx('回合結束時分裂','divides at end of turn')));
+  if(t.inf)L.push(tx([,'發炎 1 級｜圍堵細菌、強化吞噬','發炎 2 級｜圍堵細菌、強化吞噬','發炎 3 級（過度）｜每回合損傷這格與周圍組織'],[,'Inflammation level 1 | contains bacteria, stronger engulfing','Inflammation level 2 | contains bacteria, stronger engulfing','Inflammation level 3 (excessive) | damages this tile and adjacent tissue every turn'])[t.inf]+
+    (t.inf<3?(t.bac>0?(t.inf===2?tx('；<span style="color:#ffb39a">細菌還在，回合結束升到 3 級並傷組織</span>','; <span style="color:#ffb39a">bacteria remain: rises to level 3 at end of turn and damages tissue</span>'):tx('；細菌還在就會升級','; rises while bacteria remain')):tx('；沒有細菌，回合結束消退 1 級','; no bacteria: drops 1 level at end of turn')):''));
+  if(t.hp<3)L.push(tx(['組織已壞死','組織嚴重受損','組織受損'],['Tissue dead','Tissue badly damaged','Tissue damaged'])[t.hp]);
+  if(t.wound)L.push(G.sealed?tx('已結痂的傷口','Scabbed-over wound'):tx('傷口｜細菌的入口','Wound | where bacteria get in'));
   cv.style.cursor=(act||(m&&G.phase==='player'))?'pointer':'default';
   if(!L.length){tip.style.display='none';tip.innerHTML='';return;}
   tip.innerHTML=L.join('<br>');tip.style.display='block';
-  tip.style.left=Math.min(W-330,p.x+18)+'px';tip.style.top=Math.min(H-150,p.y+16)+'px';
+  tip.style.left=Math.min(W-Math.max(330,tip.offsetWidth+10),p.x+18)+'px';tip.style.top=Math.min(H-150,p.y+16)+'px';
 }
 cv.addEventListener('mousemove',onHover);
 cv.addEventListener('mouseleave',()=>{hover=-1;$('tip').style.display='none';$('tip').innerHTML='';});
@@ -757,14 +825,14 @@ cv.addEventListener('click',e=>{
   const i=tileAt(e).i;if(i<0){G.sel=-1;return hud();}
   const sel=G.macs.find(m=>m.id===G.sel),m=macAt(G,i);
   if(m&&m!==sel){G.sel=m.id;SFX.select();hud();return;}
-  if(!sel){if(G.tiles[i].bac)hint('needsel','先點選一個巨噬細胞，再下達指令。',true);return;}
+  if(!sel){if(G.tiles[i].bac)hint('needsel',['先點選一個巨噬細胞，再下達指令。','Select a macrophage first, then give the order.'],true);return;}
   if(engulfTargets(G,sel).includes(i))return uiEngulf(sel,i);
-  if(m===sel){if(G.tiles[i].bac&&sel.stomach>=CFG.CAP){SFX.deny();hint('full','這個巨噬細胞吃飽了，要等消化後才能再吞噬。',true);}return;}
+  if(m===sel){if(G.tiles[i].bac&&sel.stomach>=CFG.CAP){SFX.deny();hint('full',['這個巨噬細胞吃飽了，要等消化後才能再吞噬。','This macrophage is full; it must digest before it can engulf again.'],true);}return;}
   const prev=moveTargets(G,sel);
   if(prev.has(i))return uiMove(sel,i,prev);
   SFX.deny();
-  if(G.ap<1)hint('ap0','行動點數用完了——按「結束回合」，細菌接著行動。',true);
-  else if(G.tiles[i].bac&&sel.stomach>=CFG.CAP)hint('full','這個巨噬細胞吃飽了，要等消化後才能再吞噬。',true);
+  if(G.ap<1)hint('ap0',['行動點數用完了——按「結束回合」，細菌接著行動。','Out of action points — press “End turn” and the bacteria will act.'],true);
+  else if(G.tiles[i].bac&&sel.stomach>=CFG.CAP)hint('full',['這個巨噬細胞吃飽了，要等消化後才能再吞噬。','This macrophage is full; it must digest before it can engulf again.'],true);
 });
 // ---- 觸控（v0.8）：操作仍然只走 click，一次點擊只執行一次；這裡只補上「沒有滑鼠懸停」時的預覽與取消 ----
 cv.addEventListener('click',e=>{if(touch)onHover(e);});          // 點完後更新下方的格子說明（觸控沒有 mousemove 可以持續更新）
@@ -813,17 +881,17 @@ function bSkin(gap){                                     // 表皮：與戰場�
 function bPod(mx,my,tx,ty){ctx.strokeStyle='rgba(246,216,166,.92)';ctx.lineCap='round';ctx.lineWidth=22;ctx.beginPath();ctx.moveTo(mx,my);ctx.lineTo(tx,ty);ctx.stroke();
   ctx.strokeStyle='rgba(255,252,240,.9)';ctx.lineWidth=2;ctx.fillStyle='rgba(246,216,166,.6)';ctx.beginPath();ctx.arc(tx,ty,17,0,6.28);ctx.fill();ctx.stroke();ctx.lineCap='butt';}
 const ANIMS=[
- {tab:'① 傷口與細菌',caps:[
-   '把身體想成一座城：皮膚是城牆，牆內住著一個個組織細胞，就像城裡的居民。',
-   '皮膚上本來就住著許多細菌，大多相安無事。皮膚完整時，它們進不來。',
-   '不小心受傷，城牆破了一個洞——細菌可能趁機溜進來。',
-   '裡面溫暖又有養分。闖進來的細菌一個分裂成兩個，越來越多。',
-   '細菌擠滿的地方，那裡的組織細胞會受傷。',
-   '重點：傷口是細菌的入口。進來的細菌會自己分裂增加，越晚處理越難收拾。',
-   `戰術：傷口在第 ${CFG.INFLUX} 回合結束時結痂，在那之前每回合還有細菌湧入。滿 3 隻的菌落會擴散，並損傷所在的組織。`],
+ {tab:['① 傷口與細菌','① Wounds & bacteria'],caps:[
+   ['把身體想成一座城：皮膚是城牆，牆內住著一個個組織細胞，就像城裡的居民。','Picture the body as a walled city: the skin is the wall, and the tissue cells living inside are its residents.'],
+   ['皮膚上本來就住著許多細菌，大多相安無事。皮膚完整時，它們進不來。','Many bacteria already live on the skin, mostly without causing trouble. While the skin is intact, they cannot get in.'],
+   ['不小心受傷，城牆破了一個洞——細菌可能趁機溜進來。','An accidental cut opens a hole in the wall — and bacteria may slip in.'],
+   ['裡面溫暖又有養分。闖進來的細菌一個分裂成兩個，越來越多。','Inside it is warm and full of nutrients. The bacteria that got in divide, one into two, and keep multiplying.'],
+   ['細菌擠滿的地方，那裡的組織細胞會受傷。','Where bacteria crowd together, the tissue cells there get hurt.'],
+   ['重點：傷口是細菌的入口。進來的細菌會自己分裂增加，越晚處理越難收拾。','Key point: A wound is a way in for bacteria. Once inside, they multiply by dividing — the longer you wait, the harder they are to deal with.',1],
+   [`戰術：傷口在第 ${CFG.INFLUX} 回合結束時結痂，在那之前每回合還有細菌湧入。滿 3 隻的菌落會擴散，並損傷所在的組織。`,`Tactic: The wound scabs over at the end of turn ${CFG.INFLUX}; until then, more bacteria enter every turn. A colony of 3 spreads and damages the tissue it sits on.`,1]],
   draw(k,u){
    const gap=k>=2?[432,508]:null,R1=[110,254,398,542,686,830],R2=[182,326,470,614,758];
-   bSkin(gap);bLab(64,34,'皮膚（城牆）','#ecc9a4',13);bLab(858,306,'組織細胞（居民）',DIMC,12);
+   bSkin(gap);bLab(64,34,tx('皮膚（城牆）','Skin (the wall)'),'#ecc9a4',13);bLab(tx(858,826),306,tx('組織細胞（居民）','Tissue cells (residents)'),DIMC,12);
    let nA=0,nB=0,hpA=3,fl=0;
    if(k===2)nA=u>.75?1:0;
    else if(k===3){nA=1+Math.min(2,Math.floor(u*3.2));nB=u>.55?(u>.85?2:1):0;}
@@ -833,64 +901,64 @@ const ANIMS=[
    if(k>0)for(let i=0;i<5;i++){if(i===2&&k>=2)continue;             // 皮膚外的細菌：中性表情（不是所有細菌都有害）
      let y=20+Math.sin(T*1.6+i)*3;if(k===1&&i===2)y=L(20,35,Math.sin(cl(u*1.3)*Math.PI));   // 撞到完整的皮膚，被擋回去
      drawRod(120+i*175,y,Math.sin(T*1.3+i)*.25,T*8+i,1,k===1?cl(u*3):1,'calm');}
-   if(k===1)bLab(470,100,'皮膚完整：擋在外面','#aaf6e6',12.5,(u-.3)*3);
-   if(k>=2)bLab(470,104,'傷口','#ffb0b0',13);
+   if(k===1)bLab(470,100,tx('皮膚完整：擋在外面','Intact skin: kept outside'),'#aaf6e6',12.5,(u-.3)*3);
+   if(k>=2)bLab(470,104,tx('傷口','Wound'),'#ffb0b0',13);
    if(k===2&&u<=.75){const p=E(u/.75);drawRod(L(470,398,p),L(20,172,p),1.2*(1-p),T*9,1,1,p>.4?'sly':'calm');}   // 進了傷口才成為入侵者
    if(k>=3)for(let j=0;j<2;j++){const q=(T*.3+j/2)%1;drawRod(470+Math.sin(j*2.1)*16,34+q*60,1.57,T*6+j,.62,.5*Math.sin(q*3.14));}
    bRods(398,172,nA);bRods(542,172,nB);
-   if(k>=3)bLab(470,134,'細菌 ×'+(nA+nB),'#d2ff63',13.5);
-   if(k>=4)bLab(398,218,'組織受損','#ffb39a',12.5,k===4?(u-.3)*3:1);
+   if(k>=3)bLab(470,134,tx('細菌 ×','Bacteria ×')+(nA+nB),'#d2ff63',13.5);
+   if(k>=4)bLab(398,218,tx('組織受損','Tissue damaged'),'#ffb39a',12.5,k===4?(u-.3)*3:1);
   }},
- {tab:'② 巨噬細胞',caps:[
-   '組織裡平常就住著守衛：「巨噬細胞」。名字的意思是「很會吃的大細胞」。',
-   '它發現細菌，就伸出身體把細菌包住、吞進體內。這叫做「吞噬作用」。',
-   '吞下去的細菌，會在它體內被分解掉。',
-   '但它一次裝不了太多。吃飽了，要先消化才能再吞。',
-   '細菌分裂得快，守衛卻只有幾個——光靠它們，可能來不及。',
-   '重點：巨噬細胞靠「吞噬」清除細菌，但容量有限。要清得比細菌分裂更快，才守得住。',
-   `戰術：每個巨噬細胞最多裝 ${CFG.CAP} 隻，回合結束消化 ${CFG.DIGEST} 隻。先點巨噬細胞，再點標著「吞」的細菌；吃飽了就換另一個上。`],
+ {tab:['② 巨噬細胞','② Macrophages'],caps:[
+   ['組織裡平常就住著守衛：「巨噬細胞」。名字的意思是「很會吃的大細胞」。','Guards already live in the tissue: macrophages. The name means “big eater.”'],
+   ['它發現細菌，就伸出身體把細菌包住、吞進體內。這叫做「吞噬作用」。','When it finds a bacterium, it reaches out, wraps around it and swallows it. This is called phagocytosis.'],
+   ['吞下去的細菌，會在它體內被分解掉。','The swallowed bacterium is then broken down inside it.'],
+   ['但它一次裝不了太多。吃飽了，要先消化才能再吞。','But it cannot hold many at once. When it is full, it has to digest before it can swallow more.'],
+   ['細菌分裂得快，守衛卻只有幾個——光靠它們，可能來不及。','Bacteria divide fast, and there are only a few guards — on their own, they may not keep up.'],
+   ['重點：巨噬細胞靠「吞噬」清除細菌，但容量有限。要清得比細菌分裂更快，才守得住。','Key point: Macrophages clear bacteria by engulfing them, but their capacity is limited. To hold the line, you must clear bacteria faster than they divide.',1],
+   [`戰術：每個巨噬細胞最多裝 ${CFG.CAP} 隻，回合結束消化 ${CFG.DIGEST} 隻。先點巨噬細胞，再點標著「吞」的細菌；吃飽了就換另一個上。`,`Tactic: Each macrophage holds up to ${CFG.CAP} bacteria and digests ${CFG.DIGEST} at the end of each turn. Select a macrophage, then choose bacteria marked “Engulf”; when one is full, switch to another.`,1]],
   draw(k,u){
    const X=300,Y=150+Math.sin(T*1.5)*3,B=[[520,120],[575,190],[640,128]];
    const n4=k<4?0:k===4?[1,2,4,8][Math.min(3,Math.floor(u*4))]:8;
    [90,220,350,480,610,740,870].forEach((x,i)=>bTis(x,274,.5,3,n4>=4&&i>=4?1:0,0));
-   let st=0,mood,note='';
+   let st=0,mood,note='',fullN=0;
    if(k===0)drawRod(L(900,B[0][0],E(u)),B[0][1],3.14,T*9,1,1);
    else if(k===1){const out=u<.5,v=out?E(u/.5):1-E((u-.5)/.5),tx=L(X,B[0][0],v),ty=L(Y,B[0][1],v);bPod(X,Y,tx,ty);
      drawRod(out?B[0][0]:tx,out?B[0][1]:ty,3.14+(out?0:T*6),T*12,out?1:.5+.5*v,1);mood='eat';st=u>.96?1:0;}
-   else if(k===2){st=u<.7?1:0;note=u<.7?'分解中…':'分解完成';}
+   else if(k===2){st=u<.7?1:0;note=u<.7?tx('分解中…','Breaking down…'):tx('分解完成','Broken down');}
    else if(k===3){B.forEach((b,i)=>{const t0=.12+i*.22,w=(u-t0)/.16;
        if(w<0)drawRod(b[0],b[1],3.14+Math.sin(T*2+i)*.2,T*9+i,1,1);
        else if(w<1){drawRod(L(b[0],X+30,E(w)),L(b[1],Y,E(w)),T*8,T*12,1-.5*w,1);mood='eat';}else st++;});
-     if(u>.82){drawRod(L(900,540,E((u-.82)/.15)),150,3.14,T*9,1,1);note='吃飽了，要先消化';}}
-   else{st=k===4?3:2;if(k===4)note='吃飽了，要先消化';
+     if(u>.82){drawRod(L(900,540,E((u-.82)/.15)),150,3.14,T*9,1,1);note=tx('吃飽了，要先消化','Full — must digest first');fullN=1;}}
+   else{st=k===4?3:2;if(k===4){note=tx('吃飽了，要先消化','Full — must digest first');fullN=1;}
      for(let i=0;i<n4;i++)drawRod(540+(i%4)*96+(i>>2)*30,112+(i>>2)*72,3.14+Math.sin(T*2+i)*.3,T*9+i,1,1);
-     bLab(700,62,'細菌 ×'+n4,'#d2ff63',14);}
-   bMac(X,Y,1.5,st,mood);bLab(X,72,'巨噬細胞（守衛）','#ffeccb',13.5);
-   if(note)bLab(X,236,note,note[0]==='吃'?'#ffb27a':'#aaf6e6',13);
+     bLab(700,62,tx('細菌 ×','Bacteria ×')+n4,'#d2ff63',14);}
+   bMac(X,Y,1.5,st,mood);bLab(X,72,tx('巨噬細胞（守衛）','Macrophage (guard)'),'#ffeccb',13.5);
+   if(note)bLab(X,236,note,fullN?'#ffb27a':'#aaf6e6',13);
   }},
- {tab:'③ 發炎的兩面',caps:[
-   '傷口周圍變得紅、腫、熱、痛——這就是「發炎」，是身體啟動的防禦反應。',
-   '發炎也是求援訊號：更多免疫細胞循著訊號，從血管趕來支援。',
-   '發炎不足：沒有訊號指路，援軍不來；細菌繼續擴散。',
-   '適度發炎：守衛吞得更多、援軍也趕到，細菌比較容易被控制住。',
-   '過度發炎：反應太強或拖太久，連旁邊的正常細胞也跟著受傷。',
-   '重點：發炎是幫手，也有代價。太弱擋不住細菌，太強會傷到自己——要拿捏得剛剛好。',
-   `戰術：已經發炎、而且還有細菌的格子，發炎每回合會升 1 級，到 3 級就傷組織。按「促進發炎」後，趕在那之前清掉細菌，或用「調節發炎」降 ${CFG.CALM} 級。`],
+ {tab:['③ 發炎的兩面','③ Two sides of inflammation'],caps:[
+   ['傷口周圍變得紅、腫、熱、痛——這就是「發炎」，是身體啟動的防禦反應。','The area around the wound turns red, swollen, warm and painful — this is inflammation, a defensive response the body switches on.'],
+   ['發炎也是求援訊號：更多免疫細胞循著訊號，從血管趕來支援。','Inflammation is also a call for help: more immune cells follow the signal and come from the blood vessels to help.'],
+   ['發炎不足：沒有訊號指路，援軍不來；細菌繼續擴散。','Too little inflammation: with no signal to follow, reinforcements do not come, and the bacteria keep spreading.'],
+   ['適度發炎：守衛吞得更多、援軍也趕到，細菌比較容易被控制住。','Moderate inflammation: the guards engulf more and reinforcements arrive, so the bacteria are easier to bring under control.'],
+   ['過度發炎：反應太強或拖太久，連旁邊的正常細胞也跟著受傷。','Excessive inflammation: when the response is too strong or lasts too long, the healthy cells nearby get hurt as well.'],
+   ['重點：發炎是幫手，也有代價。太弱擋不住細菌，太強會傷到自己——要拿捏得剛剛好。','Key point: Inflammation is a helper, but it has a cost. Too weak and it cannot hold the bacteria back; too strong and it hurts your own tissue — the aim is to get it just right.',1],
+   [`戰術：已經發炎、而且還有細菌的格子，發炎每回合會升 1 級，到 3 級就傷組織。按「促進發炎」後，趕在那之前清掉細菌，或用「調節發炎」降 ${CFG.CALM} 級。`,`Tactic: A tile that is inflamed and still has bacteria rises 1 level each turn; at level 3 it damages tissue. After “Boost inflammation”, clear the bacteria before that happens, or use “Calm inflammation” to lower it by ${CFG.CALM} levels.`,1]],
   draw(k,u){
    if(k<2){                                              // 全景：發炎的部位，以及趕來的援軍
      const lv=k===0?(u>.35?1:0):1,gl=k===0?cl((u-.15)*2.2):1;
      bTis(165,92,.6,3,0,0);bTis(150,222,.6,3,0,0);bTis(352,226,.6,3,0,0);bTis(250,152,.8,3,2,lv,0,gl);bRods(250,152,2);
      bMac(392,118,.7,0);
-     ctx.fillStyle='rgba(200,50,70,.32)';ctx.strokeStyle='rgba(255,140,150,.5)';ctx.lineWidth=1.4;ctx.beginPath();ctx.roundRect(812,-20,72,360,30);ctx.fill();ctx.stroke();bLab(848,300,'血管','#ffb0b0',13);
-     bLab(250,62,'紅、腫、熱、痛','#ffb39a',14.5,k===0?(u-.4)*3:1);
+     ctx.fillStyle='rgba(200,50,70,.32)';ctx.strokeStyle='rgba(255,140,150,.5)';ctx.lineWidth=1.4;ctx.beginPath();ctx.roundRect(812,-20,72,360,30);ctx.fill();ctx.stroke();bLab(848,300,tx('血管','Blood vessel'),'#ffb0b0',13);
+     bLab(250,62,tx('紅、腫、熱、痛','Red, swollen, warm, painful'),'#ffb39a',14.5,k===0?(u-.4)*3:1);
      if(k===1){for(let j=0;j<3;j++){const q=(u*2.2+j/3)%1;ctx.strokeStyle=`rgba(255,170,100,${(1-q)*.7})`;ctx.lineWidth=2;ctx.setLineDash([6,7]);
          ctx.beginPath();ctx.arc(250,152,60+q*500,-.42,.42);ctx.stroke();ctx.setLineDash([]);}
-       bLab(600,84,'發炎訊號','#ffcf9a',13,u*4);
-       if(u>.3){const a=E((u-.3)/.55),x=L(848,470,a),y=L(160,172,a);bMac(x,y,.7,0,'focus');bLab(x,y-36,'援軍','#ffeccb',13);}}
+       bLab(600,84,tx('發炎訊號','Inflammation signal'),'#ffcf9a',13,u*4);
+       if(u>.3){const a=E((u-.3)/.55),x=L(848,470,a),y=L(160,172,a);bMac(x,y,.7,0,'focus');bLab(x,y-36,tx('援軍','Reinforcements'),'#ffeccb',13);}}
      return;
    }
-   const C=[157,470,783],nm=['發炎不足','適度發炎','過度發炎'],sub=['0 級：沒有火苗','1～2 級','3 級'],col=['#cfe6e8','#ffcf9a','#ff8a6a'],
-     end=['細菌擴散，援軍沒來','吞得更多，援軍趕到','連正常細胞也受傷'],ec=['#ffb39a','#aaf6e6','#ff9aa3'];
+   const C=[157,470,783],nm=tx(['發炎不足','適度發炎','過度發炎'],['Too little inflammation','Moderate inflammation','Excessive inflammation']),sub=tx(['0 級：沒有火苗','1～2 級','3 級'],['Level 0: no flames','Levels 1–2','Level 3']),col=['#cfe6e8','#ffcf9a','#ff8a6a'],
+     end=tx(['細菌擴散，援軍沒來','吞得更多，援軍趕到','連正常細胞也受傷'],['Bacteria spread, no reinforcements','More engulfed, reinforcements arrive','Healthy cells get hurt too']),ec=['#ffb39a','#aaf6e6','#ff9aa3'];
    ctx.strokeStyle='rgba(150,220,225,.18)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(313.5,14);ctx.lineTo(313.5,284);ctx.moveTo(626.5,14);ctx.lineTo(626.5,284);ctx.stroke();
    for(let p=0;p<3;p++){const cx=C[p];bLab(cx,30,nm[p],col[p],16);bLab(cx,49,sub[p],DIMC,12);
      bTis(cx-100,228,.5,p===2?2:3,p===0?1:0,0);bTis(cx+100,228,.5,p===2?2:3,p===0?1:0,0);
@@ -898,24 +966,24 @@ const ANIMS=[
      if(p===0){bRods(cx,152,3);for(const d of[-1,1]){const q=(T*.35+(d>0?.5:0))%1;drawRod(L(cx,cx+d*100,q),L(152,228,q),d>0?.6:2.5,T*9,.9,Math.sin(q*3.14));
          drawRod(cx+d*100,228,d,T*9+d,.8,1);}
        bMac(cx-104,112,.55,1);}
-     else if(p===1){bRods(cx,152,1);bMac(cx-104,112,.55,3);bMac(cx+104,112,.55,1,'eat');bLab(cx+104,78,'援軍','#ffeccb',12);}
+     else if(p===1){bRods(cx,152,1);bMac(cx-104,112,.55,3);bMac(cx+104,112,.55,1,'eat');bLab(cx+104,78,tx('援軍','Reinforcements'),'#ffeccb',12);}
      else bMac(cx-104,112,.55,0,'worry');
      bLab(cx,278,end[p],ec[p],12.5);
      if(k<=4&&p!==k-2){ctx.fillStyle='rgba(6,18,27,.68)';ctx.fillRect(p*313.4,0,313.4,290);}}
-   bLab(470,308,'火苗是本遊戲的發炎程度記號，不是組織真的在燃燒。',DIMC,11.5);
+   bLab(470,308,tx('火苗是本遊戲的發炎程度記號，不是組織真的在燃燒。','Flames are this game’s marker for the level of inflammation; the tissue is not actually burning.'),DIMC,11.5);
   }}];
-const capDur=s=>Math.max(3.8,1.8+s.length*.12);        // 每一步的停留秒數：字越多停越久
+const capDur=s=>LANG==='en'?Math.max(3.8,1.6+s.trim().split(/\s+/).length*.27):Math.max(3.8,1.8+s.length*.12);   // 每一步的停留秒數：字越多停越久；英文依單字數算（不套中文的字元數公式）
 function briefUi(){
-  if(!BA)return;const cap=BA.a.caps[BA.k],sum=/^(重點|戰術)：/.test(cap);
-  $('bcap').className=sum?'sum':'';$('bcap').innerHTML=sum?'<span><b>'+cap.slice(0,2)+'</b>'+cap.slice(2)+'</span>':'<span>'+cap+'</span>';
+  if(!BA)return;const c0=BA.a.caps[BA.k],cap=pick(c0),sum=!!c0[2],ci=cap.search(/[：:]/);   // 重點／戰術用字幕資料上的旗標判定，不看顯示文字
+  $('bcap').className=sum?'sum':'';$('bcap').innerHTML=sum?'<span><b>'+cap.slice(0,ci)+'</b>'+cap.slice(ci)+'</span>':'<span>'+cap+'</span>';
   $('bdots').querySelectorAll('i').forEach((d,i)=>d.className=i<BA.k?'done':i===BA.k?'now':'');
-  $('bplay').textContent=BA.done?'▶ 再看一次':BA.play?'⏸ 暫停':'▶ 播放';
+  $('bplay').textContent=BA.done?tx('▶ 再看一次','▶ Watch again'):BA.play?tx('⏸ 暫停','⏸ Pause'):tx('▶ 播放','▶ Play');
   $('bstep').textContent=`${BA.k+1} / ${BA.a.caps.length}`;
 }
 function startAnim(p){
   const c=$('bcv');BA={p,a:ANIMS[p],k:0,u:0,play:true,done:false,cv:c,c:c.getContext('2d')};
   const go=k=>{BA.k=k;BA.u=0;BA.done=false;BA.play=true;briefUi();};
-  $('bdots').innerHTML=BA.a.caps.map((_,i)=>`<i data-k="${i}" title="跳到第 ${i+1} 步"></i>`).join('');
+  $('bdots').innerHTML=BA.a.caps.map((_,i)=>`<i data-k="${i}" title="${tx(`跳到第 ${i+1} 步`,`Go to step ${i+1}`)}"></i>`).join('');
   $('bdots').querySelectorAll('i').forEach(d=>d.onclick=()=>go(+d.dataset.k));
   $('bplay').onclick=()=>{if(BA.done)go(0);else{BA.play=!BA.play;briefUi();}};
   $('bre').onclick=()=>go(0);
@@ -923,13 +991,27 @@ function startAnim(p){
 }
 function briefTick(dt){
   if(!BA)return;if(!BA.cv.isConnected){BA=null;return;}
-  if(BA.play&&!BA.done){BA.u+=dt/capDur(BA.a.caps[BA.k]);
+  if(BA.play&&!BA.done){BA.u+=dt/capDur(pick(BA.a.caps[BA.k]));
     if(BA.u>=1){if(BA.k<BA.a.caps.length-1){BA.k++;BA.u=0;}else{BA.u=1;BA.done=true;BA.play=false;}briefUi();}}
   const c=BA.c;fontBoost(c,()=>MQ.matches?Math.min(1.5,Math.max(1,560/(c.canvas.clientWidth||940))):1);c.setTransform(2,0,0,2,0,0);c.clearRect(0,0,940,320);
   ctx=c;try{BA.a.draw(BA.k,BA.u);}finally{ctx=mainCtx;}
 }
 function briefRules(){
-  const c=CFG,R=[
+  const c=CFG,R=LANG==='en'?[
+   ['Action points',`${c.AP} AP per turn, shared by all macrophages; unused points are lost.`],
+   ['Select & move',`${touch?'Tap':'Click'} a macrophage to select it. Cyan tiles are within reach: 1 AP moves up to ${c.MOVE} tiles.`],
+   ['Engulf',`Bacteria marked “Engulf” (on the same or an adjacent tile): 1 AP engulfs 1.`],
+   ['Capacity',`A macrophage holds up to ${c.CAP} and digests ${c.DIGEST} at the end of each turn; when full, it cannot engulf.`],
+   ['Growth',`At the end of each turn, every colony gains 1 bacterium (up to 3 per tile).`],
+   ['Spread',`A colony that starts the turn at 3 sends 1 bacterium along the green arrow at turn end, and damages its tile.`],
+   ['Boost inflammation',`1 AP: the selected cell’s tile and adjacent tiles go up 1 level (max 3). The flames under a tile show its level.`],
+   ['Calm inflammation',`1 AP: same area, down ${c.CALM} levels.`],
+   ['Inflammation effects',`Level 1 or higher: bacteria there cannot spread, and one engulf fills the cell to capacity. Each turn the level rises 1 if bacteria remain, or drops 1 if there are none. Level 3 damages that tile and adjacent tiles every turn.`],
+   ['Reinforcements',`One arrives at the start of turns ${c.REINF.join(' and ')} (max ${c.MAX_MACS} on the field), at the most inflamed tile. No inflammation, no reinforcements.`],
+   ['Wound',`For the first ${c.INFLUX} turns, ${c.INFLUX_N} more enters at the end of each turn; at the end of turn ${c.INFLUX} the wound scabs over.`],
+   ['Blocking',`A macrophage with room left engulfs bacteria that spread or enter onto its tile.`],
+   ['Victory',`After the wound scabs over, end a turn with ${c.SAFE} or fewer bacteria left (or none).`],
+   ['Defeat',`Tissue health reaches zero, bacteria reach ${c.LOAD_MAX}, or ${c.TURNS} turns pass without control.`]]:[
    ['行動點數',`每回合 ${c.AP} 點，所有巨噬細胞共用，不能留到下回合。`],
    ['選取與移動',`點巨噬細胞選取；青色亮格是可移動範圍，1 點最多走 ${c.MOVE} 格。`],
    ['吞噬',`標著「吞」的細菌（腳下或相鄰格）可吞噬，1 點吞 1 隻。`],
@@ -939,17 +1021,32 @@ function briefRules(){
    ['促進發炎',`1 點：選取細胞所在與相鄰格，發炎各 +1 級（最高 3 級）。格子下方的火苗數＝發炎等級。`],
    ['調節發炎',`1 點：同樣範圍，發炎各 −${c.CALM} 級。`],
    ['發炎的效果',`1 級以上：該格細菌無法擴散，吞噬時一次吞到容量上限。還有細菌的發炎格每回合 +1 級，沒有細菌則 −1 級。到 3 級：每回合損傷該格與相鄰格。`],
-   ['援軍',`第 ${c.REINF.join('、')} 回合開始時各來 1 個（場上最多 ${c.MAX_MACS} 個），前往發炎最強的格子；場上沒有發炎，援軍就不會來。`],
-   ['傷口',`前 ${c.INFLUX} 個回合，每回合結束再湧入 ${c.INFLUX_N} 隻；第 ${c.INFLUX} 回合結束時結痂，不再湧入。`],
+   [tx('援軍','Reinforcements'),`第 ${c.REINF.join('、')} 回合開始時各來 1 個（場上最多 ${c.MAX_MACS} 個），前往發炎最強的格子；場上沒有發炎，援軍就不會來。`],
+   [tx('傷口','Wound'),`前 ${c.INFLUX} 個回合，每回合結束再湧入 ${c.INFLUX_N} 隻；第 ${c.INFLUX} 回合結束時結痂，不再湧入。`],
    ['站位攔截',`細菌擴散或湧入的那一格若站著還有容量的巨噬細胞，會被直接吞掉。`],
    ['勝利',`傷口結痂後，回合結束時細菌剩 ${c.SAFE} 隻以下（或全部清光）。`],
    ['失敗',`組織健康歸零、細菌達 ${c.LOAD_MAX} 隻，或 ${c.TURNS} 回合用完仍未控制。`]];
   return`<div class="rules">${R.map(r=>`<div><b>${r[0]}</b><span>${r[1]}</span></div>`).join('')}</div>
-  <p class="note">${touch?'點一下「促進發炎／調節發炎」按鈕，會先顯示作用範圍與回合結束的預估損傷，再點一次才執行。':'把滑鼠移到「促進發炎／調節發炎」按鈕上，會先顯示作用範圍與回合結束的預估損傷。'}「組織健康」是遊戲化的整體損傷預算（累計 ${c.BUDGET} 點損傷歸零）。發炎等級、擴散阻擋、吞噬加成與援軍回合都是遊戲規則，不是人體的固定數值；真實的發炎有助限制感染，但不保證完全擋住細菌。「城牆、居民、守衛」與角色表情只是比喻：細胞和細菌沒有情緒或意識。遊戲操作不是醫療處置。</p>`;
+  <p class="note">${LANG==='en'?`${touch?'Tap “Boost” or “Calm” once to preview the affected area and the estimated damage at the end of the turn; tap again to carry it out.':'Hover over “Boost inflammation” or “Calm inflammation” to preview its area and the estimated end-of-turn damage.'} “Tissue health” is a game-style damage budget (zero after ${c.BUDGET} points of damage). Inflammation levels, blocked spreading, the engulfing bonus and reinforcement turns are game rules, not fixed values of the human body; real inflammation helps limit infection but does not guarantee that bacteria are fully held back. “Wall, residents, guards” and the faces are only metaphors: cells and bacteria have no emotions or awareness. Game actions are not medical treatment.`:`${touch?'點一下「促進發炎／調節發炎」按鈕，會先顯示作用範圍與回合結束的預估損傷，再點一次才執行。':'把滑鼠移到「促進發炎／調節發炎」按鈕上，會先顯示作用範圍與回合結束的預估損傷。'}「組織健康」是遊戲化的整體損傷預算（累計 ${c.BUDGET} 點損傷歸零）。發炎等級、擴散阻擋、吞噬加成與援軍回合都是遊戲規則，不是人體的固定數值；真實的發炎有助限制感染，但不保證完全擋住細菌。「城牆、居民、守衛」與角色表情只是比喻：細胞和細菌沒有情緒或意識。遊戲操作不是醫療處置。`}</p>`;
 }
 // 進階知識（選讀）：放在規則頁裡切換顯示，不是必讀內容
 function advHtml(){
-  const row=(y,f,t,d)=>`<circle cx="42" cy="${y}" r="17" fill="${f}" stroke="#fff" stroke-width="1.3"/><text x="74" y="${y-4}" fill="#fff" font-size="13" font-weight="600">${t}</text><text x="74" y="${y+14}" fill="#cfe6e8" font-size="11.5">${d}</text>`;
+  const row=(y,f,t,d,fs)=>`<circle cx="42" cy="${y}" r="17" fill="${f}" stroke="#fff" stroke-width="1.3"/><text x="74" y="${y-4}" fill="#fff" font-size="13" font-weight="600">${t}</text><text x="74" y="${y+14}" fill="#cfe6e8" font-size="${fs||11.5}">${d}</text>`;
+  if(LANG==='en')return`<div class="adv"><div><h3>Who shows up at the site of infection</h3>
+   <svg viewBox="0 0 450 250">
+    ${row(48,'rgba(246,216,166,.95)','Macrophage','Already lives in the tissue; the first to meet invading bacteria.',11)}
+    ${row(122,'rgba(225,215,245,.95)','Neutrophil','Usually first to arrive in large numbers; it engulfs too. Not shown here.',11)}
+    ${row(196,'rgba(240,150,150,.95)','Monocyte','Later, from the blood; can become a macrophage (reinforcements).',11)}
+    <path d="M42 68V102M42 142V176" stroke="rgba(190,225,235,.5)" stroke-width="1.3" stroke-dasharray="3 4"/>
+    <text x="442" y="244" text-anchor="end" fill="#8fb3ba" font-size="10.5">Concept sketch: top to bottom is roughly the order of arrival</text></svg>
+   <p class="note">This page is optional reading. Skipping it will not affect the game.</p></div>
+  <div><h3>Want to know a little more?</h3><ul>
+   <li class="k3">Why does an inflamed area turn red, swollen, warm and painful? After an injury or infection, cells such as mast cells can release chemical signals like <b>histamine</b>. Nearby blood vessels widen and their walls become easier to pass through, so more blood, fluid and white blood cells enter the tissue.</li>
+   <li>In real life, <b>neutrophils</b> are usually the first to arrive in large numbers; <b>monocytes</b> take longer to leave the blood and become macrophages. To keep things simple, this level shows only macrophages.</li>
+   <li class="k2">Not all bacteria are harmful: many harmless or even helpful bacteria live on the skin. In the game, the villain face is drawn only on bacteria that are causing an infection.</li>
+   <li class="k3">Inflammation has no “good side” or “bad side”: the same response helps defend when it is moderate, and damages tissue when it is too strong or lasts too long.</li>
+   <li class="k2">What this level simplifies: inflammation has levels 0–3, the player “orders” it up or down, and bacteria in an inflamed tile do not spread at all. These are game rules, not fixed laws of the human body, and not medical treatment.</li>
+  </ul></div></div>`;
   return`<div class="adv"><div><h3>誰會趕到感染的現場</h3>
    <svg viewBox="0 0 450 250">
     ${row(48,'rgba(246,216,166,.95)','巨噬細胞','平常就住在組織裡，最先遇到闖進來的細菌。')}
@@ -970,14 +1067,15 @@ function showBrief(page,inGame,adv){
   const N=ANIMS.length,last=page===N;
   let old=false;try{old=localStorage.getItem('iw_brief')==='1';}catch(e){}
   BA=null;                                              // 換頁：先停掉原本的動畫
+  ovView=()=>showBrief(page,inGame,adv);
   $('card').className='card brief';
-  $('card').innerHTML=`<div class="bh"><h1>免疫系統大作戰</h1><span>LEVEL 01｜皮膚防線：傷口入侵</span><a href="../index.html">◂ 返回主選單</a></div>
-  <div class="tabs">${[...ANIMS.map(a=>a.tab),'④ 怎麼玩'].map((t,k)=>`<button data-p="${k}" class="${k===page?'on':''}">${t}</button>`).join('')}</div>
+  $('card').innerHTML=`<div class="bh"><h1>${tx('免疫系統大作戰','Immune Wars')}</h1><span>${tx('LEVEL 01｜皮膚防線：傷口入侵','LEVEL 01 | Skin Barrier: Wound Invasion')}</span><a href="${lnk('../index.html')}">${tx('◂ 返回主選單','◂ Main menu')}</a>${langBtn()}</div>
+  <div class="tabs">${[...ANIMS.map(a=>pick(a.tab)),tx('④ 怎麼玩','④ How to play')].map((t,k)=>`<button data-p="${k}" class="${k===page?'on':''}">${t}</button>`).join('')}</div>
   <div class="body">${last?(adv?advHtml():briefRules()):`<canvas id="bcv" width="1880" height="640"></canvas><div id="bcap"></div>
-    <div class="bctl"><button id="bplay"></button><button id="bre">↺ 重新播放</button><div id="bdots"></div><span id="bstep"></span><span class="t">點橫條可跳到任一步</span></div>`}</div>
-  <div class="btns">${inGame?'':`<button id="skip" class="${old?'pri':''}">${old?'直接開始（已看過）':'跳過教學'}</button>`}
-   ${last?`<button id="adv">${adv?'◂ 回到規則':'進階知識（選讀）'}</button>`:''}${page>0?'<button id="prev">上一段</button>':''}${last?'':`<button id="next" class="${inGame||old?'':'pri'}">下一段</button>`}
-   ${last||inGame?`<button class="${last&&old?'':'pri'}" id="go">${inGame?(G.result?'回到結算':'回到戰場'):'開始戰鬥'}</button>`:''}</div>`;
+    <div class="bctl"><button id="bplay"></button><button id="bre">${tx('↺ 重新播放','↺ Replay')}</button><div id="bdots"></div><span id="bstep"></span><span class="t">${tx('點橫條可跳到任一步','Use the bars to jump to any step')}</span></div>`}</div>
+  <div class="btns">${inGame?'':`<button id="skip" class="${old?'pri':''}">${old?tx('直接開始（已看過）','Start now (seen it)'):tx('跳過教學','Skip tutorial')}</button>`}
+   ${last?`<button id="adv">${adv?tx('◂ 回到規則','◂ Back to rules'):tx('進階知識（選讀）','Learn more (optional)')}</button>`:''}${page>0?'<button id="prev">'+tx('上一段','Back')+'</button>':''}${last?'':`<button id="next" class="${inGame||old?'':'pri'}">${tx('下一段','Next')}</button>`}
+   ${last||inGame?`<button class="${last&&old?'':'pri'}" id="go">${inGame?(G.result?tx('回到結算','Back to results'):tx('回到戰場','Back to battle')):tx('開始戰鬥','Start battle')}</button>`:''}</div>`;
   $('ov').classList.add('on');
   $('card').querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>showBrief(+b.dataset.p,inGame));
   const on=(id,f)=>{const e=$(id);if(e)e.onclick=f;};
@@ -985,7 +1083,7 @@ function showBrief(page,inGame,adv){
   if(!last)startAnim(page);
 }
 function closeBrief(){
-  BA=null;
+  BA=null;ovView=null;
   if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)();}catch(e){}}
   try{localStorage.setItem('iw_brief','1');}catch(e){}
   $('ov').classList.remove('on');
@@ -993,39 +1091,40 @@ function closeBrief(){
   if(!started){started=true;SFX.turn();}
 }
 function showEnd(){
+  ovView=showEnd;
   const r=G.result,hp=Math.round(health(G)*100),stars=hp>=80?3:hp>=55?2:1;
-  const why={tissue:['組織損傷過重',G.dmgInf>G.dmgBac?'這一局多數損傷來自過度發炎——免疫反應本身也會傷到自己人。':'滿載的菌落損傷了太多組織，下次試著更早處理或圍堵它們。'],
-    overrun:['感染失控','細菌增殖得比清除更快。試著用發炎圍堵並召來援軍。'],
-    timeout:['感染仍未受控','回合用盡，細菌還在組織裡活動。']}[r.why]||[];
+  const why={tissue:[tx('組織損傷過重','Too much tissue damage'),G.dmgInf>G.dmgBac?tx('這一局多數損傷來自過度發炎——免疫反應本身也會傷到自己人。','Most of the damage this time came from excessive inflammation — the immune response itself can hurt your own side.'):tx('滿載的菌落損傷了太多組織，下次試著更早處理或圍堵它們。','Full colonies damaged too much tissue. Next time, try to deal with them or contain them sooner.')],
+    overrun:[tx('感染失控','Infection out of control'),tx('細菌增殖得比清除更快。試著用發炎圍堵並召來援軍。','Bacteria multiplied faster than they were cleared. Try using inflammation to contain them and call in reinforcements.')],
+    timeout:[tx('感染仍未受控','Infection still not under control'),tx('回合用盡，細菌還在組織裡活動。','You are out of turns, and bacteria are still active in the tissue.')]}[r.why]||[];
   // 發炎回顧：這一局的發炎是不足、適度還是過度
-  const rv=G.dmgInf>=6?['過度',`有 ${G.dmgInf} 點組織損傷來自過度發炎。發炎升到 3 級前，要把細菌清掉或用「調節發炎」降溫。`,'k3']
-    :!G.nPro?['不足','這一局沒有啟動發炎：細菌可以自由擴散，援軍也沒有訊號可循。','k2']
-    :G.reinfMiss?['偏弱',`有 ${G.reinfMiss} 次援軍因為場上沒有發炎訊號而沒來。`,'k2']
-    :['適度',`發炎幫你圍堵細菌並召來援軍，過度發炎造成的損傷只有 ${G.dmgInf} 點。`,''];
+  const rv=G.dmgInf>=6?[tx('過度','excessive'),tx(`有 ${G.dmgInf} 點組織損傷來自過度發炎。發炎升到 3 級前，要把細菌清掉或用「調節發炎」降溫。`,`${G.dmgInf} points of tissue damage came from excessive inflammation. Before inflammation reaches level 3, clear the bacteria or cool it down with “Calm inflammation”.`),'k3']
+    :!G.nPro?[tx('不足','too little'),tx('這一局沒有啟動發炎：細菌可以自由擴散，援軍也沒有訊號可循。','Inflammation was never switched on this time: bacteria could spread freely, and reinforcements had no signal to follow.'),'k2']
+    :G.reinfMiss?[tx('偏弱','on the weak side'),tx(`有 ${G.reinfMiss} 次援軍因為場上沒有發炎訊號而沒來。`,`${G.reinfMiss} time${G.reinfMiss>1?'s':''}, reinforcements did not come because there was no inflammation signal on the field.`),'k2']
+    :[tx('適度','moderate'),tx(`發炎幫你圍堵細菌並召來援軍，過度發炎造成的損傷只有 ${G.dmgInf} 點。`,`Inflammation helped you contain the bacteria and call in reinforcements, with only ${G.dmgInf} point${G.dmgInf===1?'':'s'} of damage from excessive inflammation.`),''];
   $('card').className='card '+(r.win?'win':'lose');
-  $('card').innerHTML=(r.win?`<div class="stars">${'★'.repeat(stars)}<i>${'★'.repeat(3-stars)}</i></div><h1>感染受到控制</h1><h2>第 ${G.turn} 回合完成防禦</h2>`
-    :`<h1>${why[0]}</h1><h2>防線失守</h2><p>${why[1]}</p>`)+
-  `<div class="stats"><div title="遊戲化的整體損傷預算，不代表實際存活的細胞比例"><b>${hp}%</b>組織健康</div><div><b>${G.eaten}</b>吞噬細菌</div>
-    <div><b>${G.dmgBac}</b>菌落造成損傷</div><div><b>${G.dmgInf}</b>過度發炎損傷</div></div>
+  $('card').innerHTML='<div class="lrow">'+langBtn()+'</div>'+(r.win?`<div class="stars">${'★'.repeat(stars)}<i>${'★'.repeat(3-stars)}</i></div><h1>${tx('感染受到控制','Infection under control')}</h1><h2>${tx(`第 ${G.turn} 回合完成防禦`,`Defense completed on turn ${G.turn}`)}</h2>`
+    :`<h1>${why[0]}</h1><h2>${tx('防線失守','The defense has fallen')}</h2><p>${why[1]}</p>`)+
+  `<div class="stats"><div title="${tx('遊戲化的整體損傷預算，不代表實際存活的細胞比例','A game-style overall damage budget; it does not represent the actual share of surviving cells')}"><b>${hp}%</b>${tx('組織健康','Tissue health')}</div><div><b>${G.eaten}</b>${tx('吞噬細菌','Bacteria engulfed')}</div>
+    <div><b>${G.dmgBac}</b>${tx('菌落造成損傷','Damage from colonies')}</div><div><b>${G.dmgInf}</b>${tx('過度發炎損傷','Damage from inflammation')}</div></div>
   <ul>
-    <li class="${rv[2]}"><b>這一局的發炎：${rv[0]}</b>——${rv[1]}</li>
-    <li>完整的皮膚是重要的物理屏障；傷口可能讓細菌進入組織。</li>
-    <li>巨噬細胞透過「吞噬作用」把微生物包進體內分解。</li>
-    <li class="k3">發炎能協助防禦、招來免疫細胞、有助限制感染；但過強或拖太久，也會傷害正常組織。</li>
-    <li class="k2">並非所有細菌都有害——皮膚上住著許多無害甚至有益的細菌；但它們進到傷口深處也可能致病。</li>
+    <li class="${rv[2]}"><b>${tx('這一局的發炎：','Inflammation this round: ')}${rv[0]}</b>${tx('——',' — ')}${rv[1]}</li>
+    <li>${tx('完整的皮膚是重要的物理屏障；傷口可能讓細菌進入組織。','Intact skin is an important physical barrier; a wound can let bacteria into the tissue.')}</li>
+    <li>${tx('巨噬細胞透過「吞噬作用」把微生物包進體內分解。','Macrophages wrap microbes up and break them down inside — this is phagocytosis.')}</li>
+    <li class="k3">${tx('發炎能協助防禦、招來免疫細胞、有助限制感染；但過強或拖太久，也會傷害正常組織。','Inflammation supports defense, recruits immune cells and helps limit infection; but when it is too strong or lasts too long, it also damages healthy tissue.')}</li>
+    <li class="k2">${tx('並非所有細菌都有害——皮膚上住著許多無害甚至有益的細菌；但它們進到傷口深處也可能致病。','Not all bacteria are harmful — many harmless or even helpful bacteria live on the skin; but deep inside a wound, they too may cause disease.')}</li>
   </ul>
-  <p class="note">遊戲中的回合、數值、發炎等級，以及由玩家「下令」促進或調節發炎，都是為了好玩而做的簡化，不代表真實的生理數值或醫療處置。真實情況中最先大量趕到的通常是嗜中性球，單核球要花更久才成為巨噬細胞；本關只呈現巨噬細胞。</p>
-  <div class="btns"><button class="pri" id="nextLv">進入第 2 關：病毒危機</button><button id="again">再玩一局（新戰場）</button><button id="retry">重試同一戰場</button><button id="rules">查看說明</button><button id="menu">主選單</button></div>`;
+  <p class="note">${tx('遊戲中的回合、數值、發炎等級，以及由玩家「下令」促進或調節發炎，都是為了好玩而做的簡化，不代表真實的生理數值或醫療處置。真實情況中最先大量趕到的通常是嗜中性球，單核球要花更久才成為巨噬細胞；本關只呈現巨噬細胞。','Turns, numbers, inflammation levels, and the player “ordering” inflammation up or down are all simplifications made for fun; they do not represent real physiological values or medical treatment. In real life, neutrophils are usually the first to arrive in large numbers, and monocytes take longer to become macrophages; this level shows only macrophages.')}</p>
+  <div class="btns"><button class="pri" id="nextLv">${tx('進入第 2 關：病毒危機','Level 2: Viral Crisis ▸')}</button><button id="again">${tx('再玩一局（新戰場）','New battle')}</button><button id="retry">${tx('重試同一戰場','Retry this battle')}</button><button id="rules">${tx('查看說明','Rules')}</button><button id="menu">${tx('主選單','Menu')}</button></div>`;
   $('ov').classList.add('on');
   $('again').onclick=()=>start();$('retry').onclick=()=>start(G.seed);$('rules').onclick=()=>showBrief(2,true);
-  $('nextLv').onclick=()=>{location.href='02-viral-infection.html';};$('menu').onclick=()=>{location.href='../index.html';};   // 不自動跳轉：由玩家自己決定何時前往下一關
+  $('nextLv').onclick=()=>{location.href=lnk('02-viral-infection.html');};$('menu').onclick=()=>{location.href=lnk('../index.html');};   // 不自動跳轉：由玩家自己決定何時前往下一關
 }
 let games=0;
 function start(seed){
   if(seed===undefined)seed=(Math.random()*2**31)|0;
   G=setup(seed);G.nPro=0;G.reinfMiss=0;fx=[];parts=[];hover=-1;hq=[];hCur=null;actPrev=null;
   tut.on=games++===0;tut.acts=0;tut.last='';tut.ate=0;                  // 逐步引導只在第一局出現
-  stage.classList.remove('won','lost');$('ov').classList.remove('on');
+  stage.classList.remove('won','lost');$('ov').classList.remove('on');ovView=null;
   for(const t of G.tiles)for(let k=0;k<t.bac;k++)addBv(t,{x:t.x,y:t.y});
   for(const m of G.macs)m.born=1;
   refresh();
@@ -1070,7 +1169,7 @@ function drawSkin(){
       ctx.beginPath();ctx.roundRect(g[0]-4,86,g[1]-g[0]+8,42,7);ctx.fill();ctx.stroke();
       ctx.save();ctx.clip();ctx.strokeStyle='rgba(215,150,115,.3)';ctx.lineWidth=1;
       for(let x=g[0]-50;x<g[1]+50;x+=9){ctx.beginPath();ctx.moveTo(x,86);ctx.lineTo(x+40,128);ctx.moveTo(x+40,86);ctx.lineTo(x,128);ctx.stroke();}
-      ctx.restore();ctx.fillStyle='rgba(240,200,170,.85)';ctx.fillText('結痂',cx,112);
+      ctx.restore();ctx.fillStyle='rgba(240,200,170,.85)';ctx.fillText(tx('結痂','Scab'),cx,112);
     }else{
       const gr=ctx.createLinearGradient(0,82,0,138);gr.addColorStop(0,'rgba(150,25,40,.5)');gr.addColorStop(1,'rgba(150,25,40,0)');
       ctx.fillStyle=gr;ctx.fillRect(g[0],82,g[1]-g[0],56);
@@ -1078,10 +1177,10 @@ function drawSkin(){
       for(let j=0;j<3;j++){const u=((T*.35+j/3+k*.2)%1);
         drawRod(cx+Math.sin(j*2.1+k)*26,84+u*48,1.57+Math.sin(T*3+j)*.3,T*6+j,.62,.22+.5*Math.sin(u*3.14));}
       ctx.fillStyle=next?`rgba(255,${150+60*Math.sin(T*5)},150,.95)`:'rgba(255,170,170,.6)';
-      ctx.font='600 12px "PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif';ctx.strokeStyle='rgba(30,4,8,.9)';ctx.lineWidth=3;ctx.strokeText(next?'傷口 ▼ +1':'傷口',cx,110);ctx.fillText(next?'傷口 ▼ +1':'傷口',cx,110);
+      ctx.font='600 12px "PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif';ctx.strokeStyle='rgba(30,4,8,.9)';ctx.lineWidth=3;{const ws=next?tx('傷口 ▼ +1','Wound ▼ +1'):tx('傷口','Wound');ctx.strokeText(ws,cx,110);ctx.fillText(ws,cx,110);}
     }
   });
-  ctx.fillStyle='rgba(235,205,175,.55)';ctx.textAlign='left';ctx.fillText('皮膚屏障',20,142);ctx.textAlign='center';
+  ctx.fillStyle='rgba(235,205,175,.55)';ctx.textAlign='left';ctx.fillText(tx('皮膚屏障','Skin barrier'),20,142);ctx.textAlign='center';
 }
 // 角色表情（本關自包含的小工具）：只畫眼、眉、嘴，不改任何判定、位置或碰撞範圍。
 // mood：calm 親切｜focus 專注｜eat 張嘴｜full 吃飽｜sly 狡黠（只用在正在造成感染的病原體）｜worry 擔心｜hurt 不舒服｜pain 痛苦｜dead 失去活力｜sleep 尚未被喚醒
@@ -1201,7 +1300,7 @@ function drawMac(m){
     else{ctx.strokeStyle='rgba(170,120,80,.35)';ctx.lineWidth=1;ctx.stroke();}
   }
   ctx.restore();
-  if(G.phase!=='over')badge(m.x,m.y-45,(full?'飽 ':'')+m.stomach+'/'+CFG.CAP,full?'#ffb27a':'#e9f7d8',full?'rgba(70,26,10,.9)':'rgba(8,20,28,.82)');
+  if(G.phase!=='over')badge(m.x,m.y-45,(full?tx('飽 ','Full '):'')+m.stomach+'/'+CFG.CAP,full?'#ffb27a':'#e9f7d8',full?'rgba(70,26,10,.9)':'rgba(8,20,28,.82)');
 }
 function badge(x,y,str,fg,bg){
   ctx.font='600 12px '+FONT;ctx.textAlign='center';const w=ctx.measureText(str).width+12;
@@ -1228,12 +1327,12 @@ function drawOverlays(){
       ctx.strokeStyle=`rgba(255,246,200,${hover===i?1:.55+.3*p})`;ctx.lineWidth=hover===i?3.4:2.4;
       const r=R*.7+(hover===i?0:2*p);
       for(let q=0;q<4;q++){const a=q*Math.PI/2+Math.PI/4;ctx.beginPath();ctx.arc(t.x,t.y,r,a-.42,a+.42);ctx.stroke();}
-      badge(t.x-R*.42,t.y-R*.5,'吞 ×'+engulfCount(G,sel,i),'#10200a','rgba(214,255,130,.95)');}
+      badge(t.x-R*.42,t.y-R*.5,tx('吞 ×','Engulf ×')+engulfCount(G,sel,i),'#10200a','rgba(214,255,130,.95)');}
     if(hoverAct){const col=hoverAct==='pro'?'255,130,70':'130,210,255';      // 預覽：作用範圍與每格等級變化
       for(const i of area(G,sel)){const t=G.tiles[i];hexPath(t,.95);ctx.fillStyle=`rgba(${col},.16)`;ctx.fill();
         ctx.strokeStyle=`rgba(${col},.85)`;ctx.lineWidth=2;ctx.stroke();
         const lv=actPrev&&actPrev.lv&&actPrev.lv[i];
-        if(lv&&lv[0]!==lv[1])badge(t.x,t.y+4,lv[0]+' → '+lv[1]+' 級',lv[1]===3?'#fff':'#fff3e6',lv[1]===3?'rgba(200,40,30,.95)':'rgba(30,14,8,.9)');}}
+        if(lv&&lv[0]!==lv[1])badge(t.x,t.y+4,tx(lv[0]+' → '+lv[1]+' 級','Lv '+lv[0]+' → '+lv[1]),lv[1]===3?'#fff':'#fff3e6',lv[1]===3?'rgba(200,40,30,.95)':'rgba(30,14,8,.9)');}}
   }
   for(const t of G.tiles)if(t.bac===3&&t.inf===0&&t.spreadTo>=0)drawArrow(t,G.tiles[t.spreadTo]);
   if(G.fc){
@@ -1245,7 +1344,7 @@ function drawOverlays(){
     if(G.fc.reinf>=0&&G.fc.reinf!==null){const t=G.tiles[G.fc.reinf];ctx.strokeStyle='rgba(255,236,200,.7)';ctx.lineWidth=2;
       ctx.setLineDash([5,5]);ctx.lineDashOffset=T*14;ctx.beginPath();ctx.arc(t.x,t.y,30,0,6.28);ctx.stroke();ctx.setLineDash([]);
       ctx.font='12px "PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif';ctx.textAlign='center';
-      ctx.fillStyle='rgba(255,236,200,.9)';ctx.fillText('援軍',t.x,t.y-36);}
+      ctx.fillStyle='rgba(255,236,200,.9)';ctx.fillText(tx('援軍','Reinforcements'),t.x,t.y-36);}
   }
 }
 function drawFx(){
@@ -1310,14 +1409,13 @@ function draw(){
   for(const m of G.macs)drawMac(m);
   drawFx();
   if(G.phase==='enemy'){ctx.font='13px "PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif';ctx.textAlign='center';
-    ctx.fillStyle=`rgba(210,255,140,${.6+.3*Math.sin(T*5)})`;ctx.fillText('— 細菌行動中 —',W/2,76);}
+    ctx.fillStyle=`rgba(210,255,140,${.6+.3*Math.sin(T*5)})`;ctx.fillText(tx('— 細菌行動中 —','— Bacteria are acting —'),W/2,76);}
 }
 function loop(ts){const now=ts/1000,dt=Math.min(.05,now-T||0);T=now;update(dt);draw();briefTick(dt);requestAnimationFrame(loop);}
 
-window.IW={get G(){return G},get brief(){return BA},CFG,ANIMS,start,setup,cloneState,runEnemy,advance,load,health,area,hexDist,
+window.IW={get lang(){return LANG},setLang,capDur,get G(){return G},get brief(){return BA},CFG,ANIMS,start,setup,cloneState,runEnemy,advance,load,health,area,hexDist,
   moveTargets,engulfTargets,actMove,actEngulf,actPromote,actCalm};
-$('bCalm').title=`1 點：選取的巨噬細胞所在與相鄰格，發炎各 −${CFG.CALM} 級`;
-fit();setMute(muted);start();showBrief(0,false);requestAnimationFrame(loop);
+fit();setMute(muted);applyLang();start();showBrief(0,false);requestAnimationFrame(loop);
 </script>
 </body>
 </html>

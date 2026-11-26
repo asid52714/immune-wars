@@ -7,8 +7,8 @@
 
 A free, open-source, turn-based strategy game for learning how the human immune system works. Command immune cells, defend the body, and see for yourself what immunity can do, what it cannot, and what it costs.
 
-這是個人發起的公益科普專案，目前是**早期原型**（Prototype v0.8，三個關卡，可以一關接一關連續遊玩，電腦與手機瀏覽器都能玩）。歡迎試玩，也歡迎指正醫學內容。
-*A personal, non-profit science-education project. This is an **early prototype** (v0.8, three levels that can be played back to back, on desktop and phone browsers). Playtesting and corrections are welcome.*
+這是個人發起的公益科普專案，目前是**早期原型**（三個關卡，可以一關接一關連續遊玩，電腦與手機瀏覽器都能玩）。網站目前提供的是 **v0.9 繁體中文／英文雙語公開測試版**；最近一個經維護者正式驗收的版本是 v0.8。歡迎試玩，也歡迎指正醫學內容與英文用語。
+*A personal, non-profit science-education project. This is an **early prototype** (three levels that can be played back to back, on desktop and phone browsers). The site currently serves the **v0.9 bilingual (Traditional Chinese / English) public preview**; the last version formally accepted by the maintainer is v0.8. Playtesting and corrections — including to the English — are welcome.*
 
 ## 線上遊玩｜Play online
 
@@ -17,7 +17,15 @@ A free, open-source, turn-based strategy game for learning how the human immune 
 不需要安裝任何軟體，也不需要註冊帳號。用電腦瀏覽器（滑鼠）或手機瀏覽器（觸控）即可開始遊戲。
 *No installation or account required. Open the game in a desktop or phone browser and start playing.*
 
-目前遊戲介面為繁體中文。
+**語言（v0.9 公開測試版）**：主選單與三個關卡都可以在「繁體中文｜English」之間切換，包含戰前教學動畫、規則與進階選讀、戰鬥中的提示、結算畫面，以及第三關的轉場與比較畫面。
+
+- 第一次開啟時依瀏覽器語言決定（中文瀏覽器顯示繁體中文，其餘顯示英文）；切換後會記在這台裝置的瀏覽器裡，也可以在網址加上 `?lang=en` 或 `?lang=zh` 指定。不使用帳號或 Cookie。
+- 戰鬥中切換語言不會重新開始，也不影響回合、行動點數、戰場與目前的選取；教學動畫會停在原本的步驟。
+- 兩種語言使用完全相同的遊戲規則與數值；三個關卡的規則和 v0.8 相同。
+- 英文內容已完成技術驗證（自動化檢查：沒有遺漏的中文、切換不影響戰局、電腦與手機模擬的版面），**尚待維護者人工試玩驗收**，也**尚未經英語母語人士審查**；英文用語若有不自然或不精確的地方，歡迎到 [Issues](https://github.com/asid52714/immune-wars/issues) 指正。
+- 手機上的英文版只在電腦的 Chromium 手機模擬裡檢查過，還沒有實機驗收。
+
+*__Languages (v0.9 public preview):__ the main menu and all three levels can be switched between Traditional Chinese and English — briefing animations, rules and optional reading, in-battle hints, result screens, and Level 3's transition and comparison screens. The first visit follows your browser language (Chinese browsers get Traditional Chinese, all others English); your choice is remembered in the browser on that device, and you can also add `?lang=en` or `?lang=zh` to the address. No account or cookie is used. Switching language during a battle does not restart it or change the turn, action points, battlefield or current selection, and a briefing animation stays on the step it was on. Both languages use exactly the same rules and numbers, and the level rules are unchanged from v0.8. The English text has passed automated technical checks (no leftover Chinese, switching does not affect the battle, desktop and emulated-phone layout) but is __still awaiting the maintainer's own playtest and acceptance__, and has __not been reviewed by a native English speaker__; corrections are welcome in [Issues](https://github.com/asid52714/immune-wars/issues). On phones, the English version has only been checked in Chromium's phone emulation on a computer, not on a real device.*
 
 **手機支援（v0.8 起）**：v0.8 調整了手機瀏覽器上的版面與觸控操作（直向、橫向都能玩），三個關卡的規則與內容和 v0.7 相同，電腦上的玩法也沒有改變。目前驗證過的範圍有限，如實說明如下：
 
@@ -28,7 +36,7 @@ A free, open-source, turn-based strategy game for learning how the human immune 
 
 其他手機與瀏覽器的相容性，會依玩家在 [Issues](https://github.com/asid52714/immune-wars/issues) 回報的實際情況改善；如果在你的手機上遇到問題，歡迎附上機型與瀏覽器回報。
 
-*The game text is currently in Traditional Chinese only. **Phone support (since v0.8):** layout and touch controls were adapted for phone browsers in portrait and landscape; level rules and content are unchanged from v0.7, and so is desktop play. Verified scope is limited: the maintainer playtested on an iPhone 15 Pro Max (the browser and each orientation were not separately recorded); no Android device has been tested; Chromium phone emulation passed 282/282 automated checks and the desktop regression passed 38/38. A rare canvas glitch seen in emulation (the battlefield shrinking into the top-left corner) has a workaround, but its root cause is unknown. Other devices will be improved based on reports in Issues.*
+***Phone support (since v0.8):** layout and touch controls were adapted for phone browsers in portrait and landscape; level rules and content are unchanged from v0.7, and so is desktop play. Verified scope is limited: the maintainer playtested on an iPhone 15 Pro Max (the browser and each orientation were not separately recorded); no Android device has been tested; Chromium phone emulation passed 282/282 automated checks and the desktop regression passed 38/38. A rare canvas glitch seen in emulation (the battlefield shrinking into the top-left corner) has a workaround, but its root cause is unknown. Other devices will be improved based on reports in Issues.*
 
 ## 這個專案想做什麼｜Goals
 
