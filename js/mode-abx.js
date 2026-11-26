@@ -242,7 +242,7 @@
   const rec = G => ({ turn: G.turn, hp: Math.round(AX.health(G) * 100), win: !!(G.result && G.result.win), n0: G.load0, r0: G.nR0, kill: G.killed, f0: cen(G.flora0).R, f1: cen(G.flora).R });
   M.summary = function (G, st) {
     if (!G.settled) { G.settled = 1; if (G.result && G.result.win) AX.settle(G); FS.forEach((s, i) => { s.k = G.flora[i]; }); }      // 贏了：療程一定吃完
-    const r = G.result, c = G.cfg, hp = Math.round(AX.health(G) * 100), stars = hp >= 90 ? 3 : hp >= 70 ? 2 : 1, a = cen(G.flora0).R, b = cen(G.flora).R, h = IW.save.hist, sv = IW.save.ch.abx || {};
+    const r = G.result, c = G.cfg, hp = Math.round(AX.health(G) * 100), stars = hp >= 95 ? 3 : hp >= 80 ? 2 : 1, a = cen(G.flora0).R, b = cen(G.flora).R, h = IW.save.hist, sv = IW.save.ch.abx || {};
     const why = { tissue: tx('組織損傷過重', 'Too much tissue damage'), overrun: tx('感染失控', 'Infection out of control'), timeout: tx('感染仍未受控', 'Infection still not under control') }[r.why];
     const few = G.drug && G.killed < G.rAtDrug;
     let insight = !G.drug ? tx('抗生素還沒送到，這一場就結束了。', 'This one ended before the antibiotic arrived.')

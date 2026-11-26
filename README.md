@@ -52,13 +52,13 @@ v0.10 是一次完整的產品改版，取代 v0.9 成為之後的開發基線�
 > **這個分支是候選版本，尚未發布。** 線上的正式版本仍是 v0.10（三章）。第 4 章還沒有經過維護者試玩驗收，也沒有任何外部玩家玩過。
 > *This branch is a release candidate. The live game is still v0.10 (three chapters). Chapter 4 has not yet been playtested or accepted by the maintainer.*
 
-**第 4 章｜漏網之魚：抗生素與抗藥性。** 傷口太深，細菌多到巨噬細胞忙不過來，這次有抗生素幫忙。按下去，怕藥的細菌一次死光，但總有幾隻不怕它。藥沒有改變細菌，只決定了誰留下來。第 1 章畫在皮膚外面的那一排細菌，在這一章成為這個身體的一部分：每用藥一回合，皮膚上就有一個怕藥的細菌被不怕藥的取代，而下一次闖進傷口的細菌，就是從那裡來的。
+**第 4 章｜漏網之魚：抗生素與抗藥性。** 傷口太深，細菌多到巨噬細胞忙不過來，這次有抗生素幫忙。藥一送到，它殺得死的細菌一次死光，但有幾隻這種藥對它沒用，要靠巨噬細胞處理。藥沒有改變細菌，只決定了誰留下來。第 1 章畫在皮膚外面的那一排細菌，在這一章成為這個身體的一部分：每一個療程都會讓皮膚上幾個怕藥的細菌被藥殺不死的取代，而下一次闖進傷口的細菌，就是從那裡來的。
 
 這一章和第 2 章的淋巴結是同一個原理的兩個方向：淋巴結裡，病毒的特徵把認得它的 T 細胞挑出來複製；這裡，抗生素把不怕它的細菌留下來複製。設計理由、平衡數字、測試證據、科學查證與自我批判見 [docs/CHAPTER-04.md](docs/CHAPTER-04.md)。
 
-**遊戲裡的用藥不是用藥建議。** 什麼時候按下抗生素由玩家決定，是為了讓後果看得見。真實世界裡，要不要用抗生素、用哪一種、用多久，由醫療人員判斷；請照指示使用，不要自己停藥或加藥，也不要吃別人的或上次剩下的藥。
+**這一章不是用藥建議，戰場上也刻意沒有「抗生素」按鈕。** 藥由醫師開立、在固定的回合自動送到、療程固定，玩家不能提早、延後或停藥；整章唯一由玩家決定的用藥，是感冒時要不要吃別人給的抗生素。真實世界裡，要不要用抗生素、用哪一種、用多久，由醫療人員判斷；請照指示使用，不要自己停藥或加藥，也不要吃別人的或上次剩下的藥。
 
-*__Chapter 4 | The Ones That Slip Through: antibiotics and resistance.__ A deep wound, more bacteria than the macrophages can handle, and an antibiotic to help. One press kills everything the drug works on, but a few are never affected. The drug does not change the bacteria; it decides which ones are left. The row of bacteria that Chapter 1 drew outside the skin becomes part of this body: every turn on the drug replaces one drug-sensitive bacterium on the skin with a resistant one, and that is where the next wound's bacteria come from. __Using the drug in the game is not advice about taking medicine:__ in real life, whether to use an antibiotic, which one and for how long are decisions for a health professional. See [docs/CHAPTER-04.md](docs/CHAPTER-04.md).*
+*__Chapter 4 | The Ones That Got Away: antibiotics and resistance.__ A deep wound, more bacteria than the macrophages can handle, and an antibiotic to help. When it arrives it kills everything it works on, but on a few it does not work, and those are left to the macrophages. The drug does not change the bacteria; it decides which ones are left. The row of bacteria that Chapter 1 drew outside the skin becomes part of this body: every course replaces a few drug-sensitive bacteria on the skin with resistant ones, and that is where the next wound's bacteria come from. __There is deliberately no antibiotic button:__ the drug is prescribed, arrives on a fixed turn and runs a fixed course, and the only drug decision the player makes is whether to take someone else's antibiotics for a cold. __This chapter is not advice about taking medicine:__ in real life, whether to use an antibiotic, which one and for how long are decisions for a health professional. See [docs/CHAPTER-04.md](docs/CHAPTER-04.md).*
 
 ## 內容｜What is in it
 
@@ -69,7 +69,7 @@ v0.10 是一次完整的產品改版，取代 v0.9 成為之後的開發基線�
 | **第 1 章｜皮膚防線** | 傷口讓細菌進來。巨噬細胞吞不完，於是用發炎求援，嗜中性球從血管趕來。發炎拖太久，連正常組織都受損。 | 吞噬作用；發炎是幫手也有代價；最先大量趕到的是嗜中性球 |
 | **第 2 章｜病毒來了** | 病毒鑽進細胞，巨噬細胞碰不到。偵察兵把情報送到淋巴結，由你在一群 T 細胞裡找出受體吻合的那一個。找得越久，後援越晚到。 | 病毒要進細胞才能複製；株系選擇；毒殺 T 細胞與抗體各管一種任務 |
 | **第 3 章｜捲土重來** | 同一種病毒又來了，這次淋巴結裡有你上次留下的記憶細胞。接著是另一種病毒，你要決定先不先接種疫苗。 | 免疫記憶是專一的；疫苗是在沒有損失的時候先準備 |
-| **第 4 章｜漏網之魚**（候選版本） | 很深的傷口，抗生素一次殺光怕它的細菌，剩下幾隻不怕的要靠巨噬細胞。感冒時室友遞來抗生素，吃或不吃。幾個月後又一道傷口。 | 抗生素對細菌有效、對病毒無效；抗藥性是篩選出來的，不是細菌學會的；變得有抗藥性的是細菌不是人；抗生素也會殺到無害的常在菌 |
+| **第 4 章｜漏網之魚**（候選版本） | 很深的傷口，醫師開的抗生素一次殺光它殺得死的細菌，剩下幾隻要靠巨噬細胞。感冒時室友遞來抗生素，吃或不吃。之後又一道傷口。 | 抗生素對細菌有效、對病毒無效；抗藥性是篩選出來的，不是細菌學會的；變得有抗藥性的是細菌不是人；抗生素也會殺到無害的常在菌 |
 
 *One body, three episodes, about 20–30 minutes for a full run. Each chapter opens with a few half-minute practice stages that add one rule at a time, then the real battle. There is no tutorial video to sit through.*
 
