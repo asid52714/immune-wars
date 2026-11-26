@@ -7,8 +7,8 @@
 
 A free, open-source, turn-based strategy game for learning how the human immune system works. Command immune cells, defend the body, and see for yourself what immunity can do, what it cannot, and what it costs.
 
-這是個人發起的公益科普專案，目前是**早期原型**（Prototype v0.4，兩個關卡）。歡迎試玩，也歡迎指正醫學內容。
-*A personal, non-profit science-education project. This is an **early prototype** (v0.4, two levels). Playtesting and corrections are welcome.*
+這是個人發起的公益科普專案，目前是**早期原型**（Prototype v0.6，三個關卡）。歡迎試玩，也歡迎指正醫學內容。
+*A personal, non-profit science-education project. This is an **early prototype** (v0.6, three levels). Playtesting and corrections are welcome.*
 
 ## 線上遊玩｜Play online
 
@@ -65,15 +65,29 @@ A free, open-source, turn-based strategy game for learning how the human immune 
 
 開戰前有三段動畫教學（合計約兩分鐘，可暫停、重播、跳過）：病毒與細菌有什麼不同、先天免疫如何啟動適應性免疫、抗體與毒殺 T 細胞的分工。
 
-兩個關卡都已由專案維護者親自試玩驗收；尚未做過大規模的外部試玩。
-*Both levels have been playtested and accepted by the maintainer; no large-scale external playtesting has been done yet.*
+### Level 03｜捲土重來——免疫記憶與疫苗 *(Immune memory and vaccination)*
+
+同一種病毒、同一個戰場，打兩次：第一場是身體初次遭遇這種病毒，第二場是感染之前已經接種疫苗、建立了免疫記憶。兩場的戰場、病毒、行動點數與勝敗條件完全相同，差別只在抗體與毒殺 T 細胞多快到場。打完後，遊戲用你這兩場的實際戰況做比較。
+
+- 第一次遇到陌生病原體時，適應性免疫需要時間準備
+- 記憶 B 細胞與記憶 T 細胞：再次遇到相應的抗原時，反應可以較快展開
+- 免疫記憶針對的是特定的抗原
+- 預防性疫苗在遭遇病原體之前先建立免疫準備；建立保護需要時間
+- 接種後仍可能感染，保護程度因疫苗、病原體與個人而不同
+- 自然感染也可能留下免疫記憶，但必須承擔生病及併發症的風險
+
+這一關的教學以「免疫系統的作戰經驗」為故事主軸，設計時以沒有免疫學背景的高中生也能理解為目標：先用故事與生活化的比喻（偵察兵、動員中心、戰前演習），再帶出正式的醫學名詞。開戰前只需要掌握三個核心概念；漿細胞、長壽命漿細胞與抗體反應曲線等較深入的內容，放在規則頁的「進階知識（選讀）」。比喻只是幫助理解，免疫細胞並沒有意識或指揮系統。
+
+第二場是「具有相應免疫記憶」的教學抽象模型，不代表任何特定品牌、種類或劑次的疫苗實際保護效果；個別玩家的戰果也不代表真實疫苗的效力。
+
+三個關卡都已由專案維護者親自試玩驗收；尚未做過大規模的外部試玩，也沒有做過針對學生族群的教育成效研究。
+*All three levels have been playtested and accepted by the maintainer; no large-scale external playtesting or study with students has been done yet.*
 
 ## 未來可能的主題｜Possible future topics
 
 以下是可能的發展方向，**不是發布承諾**：
 *Ideas under consideration — not commitments:*
 
-- 免疫記憶與疫苗 *(immune memory and vaccines)*
 - 抗生素與抗藥性 *(antibiotics and resistance)*
 - 腸道菌叢 *(gut microbiota)*
 - 過敏與自體免疫疾病 *(allergy and autoimmunity)*
@@ -98,9 +112,10 @@ index.html                    主選單｜main menu
 levels/
   01-skin-barrier.html        第一關（單檔、自包含）
   02-viral-infection.html     第二關（單檔、自包含）
+  03-immune-memory.html       第三關（單檔、自包含）
 ```
 
-基本操作：點選免疫細胞 → 點亮起的格子移動或行動 → 按「結束回合」（空白鍵）。每一關開始前都有簡報（第二關為動畫）與規則說明，遊戲中按右上角 `?` 可以重看。
+基本操作：點選免疫細胞 → 點亮起的格子移動或行動 → 按「結束回合」（空白鍵）。每一關開始前都有簡報（第二、三關為動畫）與規則說明，遊戲中按右上角 `?` 可以重看。
 
 ## 科學正確性與醫學聲明｜Scientific accuracy and medical disclaimer
 
@@ -121,6 +136,16 @@ levels/
 - Bouvier NM, Palese P. *The biology of influenza viruses.* Vaccine. 2008. PMCID: PMC3074182.
 - Duan S, Thomas PG. *Balancing Immune Protection and Immune Pathology by CD8+ T-Cell Responses to Influenza Infection.* Front Immunol. 2016. PMCID: PMC4742794.
 - Dumm RE, Fiege JK, Waring BM, Kuo CT, Langlois RA, Heaton NS. *Non-lytic clearance of influenza B virus from infected cells preserves epithelial barrier function.* Nat Commun. 2019;10:779. <https://doi.org/10.1038/s41467-019-08617-z> — 用來支持「真實情況中，部分受感染細胞可能在病毒清除後存活」；這是實驗研究的結果，不能推論到所有人體感染情境。遊戲為了簡化，設定受感染細胞最終都會死亡。
+
+第三關（免疫記憶與疫苗）另外參考：
+
+- World Health Organization. *How do vaccines work?* <https://www.who.int/news-room/feature-stories/detail/how-do-vaccines-work>
+- U.S. Centers for Disease Control and Prevention. *Explaining How Vaccines Work.* <https://www.cdc.gov/vaccines/basics/explaining-how-vaccines-work.html>
+- U.S. Centers for Disease Control and Prevention. *Epidemiology and Prevention of Vaccine-Preventable Diseases (Pink Book)* — Chapter 1: Principles of Vaccination. <https://www.cdc.gov/pinkbook/hcp/table-of-contents/chapter-1-principles-of-vaccination.html>
+- Janeway CA Jr, Travers P, Walport M, et al. *Immunobiology*, 5th ed. (2001) — Immunological memory <https://www.ncbi.nlm.nih.gov/books/NBK27158/>；Principles of innate and adaptive immunity <https://www.ncbi.nlm.nih.gov/books/NBK27090/>. 這是較早的版本，部分數據來自動物實驗；遊戲沒有引用其中的具體數字。
+- OpenStax, *Microbiology* — 18.4 B Lymphocytes and Humoral Immunity；18.5 Vaccines。OpenStax, *Anatomy and Physiology 2e* — 21.3、21.4（T、B 淋巴球與初次／再次免疫反應）。
+- Reinke JG, Schorr C, Lee KP. *Why are long-lived plasma cells long-lived?* Front Immunol. 2026;17:1785563. <https://doi.org/10.3389/fimmu.2026.1785563> — 用來支持進階選讀中「長壽命漿細胞可長期存活並持續分泌抗體，與記憶 B 細胞不同」。
+- Hammarlund E, et al. *Plasma cell survival in the absence of B cell memory.* Nat Commun. 2017;8:1781. <https://doi.org/10.1038/s41467-017-01901-w> — 同上；這是獼猴的實驗研究，不能直接推論到所有人體免疫情境。
 
 若遊戲內容與上述資料或現行醫學共識不一致，以專業資料為準，並請[告訴我們](https://github.com/asid52714/immune-wars/issues)。
 
