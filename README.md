@@ -7,28 +7,43 @@
 
 A free, open-source, turn-based strategy game for learning how the human immune system works.
 
-> **這個分支是實驗性的改版候選版本（Redesign Candidate），不是目前公開的版本。**
-> 公開版本仍是 [v0.9](https://github.com/asid52714/immune-wars/tree/v0.9)，線上遊玩網址 <https://asid52714.github.io/immune-wars/> 也還是 v0.9。這個分支尚未經過維護者驗收，也沒有合併授權。設計理由、測試證據與已知限制見 [docs/REDESIGN.md](docs/REDESIGN.md)。
->
-> *This branch is an experimental redesign candidate, not the published version. The published game is still v0.9. See [docs/REDESIGN.md](docs/REDESIGN.md) for the design rationale, test evidence and known limitations.*
+這是個人發起的公益科普專案，目前是**早期原型**（Prototype v0.10 — One Body, Many Battles：三章連成同一個身體的經歷，繁體中文與英文雙語，電腦與手機瀏覽器都能玩）。歡迎試玩，也歡迎指正醫學內容與英文用語。
+*A personal, non-profit science-education project. This is an **early prototype** (v0.10 — One Body, Many Battles: three chapters that form one body's story, in Traditional Chinese and English, on desktop and phone browsers). Playtesting and corrections, including to the English, are welcome.*
 
-## 怎麼試玩這個候選版本｜How to play this candidate
+## 線上遊玩｜Play online
 
-候選版本沒有部署到線上。下載這個分支後，用瀏覽器打開 `index.html` 就能玩，不需要安裝任何東西，也不需要網路。
+**[免費開始遊玩｜Play for free](https://asid52714.github.io/immune-wars/)**
+
+不需要安裝任何軟體，也不需要註冊帳號。用電腦瀏覽器（滑鼠）或手機瀏覽器（觸控）即可開始。
+*No installation or account required. Open the game in a desktop or phone browser and start playing.*
+
+也可以下載後離線玩：用瀏覽器直接打開 `index.html` 即可，不需要網路。
 
 ```bash
-git clone -b experiment/autonomous-redesign https://github.com/asid52714/immune-wars.git
+git clone https://github.com/asid52714/immune-wars.git
 cd immune-wars
 open index.html            # macOS；其他系統直接用瀏覽器開啟這個檔案
 ```
 
-要用手機試玩，可以在同一個區域網路裡起一個臨時的靜態伺服器，再用手機瀏覽器開啟電腦的 IP：
+*To play offline, clone the repository and open `index.html` in a browser.*
 
-```bash
-python3 -m http.server 8080      # 然後在手機開 http://<電腦的 IP>:8080/
-```
+## v0.10 是什麼｜About v0.10
 
-*The candidate is not deployed. Clone this branch and open `index.html` in a browser; nothing to install and no network needed. To try it on a phone, serve the folder on your local network with `python3 -m http.server 8080`.*
+v0.10 是一次完整的產品改版，取代 v0.9 成為之後的開發基線。v0.9 的三個關卡是三個互不相干的網頁，每一關先看教學動畫再開打。v0.10 把它們改成同一個身體的三段經歷：規則用小練習帶出來，適應性免疫由玩家在淋巴結親手完成，打過的病毒會留在記憶冊裡。設計理由、平衡數字、測試證據與自我批判見 [docs/REDESIGN.md](docs/REDESIGN.md)。舊版仍可從 [v0.9 標籤](https://github.com/asid52714/immune-wars/tree/v0.9)取得。
+
+這個版本驗證過什麼、沒驗證過什麼，如實列在這裡：
+
+- **維護者人工驗收：5 項全部通過。** 維護者親自玩完整個版本，逐項回答：比 v0.9 更好玩、更容易理解免疫系統、更有意願繼續玩下一章、更喜歡新的美術與操作、願意以它取代 v0.9。這是一個人的試玩判斷，不是外部玩家測試。
+- **獨立原始碼審查。** 發布前另由 ChatGPT 讀取原始碼、設計報告與版本差異，指出三個問題（重玩第 2 章時錯誤顯示「記憶冊新增」、接種與未接種的紀錄互相覆蓋、網址上的語言參數會蓋掉之後的語言選擇），都已確認並修正。
+- **自動化測試**在電腦上用 Chromium 與 WebKit 兩種瀏覽器引擎跑完三章的完整流程、觸控操作與多種螢幕尺寸。**這不等於實機驗證**：iPhone、Android 實機與 Firefox 都沒有逐一測過。
+- **英文尚未經英語母語人士審查。**
+- **醫學內容**由 AI 輔助對照公開教材查核，**尚未經正式的醫學專業審查**。
+- **沒有做過教育成效研究。** 「比較容易理解」是維護者的試玩感受，不是研究結論。
+- 聲音、螢幕閱讀器與純鍵盤操作沒有驗證過；其他已知限制列在 [docs/REDESIGN.md](docs/REDESIGN.md)。
+
+沒有驗證過的裝置與上面這些限制，會依玩家在 [Issues](https://github.com/asid52714/immune-wars/issues) 回報的實際情況改善。遇到問題時，歡迎附上機型與瀏覽器回報。
+
+*__About v0.10:__ a full redesign that replaces v0.9 as the baseline. The maintainer playtested the whole version and accepted it on all five checks (more fun, easier to understand, more inclined to keep playing, preferred art and controls, willing to replace v0.9); that is one person's judgment, not an external playtest. An independent source review before release found three issues, all confirmed and fixed. Automated tests ran the full three-chapter flow in Chromium and WebKit on a desktop computer, which is not the same as testing on real phones. The English has not been reviewed by a native speaker; the medical content was checked against open textbooks with AI assistance and has **not** had a formal expert review; there has been no study of learning outcomes. Unverified devices and other known limitations will be improved based on real feedback in [Issues](https://github.com/asid52714/immune-wars/issues).*
 
 進度與記憶冊只存在這台裝置的瀏覽器（localStorage），不使用帳號、Cookie 或任何連線。主選單有「清除進度」。
 
@@ -71,7 +86,7 @@ js/mode-skin.js       第 1 章的畫面、操作與練習關卡
 js/mode-airway.js     第 2、3 章的畫面、操作、練習關卡與流程
 js/app.js             主選單、記憶冊、圖鑑、說明頁與頁面切換
 levels/*.html         舊版關卡網址的轉址頁
-docs/REDESIGN.md      改版說明、測試結果、畫面與已知限制
+docs/REDESIGN.md      v0.10 改版的設計報告：理由、測試結果、畫面與已知限制
 ```
 
 全部用傳統 `<script>` 標籤載入，沒有建置步驟。
@@ -108,7 +123,7 @@ v0.7 新增的教學文字（發炎的紅腫熱痛、肥大細胞與組織胺、
 - Reinke JG, Schorr C, Lee KP. *Why are long-lived plasma cells long-lived?* Front Immunol. 2026;17:1785563. <https://doi.org/10.3389/fimmu.2026.1785563> — 用來支持進階選讀中「長壽命漿細胞可長期存活並持續分泌抗體，與記憶 B 細胞不同」。
 - Hammarlund E, et al. *Plasma cell survival in the absence of B cell memory.* Nat Commun. 2017;8:1781. <https://doi.org/10.1038/s41467-017-01901-w> — 同上；這是獼猴的實驗研究，不能直接推論到所有人體免疫情境。
 
-改版候選版本新增或改寫的敘述（嗜中性球與膿、白血球的細胞核形態、株系選擇、初始 T 細胞的稀有程度、T 細胞在淋巴結內掃描樹突細胞、先天免疫與訓練免疫的差別、疫苗與免疫記憶的專一性）另外對照：
+v0.10 新增或改寫的敘述（嗜中性球與膿、白血球的細胞核形態、株系選擇、初始 T 細胞的稀有程度、T 細胞在淋巴結內掃描樹突細胞、先天免疫與訓練免疫的差別、疫苗與免疫記憶的專一性）另外對照：
 
 - OpenStax, *Anatomy and Physiology 2e* — 18.4 Leukocytes and Platelets；21.2；21.3；21.4。OpenStax, *Microbiology* — 6.2；17.3；17.5；18.1；18.5。OpenStax, *Biology 2e* — 42.1；42.2。
 - Netea MG, et al. *Defining trained immunity and its role in health and disease.* Nat Rev Immunol. 2020. PMCID: PMC7186935 — 用來支持「先天免疫不形成 T、B 細胞那種專一的長期記憶，但有較短、較不專一的訓練免疫」。
@@ -141,7 +156,7 @@ v0.7 新增的教學文字（發炎的紅腫熱痛、肥大細胞與組織胺、
 
 ## 關於開發方式｜How this project is built
 
-本專案由個人發起及維護，結合人類的產品設計、遊戲試玩、知識審查與 AI 輔助軟體開發。v0.9 以前的程式碼主要由 AI 協作工具（ChatGPT 與 Claude Code）依維護者的設計與回饋產出。這個改版候選版本則是維護者授權 Claude Code 自主設計與實作的實驗；維護者負責產品方向、遊戲體驗驗收及發布決策。
+本專案由個人發起及維護，結合人類的產品設計、遊戲試玩、知識審查與 AI 輔助軟體開發。v0.9 以前的程式碼主要由 AI 協作工具（ChatGPT 與 Claude Code）依維護者的設計與回饋產出。v0.10 的產品設計與主要實作，則是維護者授權 Claude Code 自主完成、再由維護者試玩驗收與 ChatGPT 獨立審查後發布的；維護者負責產品方向、遊戲體驗驗收及發布決策。
 
 *A personal project combining human product design, playtesting, and content review with AI-assisted software development. Most of the code was produced with AI tools (ChatGPT and Claude Code) under the maintainer's direction; the maintainer is responsible for product direction, acceptance of the gameplay, and release decisions.*
 

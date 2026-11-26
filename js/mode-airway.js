@@ -230,6 +230,8 @@
   };
 
   /* ---------------- 結算 ---------------- */
+  const varKey = G => G.scn.vax ? 'varVax' : G.mem ? 'varMem' : 'varNo';
+  { const h = IW.save.hist; if (h.variant) { const k = h.variant.vax ? 'varVax' : h.variant.mem ? 'varMem' : 'varNo'; if (!h[k]) h[k] = h.variant; delete h.variant; } }   // 候選版本的舊欄位（單一筆）搬到新欄位
   const rec = G => ({ turn: G.turn, hp: Math.round(AW.health(G) * 100), delay: G.delay || 0, secs: G.ln ? +G.ln.secs.toFixed(1) : null, mem: !!G.mem, ag: G.ag, win: !!(G.result && G.result.win) });
   M.summary = function (G, st) {
     const r = G.result, hp = Math.round(AW.health(G) * 100), stars = hp >= 60 ? 3 : hp >= 35 ? 2 : 1, key = G.scn.key, h = IW.save.hist;
@@ -237,12 +239,13 @@
       : tx(`第 ${G.ag} 回合取得情報。淋巴結花了 <b>${G.ln.secs.toFixed(1)} 秒</b>找到吻合的 T 細胞，後援 <b>${G.delay} 回合後</b>抵達。`, `Intel collected on turn ${G.ag}. The lymph node took <b>${G.ln.secs.toFixed(1)} s</b> to find the matching T cell, and backup arrived <b>${G.delay} turn${G.delay > 1 ? 's' : ''} later</b>.`)
       + (G.mem ? tx('這次有記憶細胞，所以幾乎不用找。', ' With memory cells present, there was hardly any searching to do.') : tx('第一次遇到這種病毒，要從一大群 T 細胞裡把認得它的那一個找出來，所以慢。', ' On a first encounter the one T cell that recognizes the virus has to be found among many, which is why it is slow.'));
     let extra = '';
-    if (r.win && key === 'first') extra = `<p class="note">${tx('記憶冊新增：<b>病毒 甲</b>。一部分複製出來的 T、B 細胞留了下來，成為記憶細胞。下次它再來，淋巴結不必從頭找。', 'Added to your memory album: <b>Virus A</b>. Some of the copied T and B cells stayed behind as memory cells. Next time it comes, the lymph node will not have to search from scratch.')}</p>`;
+    if (r.win && key === 'first' && !G.mem) extra = `<p class="note">${tx('記憶冊新增：<b>病毒 甲</b>。一部分複製出來的 T、B 細胞留了下來，成為記憶細胞。下次它再來，淋巴結不必從頭找。', 'Added to your memory album: <b>Virus A</b>. Some of the copied T and B cells stayed behind as memory cells. Next time it comes, the lymph node will not have to search from scratch.')}</p>`;
+    if (r.win && key === 'first' && G.mem) extra = `<p class="note">${tx('這個身體已經記得「病毒 甲」，所以這一場不是初次遭遇，記憶冊也沒有變動。想重新體驗第一次，可以在主選單清除進度。', 'This body already remembers Virus A, so this was not a first encounter and your memory album is unchanged. To feel the first time again, reset your progress from the menu.')}</p>`;
     if (key !== 'first') {
-      const rows = [['first', tx('第 2 章：第一次遇到 甲', 'Ch. 2: first time, Virus A')], ['again', tx('甲 再來（有記憶）', 'Virus A again (memory)')], ['variant', h.variant && h.variant.vax ? tx('乙（已接種疫苗）', 'Virus B (vaccinated)') : tx('乙（沒有接種）', 'Virus B (not vaccinated)')]].filter(x => h[x[0]]);
+      const rows = [['first', tx('第 2 章：第一次遇到 甲', 'Ch. 2: first time, Virus A')], ['again', tx('甲 再來（有記憶）', 'Virus A again (memory)')], ['varNo', tx('乙（沒有接種）', 'Virus B (not vaccinated)')], ['varVax', tx('乙（已接種疫苗）', 'Virus B (vaccinated)')], ['varMem', tx('乙 再來（得過，有記憶）', 'Virus B again (had it; memory)')]].filter(x => h[x[0]]);
       if (rows.length > 1) extra = `<table><tr><th>${tx('你的紀錄', 'Your record')}</th><th>${tx('找到 T 細胞', 'Time to match')}</th><th>${tx('後援', 'Backup')}</th><th>${tx('組織健康', 'Tissue')}</th></tr>${rows.map(([k, n]) => { const x = h[k]; return `<tr><td>${n}</td><td>${x.secs === null ? '—' : x.secs + tx(' 秒', ' s')}</td><td>${x.delay ? x.delay + tx(' 回合', x.delay > 1 ? ' turns' : ' turn') : '—'}</td><td>${x.win ? x.hp + '%' : tx('失守', 'lost')}</td></tr>`; }).join('')}</table>
         <p class="note">${tx('這是你自己打出來的數字，不是預設的結果。差別不全來自免疫記憶：戰場不同、你也更熟練了。', 'These are your own numbers, not preset results. Not all of the difference comes from immune memory: the battlefields differ, and you have had more practice.')}</p>`;
-      if (r.win && key === 'variant') extra += `<p class="note">${h.variant && h.variant.vax ? tx('疫苗讓身體在前線沒有損失的時候，先把「找出認得它的細胞」這件事做完。', 'A vaccine lets the body finish finding the cells that recognize a virus in advance, while nothing at the front is being lost.') : tx('你沒有接種就打贏了。可以回到選擇點，改成先接種，比較看看差多少。', 'You won without the vaccine. You can go back to the choice and vaccinate first to see how much it changes.')}</p>`;
+      if (r.win && key === 'variant') extra += `<p class="note">${G.scn.vax ? tx('疫苗讓身體在前線沒有損失的時候，先把「找出認得它的細胞」這件事做完。', 'A vaccine lets the body finish finding the cells that recognize a virus in advance, while nothing at the front is being lost.') : G.mem ? tx('這個身體已經得過「病毒 乙」，所以這一場有記憶細胞幫忙。', 'This body has already had Virus B, so memory cells helped this time.') : tx('你沒有接種就打贏了。可以回到選擇點，改成先接種：兩種情況的紀錄會並排在上面的表格裡。', 'You won without the vaccine. You can go back to the choice and vaccinate first: both records will sit side by side in the table above.')}</p>`;
     }
     return { stars, hp, kicker: r.win ? tx(`${VN(G.scn.virus)}｜第 ${G.turn} 回合清除`, `${VN(G.scn.virus)} | cleared on turn ${G.turn}`) : tx('防線失守', 'The defense has fallen'),
       title: r.win ? tx('病毒清除', 'Virus cleared') : r.why === 'tissue' ? tx('組織損傷過重', 'Too much tissue damage') : tx('感染仍未清除', 'Infection still not cleared'),
@@ -276,7 +279,7 @@
         guide: G => { if (G.ap === 0 || acts) return ''; return tx('灰紫色的是被感染的細胞，箭頭是它接下來釋放病毒的落點。先點一個巨噬細胞，吞掉細胞外的病毒。', 'The grey-violet cell is infected; arrows show where it will release viruses next. Select a macrophage and engulf the viruses outside cells.'); } },
       { kind: 'practice', seed: 5, cfg: { TURNS: 10, BUDGET: 14 }, preset: { units: [['mac', 20], ['dc', 22]], inf: { 8: 1, 10: 1 }, vir: { 9: 1, 14: 1 } },
         goal: ['練習 2：讓偵察兵把情報送到淋巴結', 'Practice 2: get the scout’s intel to the lymph node'], won: ['專門對付它的後援', 'Backup made for this one virus'],
-        say: ['偵察兵（樹突細胞）帶著病毒的特徵到淋巴結，從一大群 T 細胞裡找出認得它的那一個。被選中的細胞大量複製，成為「毒殺 T 細胞」，回到戰場讓受感染的細胞自我了斷。這一套叫適應性免疫：慢，但是專一。', 'The scout (a dendritic cell) carries the virus’s features to the lymph node, where the one T cell that recognizes them is found among many. That cell multiplies into cytotoxic T cells, which return to the field and make infected cells self-destruct. This is adaptive immunity: slow, but specific.'],
+        say: G => (G.mem ? tx('（你的身體已經記得這種病毒，所以這次幾乎不用找。第一次遇到時會慢得多。）', '(Your body already remembers this virus, so there was hardly any searching this time. A first encounter is much slower.) ') : '') + pick(['偵察兵（樹突細胞）帶著病毒的特徵到淋巴結，從一大群 T 細胞裡找出認得它的那一個。被選中的細胞大量複製，成為「毒殺 T 細胞」，回到戰場讓受感染的細胞自我了斷。這一套叫適應性免疫：慢，但是專一。', 'The scout (a dendritic cell) carries the virus’s features to the lymph node, where the one T cell that recognizes them is found among many. That cell multiplies into cytotoxic T cells, which return to the field and make infected cells self-destruct. This is adaptive immunity: slow, but specific.']),
         next: ['還有一種工具 ▸', 'There is one more tool ▸'], lost: ['先點偵察兵（琥珀色、有突起的細胞），讓它走到受感染的細胞旁邊，點標著「取樣」的格子。越早越好。', 'Select the scout (the amber cell with arms), move it next to an infected cell, and tap a tile marked “Sample”. The sooner the better.'],
         guide: G => { const u = selU(G); if (G.ap === 0) return ''; if (!G.ag && !(u && u.kind === 'dc')) return tx('巨噬細胞碰不到細胞裡的病毒。點選偵察兵（琥珀色、有突起的細胞）。', 'Macrophages cannot reach viruses inside cells. Select the scout (the amber cell with arms).'); if (G.ag && G.turn < G.tAt && !acts) return tx('後援在路上。先用巨噬細胞吞掉細胞外的病毒，撐到 T 細胞抵達。', 'Backup is on the way. Use the macrophage to engulf free viruses and hold on until the T cells arrive.'); return ''; } },
       { kind: 'practice', seed: 7, cfg: { TURNS: 5, BUDGET: 10 }, preset: { units: [['mac', 26]], inf: { 8: 2, 10: 3 }, vir: { 13: 2, 14: 1, 19: 2, 16: 1, 17: 2, 22: 1 }, ready: { t: 1, ab: -1 } },
@@ -285,7 +288,7 @@
         next: ['開始正式戰鬥 ▸', 'Start the real battle ▸'], lost: ['按「抗體」再點病毒聚集的地方；按「毒殺 T 細胞」再點灰紫色的細胞。', 'Press “Antibodies” and tap where viruses cluster; press “T cells” and tap a grey-violet cell.'],
         guide: G => { if (G.ap === 0 || aim) return ''; return AW.nVir(G) && G.ab ? tx('按下方的「抗體」，再點病毒最密的地方：一次中和一整片。', 'Press “Antibodies” below, then tap where the viruses are densest: one use clears a whole area.') : AW.nInf(G) && G.ctl ? tx('按「毒殺 T 細胞」，再點受感染的細胞。', 'Press “T cells”, then tap an infected cell.') : ''; } },
       { kind: 'battle', cfg: {}, scn: { virus: 'A', key: 'first' } }],
-    onBattleEnd(G, s) { const c = IW.save.ch.airway = IW.save.ch.airway || {}; c.plays = (c.plays || 0) + 1; unlock(); if (G.result.win) { c.done = true; c.stars = Math.max(c.stars || 0, s.stars); if (!IW.save.mem.A) IW.save.mem.A = { from: 'infection' }; if (!IW.save.hist.first || !IW.save.hist.first.win) IW.save.hist.first = rec(G); IW.sfx('card'); } IW.store(); },
+    onBattleEnd(G, s) { const c = IW.save.ch.airway = IW.save.ch.airway || {}; c.plays = (c.plays || 0) + 1; unlock(); if (G.result.win) { c.done = true; c.stars = Math.max(c.stars || 0, s.stars); if (!IW.save.mem.A) IW.save.mem.A = { from: 'infection' }; if (!G.mem && (!IW.save.hist.first || !IW.save.hist.first.win)) IW.save.hist.first = rec(G); /* 基準紀錄只收「沒有記憶」的那一場 */ IW.sfx('card'); } IW.store(); },
     endButtons(G) {
       return G.result.win ? [{ label: tx('第 3 章：它又來了 ▸', 'Chapter 3: It comes back ▸'), pri: 1, fn: () => { location.hash = '#return'; } }, { label: tx('再玩一局', 'New battle'), sm: 1, fn: () => B.go(B.stage) }, menuBtn()]
         : [{ label: tx('再試一次（同一戰場）', 'Try again (same battle)'), pri: 1, fn: () => B.go(B.stage, G.seed) }, { label: tx('換一個戰場', 'New battle'), sm: 1, fn: () => B.go(B.stage) }, { label: tx('重玩練習', 'Replay practice'), sm: 1, fn: () => B.go(0) }, menuBtn()];
@@ -315,7 +318,7 @@
         } }],
     onBattleEnd(G, s, st) {
       const c = IW.save.ch.return = IW.save.ch.return || {}, k = G.scn.key; unlock(); IW.save.codex.vaccine = 1;
-      IW.save.hist[k] = Object.assign(rec(G), { vax: !!G.scn.vax });
+      IW.save.hist[k === 'variant' ? varKey(G) : k] = Object.assign(rec(G), { vax: !!G.scn.vax });
       if (G.result.win) { if (k === 'again') c.again = true; else { c.done = true; c.stars = Math.max(c.stars || 0, s.stars); if (!IW.save.mem.B) IW.save.mem.B = { from: 'infection' }; } }
       IW.store();
     },

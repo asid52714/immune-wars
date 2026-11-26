@@ -28,6 +28,7 @@ window.IW = window.IW || {};
   IW.onLang = f => langSubs.push(f);
   IW.setLang = l => {
     l = norm(l); if (!l || l === LANG) return; LANG = l; save.lang = l; IW.store();
+    try { const u = new URL(location.href); if (u.searchParams.has('lang')) { u.searchParams.set('lang', l); history.replaceState(null, '', u); } } catch (e) { /* 換不了網址也照樣切換 */ }
     document.documentElement.lang = l === 'en' ? 'en' : 'zh-Hant-TW';
     for (const f of langSubs) try { f(); } catch (e) { console.error(e); }
   };
