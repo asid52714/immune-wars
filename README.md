@@ -7,8 +7,8 @@
 
 A free, open-source, turn-based strategy game for learning how the human immune system works. Command immune cells, defend the body, and see for yourself what immunity can do, what it cannot, and what it costs.
 
-這是個人發起的公益科普專案，目前是**早期原型**（Prototype v0.7，三個關卡，可以一關接一關連續遊玩）。歡迎試玩，也歡迎指正醫學內容。
-*A personal, non-profit science-education project. This is an **early prototype** (v0.7, three levels that can be played back to back). Playtesting and corrections are welcome.*
+這是個人發起的公益科普專案，目前是**早期原型**（三個關卡，可以一關接一關連續遊玩）。網站目前提供的是 **v0.8 手機公開測試版**；最近一次由維護者正式驗收的版本是 v0.7。歡迎試玩，也歡迎指正醫學內容。
+*A personal, non-profit science-education project. This is an **early prototype** (three levels that can be played back to back). The site currently serves the **v0.8 mobile public preview**; v0.7 is the most recent version formally accepted by the maintainer. Playtesting and corrections are welcome.*
 
 ## 線上遊玩｜Play online
 
@@ -17,8 +17,10 @@ A free, open-source, turn-based strategy game for learning how the human immune 
 不需要安裝任何軟體，也不需要註冊帳號。使用電腦瀏覽器及滑鼠即可開始遊戲。
 *No installation or account required. Open the game in a desktop browser and start playing.*
 
-目前遊戲介面為繁體中文，尚未提供手機版。
-*The game text is currently in Traditional Chinese only; there is no mobile version yet.*
+目前遊戲介面為繁體中文。
+
+**手機公開測試版（v0.8 Public Preview）**：v0.8 調整了手機瀏覽器上的版面與觸控操作，三個關卡的規則與內容和 v0.7 相同。這一版只在電腦上用瀏覽器的手機模擬測試過：Android Chrome 的實機驗收尚未完成，iOS Safari 尚未驗證，所以手機上可能還有問題；電腦上的玩法維持 v0.7 的樣子。在手機上遇到問題，歡迎到 Issues 回報。
+*The game text is currently in Traditional Chinese only. **Mobile public preview (v0.8):** layout and touch controls were adjusted for phone browsers; the rules and content of the three levels are unchanged from v0.7. So far this has only been tested with desktop browser emulation: real-device acceptance on Android Chrome is not finished, and iOS Safari has not been verified. Desktop play is the same as v0.7.*
 
 ## 這個專案想做什麼｜Goals
 
