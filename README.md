@@ -7,20 +7,28 @@
 
 A free, open-source, turn-based strategy game for learning how the human immune system works. Command immune cells, defend the body, and see for yourself what immunity can do, what it cannot, and what it costs.
 
-這是個人發起的公益科普專案，目前是**早期原型**（三個關卡，可以一關接一關連續遊玩）。網站目前提供的是 **v0.8 手機公開測試版**；最近一次由維護者正式驗收的版本是 v0.7。歡迎試玩，也歡迎指正醫學內容。
-*A personal, non-profit science-education project. This is an **early prototype** (three levels that can be played back to back). The site currently serves the **v0.8 mobile public preview**; v0.7 is the most recent version formally accepted by the maintainer. Playtesting and corrections are welcome.*
+這是個人發起的公益科普專案，目前是**早期原型**（Prototype v0.8，三個關卡，可以一關接一關連續遊玩，電腦與手機瀏覽器都能玩）。歡迎試玩，也歡迎指正醫學內容。
+*A personal, non-profit science-education project. This is an **early prototype** (v0.8, three levels that can be played back to back, on desktop and phone browsers). Playtesting and corrections are welcome.*
 
 ## 線上遊玩｜Play online
 
 **[免費開始遊玩｜Play for free](https://asid52714.github.io/immune-wars/)**
 
-不需要安裝任何軟體，也不需要註冊帳號。使用電腦瀏覽器及滑鼠即可開始遊戲。
-*No installation or account required. Open the game in a desktop browser and start playing.*
+不需要安裝任何軟體，也不需要註冊帳號。用電腦瀏覽器（滑鼠）或手機瀏覽器（觸控）即可開始遊戲。
+*No installation or account required. Open the game in a desktop or phone browser and start playing.*
 
 目前遊戲介面為繁體中文。
 
-**手機公開測試版（v0.8 Public Preview）**：v0.8 調整了手機瀏覽器上的版面與觸控操作，三個關卡的規則與內容和 v0.7 相同。這一版只在電腦上用瀏覽器的手機模擬測試過：Android Chrome 的實機驗收尚未完成，iOS Safari 尚未驗證，所以手機上可能還有問題；電腦上的玩法維持 v0.7 的樣子。在手機上遇到問題，歡迎到 Issues 回報。
-*The game text is currently in Traditional Chinese only. **Mobile public preview (v0.8):** layout and touch controls were adjusted for phone browsers; the rules and content of the three levels are unchanged from v0.7. So far this has only been tested with desktop browser emulation: real-device acceptance on Android Chrome is not finished, and iOS Safari has not been verified. Desktop play is the same as v0.7.*
+**手機支援（v0.8 起）**：v0.8 調整了手機瀏覽器上的版面與觸控操作（直向、橫向都能玩），三個關卡的規則與內容和 v0.7 相同，電腦上的玩法也沒有改變。目前驗證過的範圍有限，如實說明如下：
+
+- 維護者用 iPhone 15 Pro Max 實際試玩，整體評價可以正常遊玩；沒有逐一記錄使用的瀏覽器，也沒有分別驗收直向與橫向。
+- Android 實機沒有測過。
+- 在電腦上用 Chromium 的手機模擬（三種螢幕尺寸，含直橫向旋轉）做過自動化操作檢查，282 項全部通過；電腦版回歸檢查 38 項全部通過。模擬不等於實機。
+- 開發時在模擬環境偶爾看到戰場畫面突然縮小、擠在左上角，已加上自動復原的處理，但根本原因沒有確認。
+
+其他手機與瀏覽器的相容性，會依玩家在 [Issues](https://github.com/asid52714/immune-wars/issues) 回報的實際情況改善；如果在你的手機上遇到問題，歡迎附上機型與瀏覽器回報。
+
+*The game text is currently in Traditional Chinese only. **Phone support (since v0.8):** layout and touch controls were adapted for phone browsers in portrait and landscape; level rules and content are unchanged from v0.7, and so is desktop play. Verified scope is limited: the maintainer playtested on an iPhone 15 Pro Max (the browser and each orientation were not separately recorded); no Android device has been tested; Chromium phone emulation passed 282/282 automated checks and the desktop regression passed 38/38. A rare canvas glitch seen in emulation (the battlefield shrinking into the top-left corner) has a workaround, but its root cause is unknown. Other devices will be improved based on reports in Issues.*
 
 ## 這個專案想做什麼｜Goals
 
