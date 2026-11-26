@@ -47,6 +47,7 @@
     if (!S || S.phase !== 'search' || S.check) return false; const c = S.cells.find(c => c.id === id); if (!c) return false;
     const ok = same(c.code, S.target); S.check = { c, ok, t: 0, bad: ok ? -1 : c.code.findIndex((v, i) => v !== S.target[i]) }; IW.sfx('select'); return ok;
   };
+  L.abort = function () { cancelAnimationFrame(raf); if (host) { host.classList.remove('on'); host.innerHTML = ''; } S = null; };   // 離開戰場時中止：不回傳結果
   Object.defineProperty(L, 'S', { get: () => S });
   function say(c) { capNow = c; IW.$('lnCap').innerHTML = pick(c); }
   function btns(b) { btnNow = b; IW.$('lnBtns').innerHTML = b.map((x, i) => `<button class="pill${x.pri ? ' pri' : ''}" data-i="${i}">${pick(x.t)}</button>`).join(''); IW.$('lnBtns').querySelectorAll('button').forEach(e => e.onclick = () => btnNow[+e.dataset.i].f()); }

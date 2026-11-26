@@ -49,7 +49,7 @@
     last = 0; raf = requestAnimationFrame(loop);
   };
   B.close = function () {
-    if (!root) return; cancelAnimationFrame(raf); removeEventListener('resize', fit); removeEventListener('keydown', onKey); removeEventListener('pointerdown', onDown, true);
+    if (!root) return; cancelAnimationFrame(raf); if (IW.lymph) IW.lymph.abort(); removeEventListener('resize', fit); removeEventListener('keydown', onKey); removeEventListener('pointerdown', onDown, true);
     if (B._ro) B._ro.disconnect(); root.remove(); root = null; G = null; cardView = null; IW.setBeat(0); B.busy = false;
   };
   function onKey(e) {
@@ -69,7 +69,7 @@
     if (!root) return; const f = $('field').getBoundingClientRect(); if (!f.width || !f.height) return;
     const k = Math.min(f.width / W, f.height / H), dpr = Math.min(2.5, window.devicePixelRatio || 1);
     cv.style.width = Math.floor(W * k) + 'px'; cv.style.height = Math.floor(H * k) + 'px';
-    cv.width = Math.round(W * k * dpr); cv.height = Math.round(H * k * dpr);
+    cv.width = Math.round(W * k * dpr); cv.height = Math.round(H * k * dpr); narrowV = getComputedStyle($('info')).display === 'none';
   }
   function tileAt(e) {
     if (!G) return -1; const b = cv.getBoundingClientRect(), x = (e.clientX - b.left) * W / b.width, y = (e.clientY - b.top) * H / b.height;
@@ -151,7 +151,7 @@
     if (force) hq.unshift({ key, text }); else hq.push({ key, text });
     if (hq.length > 4) hq.length = 4; return true;
   };
-  const narrow = () => getComputedStyle($('info')).display === 'none';   // 手機直向：格子說明併入提示框
+  let narrowV = false; const narrow = () => narrowV;   // 手機直向：格子說明併入提示框
   function hintTick() {
     if (!G) return; const now = performance.now();
     if (hCur && (now > hEnd || (hq.length && now > hMin))) hCur = null;

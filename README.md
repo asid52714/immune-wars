@@ -1,161 +1,84 @@
 # 免疫系統大作戰｜Immune Wars
 
-**在遊戲中探索人體看不見的防禦戰爭。**
-*Discover the invisible battles inside the human body.*
+**帶領免疫細胞守住同一個身體。打過的仗，它會記得。**
+*Lead the immune cells that defend one body. What it has fought, it remembers.*
 
-免費、開源的醫學科普回合制策略遊戲。你指揮免疫細胞守住人體，在一場場防禦戰裡看懂免疫系統怎麼運作——它能做什麼、做不到什麼、又會付出什麼代價。
+免費、開源的醫學科普回合制策略遊戲。你指揮免疫細胞守住人體，在一場場防禦戰裡看懂免疫系統怎麼運作：它能做什麼、做不到什麼、又會付出什麼代價。
 
-A free, open-source, turn-based strategy game for learning how the human immune system works. Command immune cells, defend the body, and see for yourself what immunity can do, what it cannot, and what it costs.
+A free, open-source, turn-based strategy game for learning how the human immune system works.
 
-這是個人發起的公益科普專案，目前是**早期原型**（Prototype v0.9，三個關卡，可以一關接一關連續遊玩，繁體中文與英文雙語，電腦與手機瀏覽器都能玩）。歡迎試玩，也歡迎指正醫學內容與英文用語。
-*A personal, non-profit science-education project. This is an **early prototype** (v0.9: three levels that can be played back to back, in Traditional Chinese and English, on desktop and phone browsers). Playtesting and corrections — including to the English — are welcome.*
+> **這個分支是實驗性的改版候選版本（Redesign Candidate），不是目前公開的版本。**
+> 公開版本仍是 [v0.9](https://github.com/asid52714/immune-wars/tree/v0.9)，線上遊玩網址 <https://asid52714.github.io/immune-wars/> 也還是 v0.9。這個分支尚未經過維護者驗收，也沒有合併授權。設計理由、測試證據與已知限制見 [docs/REDESIGN.md](docs/REDESIGN.md)。
+>
+> *This branch is an experimental redesign candidate, not the published version. The published game is still v0.9. See [docs/REDESIGN.md](docs/REDESIGN.md) for the design rationale, test evidence and known limitations.*
 
-## 線上遊玩｜Play online
+## 怎麼試玩這個候選版本｜How to play this candidate
 
-**[免費開始遊玩｜Play for free](https://asid52714.github.io/immune-wars/)**
+候選版本沒有部署到線上。下載這個分支後，用瀏覽器打開 `index.html` 就能玩，不需要安裝任何東西，也不需要網路。
 
-不需要安裝任何軟體，也不需要註冊帳號。用電腦瀏覽器（滑鼠）或手機瀏覽器（觸控）即可開始遊戲。
-*No installation or account required. Open the game in a desktop or phone browser and start playing.*
+```bash
+git clone -b experiment/autonomous-redesign https://github.com/asid52714/immune-wars.git
+cd immune-wars
+open index.html            # macOS；其他系統直接用瀏覽器開啟這個檔案
+```
 
-**語言（v0.9 起）**：主選單與三個關卡全面支援繁體中文與英文，可以隨時在「繁體中文｜English」之間切換，包含戰前教學動畫、規則與進階選讀、戰鬥中的提示、結算畫面，以及第三關的轉場與比較畫面。
+要用手機試玩，可以在同一個區域網路裡起一個臨時的靜態伺服器，再用手機瀏覽器開啟電腦的 IP：
 
-- 第一次開啟時依瀏覽器語言決定（中文瀏覽器顯示繁體中文，其餘顯示英文）；切換後會記在這台裝置的瀏覽器裡，也可以在網址加上 `?lang=en` 或 `?lang=zh` 指定。不使用帳號或 Cookie。
-- 兩種語言使用完全相同的遊戲規則與數值；三個關卡的規則和 v0.8 相同。
-- 戰鬥中切換語言不會重新開始，也不影響回合、行動點數、戰場與目前的選取；教學動畫會停在原本的步驟。
-- 英文字幕有自己的閱讀時間設定（依英文單字數計算），不是直接套用中文字幕的時間。
-- 維護者以 12 個檢核項目親自試玩驗收：**11 項符合、1 項未評估、沒有不符合的項目**。唯一未評估的是「語言切換按鈕是否容易找到」；切換功能本身已通過自動化檢查。
-- 英文內容**尚未經英語母語人士審查**。英文用語或醫學內容若有不自然、不精確的地方，歡迎到 [Issues](https://github.com/asid52714/immune-wars/issues) 指正。
-- 手機上的英文版通過了維護者的試玩（沒有逐一記錄機型與瀏覽器），自動化檢查只在電腦的 Chromium 手機模擬裡做過；沒有驗證過所有手機型號與瀏覽器。
+```bash
+python3 -m http.server 8080      # 然後在手機開 http://<電腦的 IP>:8080/
+```
 
-*__Languages (since v0.9):__ the main menu and all three levels fully support Traditional Chinese and English, and you can switch at any time — briefing animations, rules and optional reading, in-battle hints, result screens, and Level 3's transition and comparison screens. The first visit follows your browser language (Chinese browsers get Traditional Chinese, all others English); your choice is remembered in the browser on that device, and you can also add `?lang=en` or `?lang=zh` to the address. No account or cookie is used. Both languages use exactly the same rules and numbers, and the level rules are unchanged from v0.8. Switching language during a battle does not restart it or change the turn, action points, battlefield or current selection, and a briefing animation stays on the step it was on. English captions have their own reading-time setting (based on word count) rather than reusing the Chinese timing. The maintainer playtested the bilingual version against a 12-item checklist: __11 items met, 1 not evaluated, none failed__; the one item not evaluated is whether the language switch is easy to find (the switch itself passed automated checks). The English text has __not been reviewed by a native English speaker__; corrections to the English or the medical content are welcome in [Issues](https://github.com/asid52714/immune-wars/issues). On phones, the English version passed the maintainer's playtest (device and browser were not individually recorded) and automated checks were run only in Chromium's phone emulation; not every phone model or browser has been verified.*
+*The candidate is not deployed. Clone this branch and open `index.html` in a browser; nothing to install and no network needed. To try it on a phone, serve the folder on your local network with `python3 -m http.server 8080`.*
 
-**手機支援（v0.8 起）**：v0.8 調整了手機瀏覽器上的版面與觸控操作（直向、橫向都能玩），三個關卡的規則與內容和 v0.7 相同，電腦上的玩法也沒有改變。目前驗證過的範圍有限，如實說明如下：
+進度與記憶冊只存在這台裝置的瀏覽器（localStorage），不使用帳號、Cookie 或任何連線。主選單有「清除進度」。
 
-- 維護者用 iPhone 15 Pro Max 實際試玩，整體評價可以正常遊玩；沒有逐一記錄使用的瀏覽器，也沒有分別驗收直向與橫向。
-- Android 實機沒有測過。
-- 在電腦上用 Chromium 的手機模擬（三種螢幕尺寸，含直橫向旋轉）做過自動化操作檢查，282 項全部通過；電腦版回歸檢查 38 項全部通過。模擬不等於實機。
-- 開發時在模擬環境偶爾看到戰場畫面突然縮小、擠在左上角，已加上自動復原的處理，但根本原因沒有確認。
+## 內容｜What is in it
 
-其他手機與瀏覽器的相容性，會依玩家在 [Issues](https://github.com/asid52714/immune-wars/issues) 回報的實際情況改善；如果在你的手機上遇到問題，歡迎附上機型與瀏覽器回報。
+整個遊戲是同一個身體的三段經歷，大約 20 到 30 分鐘可以玩完一輪。每一章先用幾個半分鐘的小練習帶出規則，一次只多一條，然後才是正式戰鬥。沒有需要先看完的教學影片。
 
-***Phone support (since v0.8):** layout and touch controls were adapted for phone browsers in portrait and landscape; level rules and content are unchanged from v0.7, and so is desktop play. Verified scope is limited: the maintainer playtested on an iPhone 15 Pro Max (the browser and each orientation were not separately recorded); no Android device has been tested; Chromium phone emulation passed 282/282 automated checks and the desktop regression passed 38/38. A rare canvas glitch seen in emulation (the battlefield shrinking into the top-left corner) has a workaround, but its root cause is unknown. Other devices will be improved based on reports in Issues.*
+| | 你會遇到的事 | 玩完會帶走的概念 |
+|---|---|---|
+| **第 1 章｜皮膚防線** | 傷口讓細菌進來。巨噬細胞吞不完，於是用發炎求援，嗜中性球從血管趕來。發炎拖太久，連正常組織都受損。 | 吞噬作用；發炎是幫手也有代價；最先大量趕到的是嗜中性球 |
+| **第 2 章｜病毒來了** | 病毒鑽進細胞，巨噬細胞碰不到。偵察兵把情報送到淋巴結，由你在一群 T 細胞裡找出受體吻合的那一個。找得越久，後援越晚到。 | 病毒要進細胞才能複製；株系選擇；毒殺 T 細胞與抗體各管一種任務 |
+| **第 3 章｜捲土重來** | 同一種病毒又來了，這次淋巴結裡有你上次留下的記憶細胞。接著是另一種病毒，你要決定先不先接種疫苗。 | 免疫記憶是專一的；疫苗是在沒有損失的時候先準備 |
+
+*One body, three episodes, about 20–30 minutes for a full run. Each chapter opens with a few half-minute practice stages that add one rule at a time, then the real battle. There is no tutorial video to sit through.*
+
+**語言**：繁體中文與英文，隨時可以切換，切換不會影響進行中的戰局。英文尚未經英語母語人士審查。
+**裝置**：電腦（滑鼠）與手機（觸控，直向為主，橫向也能玩）。戰場本身是直向的場景：體表在上、血管在下。
 
 ## 這個專案想做什麼｜Goals
 
-- 透過遊戲學習人體免疫系統，認識細菌、病毒等病原體。
-- 用戰術決策的「行為與後果」理解免疫反應的作用與限制，而不是背名詞。
-- 降低醫學與生命科學知識的學習門檻。
-- 鼓勵科學交流與社群協作。
+用「玩」而不是用「讀」，讓沒有醫學背景的人記住幾個免疫學的核心概念。設計上的幾個原則：
 
-*Learn immunology by playing: understand pathogens and immune responses through decisions and their consequences, lower the barrier to medical and life-science knowledge, and invite open scientific discussion.*
+- **規則自己教。** 概念盡量做成玩家會親手遇到的後果，而不是戰前的說明文字。想讀更多的人，可以打開主選單的細胞圖鑑。
+- **娛樂性優先，但不犧牲基礎醫學正確。** 為了好玩而做的簡化，集中列在遊戲裡的「這款遊戲簡化了什麼」。
+- **以台灣高中社會組學生也能理解為目標。** 比喻與正式名詞並列（「偵察兵＝樹突細胞」），語氣不幼兒化。
+- **角色靠輪廓辨認，輪廓取自真實形態。** 配色來自病理切片的 H&E 染色。表情只是幫助辨認的比喻：正在造成感染的細菌與病毒才畫成反派，被感染或受損的細胞是受害者，抗體是蛋白質所以沒有表情。
+- **零安裝、可離線、沒有追蹤。** 純 HTML／CSS／JavaScript，沒有框架、後端、外部函式庫、圖片或音檔；畫面與聲音都由程式即時產生。
 
-### 設計理念｜Design approach
-
-**Story First → Concept Layering → Animated Learning → Strategic Gameplay → Reflective Learning**
-
-1. **先講故事**：先用故事與生活化的比喻（城牆、守衛、偵察兵）讓人看懂發生了什麼事，再帶出正式的醫學名詞。
-2. **知識分層**：開戰前只需要掌握少數核心概念；較深入的機制與名詞放在規則頁的「進階知識（選讀）」。
-3. **動畫建立概念**：每一關開戰前都有三段簡短的故事動畫，可暫停、重播、跳過，遊戲中也能重看。
-4. **策略運用知識**：在回合制戰鬥裡，用剛學到的概念做決定、承擔後果。
-5. **戰後回顧**：結算畫面回顧這一局的決策與結果，並整理重點知識。
-
-**角色視覺化（Character-Based Visual Learning）**：三個關卡的細胞與病原體採用一致的角色造型，用外觀與表情幫助辨認「誰是誰、現在怎麼了」，不只依賴文字或顏色。
-
-- 巨噬細胞是守衛、樹突細胞是偵察兵、毒殺 T 細胞是特勤隊員；健康、受感染、受損的組織細胞有不同的表情。
-- 反派表情只畫在正在造成感染的細菌與病毒上——大多數細菌並不會讓人生病。
-- 受感染的細胞是受害者，不是壞人。
-- 抗原畫成一張「情報卡」（病毒的特徵樣本），不是另一種生物；抗體維持 Y 字形，它是蛋白質，不是細胞。
-- **表情與比喻只是教學用的視覺比喻**：細胞、細菌與病毒沒有情緒或意識，免疫系統也沒有指揮中心。
-
-設計時以沒有免疫學背景的高中生（例如社會組學生）也能理解為基本目標，並希望國小高年級學生也有機會看懂核心故事；後者目前只是設計方向，**還沒有找國小學生試玩驗證**。
-
-*Story first, then terminology; core ideas up front and deeper detail as optional reading; short animated briefings before each battle; turn-based battles that put the ideas to use; and a post-battle review. Cells and pathogens share one consistent character style across levels. Faces and metaphors are teaching devices only — cells and microbes have no feelings or intentions.*
-
-這是本專案採用的設計方法，尚未做過教育成效研究，不代表已證實的學習效果。
-*This is a design approach, not a claim of proven educational effectiveness.*
-
-## 關卡｜Levels
-
-### Level 01｜皮膚防線——傷口入侵 *(Skin barrier: wound infection)*
-
-皮膚破了洞，細菌趁機溜進來。帶領守衛「巨噬細胞」吞掉細菌，並拿捏發炎的力道：太弱擋不住，太強會傷到自己。
-
-- 皮膚是物理屏障，傷口是破口
-- 細菌的增殖與擴散
-- 巨噬細胞的吞噬作用
-- 發炎反應的兩面：協助防禦，也可能損傷組織
-
-開戰前有三段故事動畫（v0.7 起取代原本的靜態圖卡）：傷口與細菌、巨噬細胞、發炎的兩面。嗜中性球、單核球與組織胺等較深入的內容放在「進階知識（選讀）」。
-
-### Level 02｜呼吸道防線——病毒危機 *(Airway defense: viral infection)*
-
-病毒會鑽進呼吸道的細胞，把它變成製造病毒的工廠。守衛（先天免疫）先爭取時間，偵察兵帶回情報，等後援（適應性免疫）到場：抗體處理細胞外的病毒，毒殺 T 細胞處理受感染的細胞。
-
-- 病毒必須依賴宿主細胞才能複製（和細菌的根本差異）
-- 先天免疫與適應性免疫的分工
-- 樹突細胞攝取抗原、前往淋巴結；適應性免疫為什麼需要準備時間
-- B 細胞、漿細胞與抗體中和
-- 細胞毒殺 T 細胞（CD8+）清除受感染細胞，以及隨之而來的組織損失
-
-開戰前有三段故事動畫（可暫停、重播、跳過）：兩種入侵者（細菌與病毒）、偵察兵帶回情報、抗體與毒殺 T 細胞的分工。輔助 T 細胞、共同刺激、漿細胞等較深入的內容放在「進階知識（選讀）」。
-
-### Level 03｜捲土重來——免疫記憶與疫苗 *(Immune memory and vaccination)*
-
-同一種病毒、同一個戰場，打兩次：第一場是身體初次遭遇這種病毒，第二場是感染之前已經接種疫苗、建立了免疫記憶。兩場的戰場、病毒、行動點數與勝敗條件完全相同，差別只在抗體與毒殺 T 細胞多快到場。打完後，遊戲用你這兩場的實際戰況做比較。
-
-- 第一次遇到陌生病原體時，適應性免疫需要時間準備
-- 記憶 B 細胞與記憶 T 細胞：再次遇到相應的抗原時，反應可以較快展開
-- 免疫記憶針對的是特定的抗原
-- 預防性疫苗在遭遇病原體之前先建立免疫準備；建立保護需要時間
-- 接種後仍可能感染，保護程度因疫苗、病原體與個人而不同
-- 自然感染也可能留下免疫記憶，但必須承擔生病及併發症的風險
-
-這一關的教學以「免疫系統的作戰經驗」為故事主軸，設計時以沒有免疫學背景的高中生也能理解為目標：先用故事與生活化的比喻（偵察兵、動員中心、戰前演習），再帶出正式的醫學名詞。開戰前只需要掌握三個核心概念；漿細胞、長壽命漿細胞與抗體反應曲線等較深入的內容，放在規則頁的「進階知識（選讀）」。比喻只是幫助理解，免疫細胞並沒有意識或指揮系統。
-
-第二場是「具有相應免疫記憶」的教學抽象模型，不代表任何特定品牌、種類或劑次的疫苗實際保護效果；個別玩家的戰果也不代表真實疫苗的效力。
-
-每一關的結算畫面都可以直接前往下一關（不會自動跳轉，也沒有關卡解鎖或存檔）；也可以隨時從主選單任選關卡。
-
-三個關卡都已由專案維護者親自試玩驗收；v0.7 的教學與角色改版，維護者以 15 個檢核項目試玩評估，15 項全部符合。v0.9 的雙語版，維護者以 12 個檢核項目試玩評估，11 項符合、1 項未評估（語言切換按鈕是否容易找到）。這是維護者個人的試玩結果：尚未做過大規模的外部試玩，沒有找國小學生驗證，也沒有做過針對學生族群的教育成效研究。
-*All three levels have been playtested and accepted by the maintainer (the v0.7 tutorial and character update met all 15 of the maintainer's checklist items; the v0.9 bilingual version met 11 of 12, with one item not evaluated). No large-scale external playtesting, no testing with primary-school pupils, and no study of educational effectiveness has been done yet.*
-
-## 未來可能的主題｜Possible future topics
-
-以下是可能的發展方向，**不是發布承諾**：
-*Ideas under consideration — not commitments:*
-
-- 抗生素與抗藥性 *(antibiotics and resistance)*
-- 腸道菌叢 *(gut microbiota)*
-- 過敏與自體免疫疾病 *(allergy and autoimmunity)*
-- 癌細胞與腫瘤免疫 *(cancer and tumor immunity)*
-
-## 本機執行｜Run locally
-
-遊戲是純靜態的 HTML、CSS、JavaScript，可以完全離線執行。
-
-1. 下載本專案：按頁面上方的 **Code → Download ZIP** 並解壓縮，或
-   ```
-   git clone https://github.com/asid52714/immune-wars.git
-   ```
-2. 用瀏覽器開啟資料夾裡的 `index.html`，選擇關卡即可開始。
-
-不需要後端伺服器、資料庫、API Key，也不需要安裝任何框架或執行建置步驟。
-
-*Plain static HTML/CSS/JavaScript. Download or clone, then open `index.html` in a browser. No server, database, API key, framework, or build step is required.*
+## 專案結構｜Project layout
 
 ```
-index.html                    主選單｜main menu
-levels/
-  01-skin-barrier.html        第一關（單檔、自包含）
-  02-viral-infection.html     第二關（單檔、自包含）
-  03-immune-memory.html       第三關（單檔、自包含）
+index.html            單一頁面：主選單與三章都在這裡
+css/game.css          樣式與版面（手機直向／橫向／桌面）
+js/core.js            語言、存檔、音效、小工具
+js/art.js             所有角色與場景的畫法
+js/rules.js           規則層：純邏輯，不碰畫面（平衡模擬直接呼叫這一層）
+js/battle.js          戰鬥外殼：版面、輸入、回合流程、提示、結算時間軸
+js/lymph.js           淋巴結小玩法
+js/mode-skin.js       第 1 章的畫面、操作與練習關卡
+js/mode-airway.js     第 2、3 章的畫面、操作、練習關卡與流程
+js/app.js             主選單、記憶冊、圖鑑、說明頁與頁面切換
+levels/*.html         舊版關卡網址的轉址頁
+docs/REDESIGN.md      改版說明、測試結果、畫面與已知限制
 ```
 
-基本操作：點選免疫細胞 → 點亮起的格子移動或行動 → 按「結束回合」（空白鍵）。每一關開始前都有故事動畫與規則說明，遊戲中按右上角 `?` 可以重看；打完一關，結算畫面有前往下一關的按鈕。
+全部用傳統 `<script>` 標籤載入，沒有建置步驟。
 
 ## 科學正確性與醫學聲明｜Scientific accuracy and medical disclaimer
 
-**本遊戲僅供科學教育與娛樂用途，不提供醫療診斷、治療或個人健康建議。** 為了遊戲性，部分生物學機制、時間尺度及數值經過簡化，不代表真實人體中的固定生理反應。遊戲內的簡報與結算畫面會標明哪些是醫學知識、哪些是遊戲化的抽象。
+**本遊戲僅供科學教育與娛樂用途，不提供醫療診斷、治療或個人健康建議。** 為了遊戲性，部分生物學機制、時間尺度及數值經過簡化，不代表真實人體中的固定生理反應。遊戲主選單的「這款遊戲簡化了什麼」把所有簡化集中列在一頁。
 
 **This game is for science education and entertainment only. It does not provide medical diagnosis, treatment, or personal health advice.** Some mechanisms, time scales, and numbers are simplified for gameplay and do not represent fixed physiological responses.
 
@@ -185,6 +108,16 @@ v0.7 新增的教學文字（發炎的紅腫熱痛、肥大細胞與組織胺、
 - Reinke JG, Schorr C, Lee KP. *Why are long-lived plasma cells long-lived?* Front Immunol. 2026;17:1785563. <https://doi.org/10.3389/fimmu.2026.1785563> — 用來支持進階選讀中「長壽命漿細胞可長期存活並持續分泌抗體，與記憶 B 細胞不同」。
 - Hammarlund E, et al. *Plasma cell survival in the absence of B cell memory.* Nat Commun. 2017;8:1781. <https://doi.org/10.1038/s41467-017-01901-w> — 同上；這是獼猴的實驗研究，不能直接推論到所有人體免疫情境。
 
+改版候選版本新增或改寫的敘述（嗜中性球與膿、白血球的細胞核形態、株系選擇、初始 T 細胞的稀有程度、T 細胞在淋巴結內掃描樹突細胞、先天免疫與訓練免疫的差別、疫苗與免疫記憶的專一性）另外對照：
+
+- OpenStax, *Anatomy and Physiology 2e* — 18.4 Leukocytes and Platelets；21.2；21.3；21.4。OpenStax, *Microbiology* — 6.2；17.3；17.5；18.1；18.5。OpenStax, *Biology 2e* — 42.1；42.2。
+- Netea MG, et al. *Defining trained immunity and its role in health and disease.* Nat Rev Immunol. 2020. PMCID: PMC7186935 — 用來支持「先天免疫不形成 T、B 細胞那種專一的長期記憶，但有較短、較不專一的訓練免疫」。
+- Obst R. *The Timing of T Cell Priming and Cycling.* Front Immunol. 2015;6:563 — T 細胞在淋巴結內逐一碰觸樹突細胞；初始 CD8 T 細胞對單一抗原的頻率。這些數字多來自小鼠研究。
+- Quiel J, et al. *Antigen-stimulated CD4 T-cell expansion is inversely and log-linearly related to precursor number.* PNAS. 2011. PMCID: PMC3044359 — 初始 CD4 T 細胞對單一抗原的頻率（小鼠）。
+- H&E 染色的顏色（細胞核藍紫、細胞質粉紅）只查了維基百科條目 *H&E stain*，沒有找到教科書層級的公開來源。
+
+這一批是由 AI 助手開啟原始頁面逐條比對的結果（16 條敘述：13 條有直接支持、3 條加註後採用），**不是醫學專業審查**。Janeway *Immunobiology* 的線上版本這次沒有讀到。
+
 若遊戲內容與上述資料或現行醫學共識不一致，以專業資料為準，並請[告訴我們](https://github.com/asid52714/immune-wars/issues)。
 
 ## 歡迎回饋與貢獻｜Feedback and contributions
@@ -208,7 +141,7 @@ v0.7 新增的教學文字（發炎的紅腫熱痛、肥大細胞與組織胺、
 
 ## 關於開發方式｜How this project is built
 
-本專案由個人發起及維護，結合人類的產品設計、遊戲試玩、知識審查與 AI 輔助軟體開發。程式碼主要由 AI 協作工具（ChatGPT 與 Claude Code）依維護者的設計與回饋產出；維護者負責產品方向、遊戲體驗驗收及發布決策。
+本專案由個人發起及維護，結合人類的產品設計、遊戲試玩、知識審查與 AI 輔助軟體開發。v0.9 以前的程式碼主要由 AI 協作工具（ChatGPT 與 Claude Code）依維護者的設計與回饋產出。這個改版候選版本則是維護者授權 Claude Code 自主設計與實作的實驗；維護者負責產品方向、遊戲體驗驗收及發布決策。
 
 *A personal project combining human product design, playtesting, and content review with AI-assisted software development. Most of the code was produced with AI tools (ChatGPT and Claude Code) under the maintainer's direction; the maintainer is responsible for product direction, acceptance of the gameplay, and release decisions.*
 
