@@ -266,7 +266,8 @@
      皮膚表面另有一排菌群 flora（12 個位子）：C＝無害的住戶、S＝怕藥的伺機菌、R＝不怕藥的伺機菌。
      抗生素不是玩家的按鈕：它是醫師開的藥，在第 DRUG_AT 回合開始時自動送到，療程長度固定（COURSE 回合）。
      玩家不能提早、延後、縮短、延長或中途停止（刻意的設計：遊戲不讓「何時用藥、用多久」變成可以最佳化的操作）：
-       開始的當下殺死組織裡所有怕藥的細菌；療程的每一回合，皮膚上緊鄰條紋菌的一個怕藥細菌死掉，由條紋菌補位。
+       藥需要時間：第一劑讓每一格怕藥的細菌死掉一半（無條件進位），而且療程中怕藥的細菌不再分裂、擴散；
+       下一回合的第二劑把剩下的清完。療程的每一回合，皮膚上緊鄰條紋菌的一個怕藥細菌死掉，由條紋菌補位。
        提早打贏，剩下的療程也照樣吃完（settle）。所以一個療程對皮膚的代價是固定的，和打得快慢、何時開始無關；
        玩家唯一能改變的，是要不要多一個不必要的療程。沒有用藥的幾個月裡，皮膚會恢復一格（recover）。
      抗藥性不是藥「教」出來的：突變在分裂時隨機發生（MU），有沒有用藥都一樣；藥只決定誰留下來。
@@ -333,10 +334,11 @@
   AX.onCourse = S => !!S.drug && S.doses < S.cfg.COURSE;
   AX.dose = S => { S.doses++; return AX.floraTick(S.flora, S.rng); };
   AX.settle = S => { const ev = []; while (AX.onCourse(S)) ev.push(AX.dose(S)); return ev; };   // 提早打贏：剩下的療程照樣吃完
-  AX.actDrug = function (S) {
-    const ev = { kill: [] };
-    for (const t of S.tiles) { const n = t.b.filter(x => !x).length; if (n) { t.b = t.b.filter(x => x); ev.kill.push({ i: t.i, n }); S.killed += n; } }
-    S.drug = 1; S.drugAt = S.turn; return ev;
+  AX.drugOn = S => !!S.drug && S.turn < S.drugAt + S.cfg.COURSE;      // 藥還在體內：怕藥的細菌不分裂、不擴散
+  AX.actDrug = function (S, last) {                           // last＝療程最後一劑：把剩下怕藥的清完
+    const ev = { kill: [], last: !!last };
+    for (const t of S.tiles) { const n = t.b.filter(x => !x).length, k = last ? n : Math.ceil(n / 2); if (k) { let d = k; t.b = t.b.filter(x => x || d-- <= 0); ev.kill.push({ i: t.i, n: k }); S.killed += k; } }
+    if (!S.drug) { S.drug = 1; S.drugAt = S.turn; } return ev;
   };
   // ---- 細菌階段 ----
   AX.phaseDigest = S => { const ev = []; for (const u of S.units) if (u.stomach > 0) { const n = Math.min(S.cfg.DIGEST, u.stomach); u.stomach -= n; ev.push({ id: u.id, n }); } return ev; };
@@ -346,7 +348,8 @@
     const ev = [];
     for (const t of S.tiles.filter(t => t.b.length === 3)) {
       if (t.spreadTo < 0) continue;
-      const to = S.tiles[t.spreadTo], u = unitAt(S, to.i), r = t.b[Math.floor(S.rng() * 3)];
+      const pool = AX.drugOn(S) ? t.b.filter(x => x) : t.b; if (!pool.length) continue;
+      const to = S.tiles[t.spreadTo], u = unitAt(S, to.i), r = pool[Math.floor(S.rng() * pool.length)];
       if (u && u.stomach < S.cfg.CAP) { u.stomach++; S.eaten++; if (r) S.eatenR++; ev.push({ from: t.i, to: to.i, unit: u.id, r }); }
       else if (to.b.length < 3) ev.push({ from: t.i, to: to.i, r });
     }
@@ -358,7 +361,8 @@
     if (sc && sc.turn === S.turn) { const ok = list.filter(i => { const b = S.tiles[i].b; return b.length > 0 && b.length < 3 && !b.includes(1); }); mt = ok.includes(sc.tile) ? sc.tile : ok.length ? ok[ok.length - 1] : -1; }
     for (const i of list) {
       const t = S.tiles[i]; if (!t.b.length || t.b.length >= 3) continue;
-      let r = t.b[Math.floor(S.rng() * t.b.length)], mut = false;
+      const pool = AX.drugOn(S) ? t.b.filter(x => x) : t.b; if (!pool.length) continue;
+      let r = pool[Math.floor(S.rng() * pool.length)], mut = false;
       if (i === mt) { r = 0; mut = true; S.script = null; } else if (!r && S.rng() < S.cfg.MU) mut = true;
       if (mut) { r = 1; S.mut++; if (!S.mutAt) S.mutAt = S.turn; }
       t.b.push(r); ev.push({ i, r, mut });
@@ -378,7 +382,7 @@
     if (L >= S.cfg.LOAD_MAX) return S.result = { win: false, why: 'overrun' };
     if (S.turn >= S.cfg.TURNS) return S.result = { win: false, why: 'timeout' };
     S.turn++; S.ap = S.cfg.AP; S.drugEv = null;
-    if (!S.drug && S.turn === S.cfg.DRUG_AT) { S.drugEv = AX.actDrug(S); if (AX.load(S) === 0) return S.result = { win: true }; }   // 醫師開的抗生素送到：不花行動點數，也不由玩家決定時機
+    if (S.turn >= S.cfg.DRUG_AT && S.turn < S.cfg.DRUG_AT + S.cfg.COURSE) { S.drugEv = AX.actDrug(S, S.turn === S.cfg.DRUG_AT + S.cfg.COURSE - 1); if (AX.load(S) === 0) return S.result = { win: true }; }   // 醫師開的抗生素：每回合一劑，不花行動點數，也不由玩家決定時機
     AX.plan(S); return null;
   };
   AX.clone = S => Object.assign({}, S, { tiles: S.tiles.map(t => Object.assign({}, t, { b: t.b.slice() })), units: S.units.map(u => Object.assign({}, u)), flora: S.flora.slice(), rng: () => .5, result: null });
