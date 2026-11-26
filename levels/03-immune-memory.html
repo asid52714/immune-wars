@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>免疫系統大作戰 Immune Wars · 第 3 關 · Prototype v0.6</title>
+<title>免疫系統大作戰 Immune Wars · 第 3 關 · Prototype v0.7</title>
 <style>
   :root{
     --ink:#e6f4f4; --dim:#8fb3ba; --line:rgba(150,220,225,.22);
@@ -116,7 +116,7 @@
   .card .stars i{font-style:normal;color:rgba(255,255,255,.14);text-shadow:none}
   .card.win h1{color:#aaf6e6;text-shadow:0 0 26px rgba(120,240,220,.5)}
   .card.lose h1{color:#ff9aa3}
-  .card.brief{width:1010px;padding:22px 34px 22px;text-align:left}
+  .card.brief{width:1010px;max-height:708px;padding:20px 34px 20px;text-align:left}
   .brief .bh{display:flex;align-items:baseline;gap:16px;margin-bottom:10px}
   .brief h1{font-size:25px;margin:0;letter-spacing:.12em}
   .brief .bh span{font-size:12.5px;letter-spacing:.24em;color:var(--dim)}
@@ -148,7 +148,7 @@
   .brief .lead{margin:12px 0 6px;font-size:15px;color:#fff;text-align:center}
   .brief .note{margin:8px 0 0;text-align:left}
   .rules{display:grid;grid-template-columns:1fr 1fr;gap:0 30px;font-size:13.5px;line-height:1.5}
-  .rules div{display:flex;gap:12px;padding:5px 0;border-top:1px solid rgba(150,220,225,.1)}
+  .rules div{display:flex;gap:12px;padding:4px 0;border-top:1px solid rgba(150,220,225,.1)}
   .rules b{flex:0 0 86px;color:#aef;font-weight:600}
   .rules span{color:#d6eaec}
   .brief .btns{margin-top:12px;justify-content:flex-end}
@@ -237,7 +237,7 @@
 <script>
 'use strict';
 /* =====================================================================
-   免疫系統大作戰 Immune Wars — Prototype v0.6（Level 03 捲土重來：免疫記憶與疫苗）
+   免疫系統大作戰 Immune Wars — Prototype v0.7（Level 03 捲土重來：免疫記憶與疫苗）
    單檔、離線、無外部相依。戰鬥規則沿用第 2 關（02-viral-infection.html）的做法，但各關各自獨立，不共用程式。
    本關把同一個戰場打兩次：SCN.A 初次遭遇、SCN.B 事前已建立免疫記憶；兩場只差 SCN 裡的數值。
    數值為娛樂性抽象模型，非真實生理數值。
@@ -726,15 +726,21 @@ const mainCtx=ctx,L=(a,b,u)=>a+(b-a)*u,cl=u=>Math.max(0,Math.min(1,u)),E=u=>ease
 function bCell(x,y,sc,st,by){ctx.save();ctx.translate(x,y);ctx.scale(sc,sc);drawCell({x:0,y:0,st,age:1,seed:x*.37+y,flash:0,by:by||''});ctx.restore();}
 function bUnit(x,y,sc,kind,stomach){const ph=G.phase;G.phase='over';ctx.save();ctx.translate(x,y);ctx.scale(sc,sc);   // phase 暫設 over：不畫戰場用的容量標籤
   drawUnit({id:-9,kind,x:0,y:0,stomach:stomach||0,ang:0,str:0,gulp:0,born:1,ph:1});ctx.restore();G.phase=ph;}
-function bT(x,y,l,col,a,r){ctx.globalAlpha=a===undefined?1:cl(a);ctx.fillStyle=col;ctx.strokeStyle='#fff';ctx.lineWidth=1.4;ctx.beginPath();ctx.arc(x,y,r||13,0,6.28);ctx.fill();ctx.stroke();
-  ctx.font='700 10px system-ui';ctx.textAlign='center';ctx.fillStyle='#06202e';ctx.fillText(l,x,y+3.5);ctx.globalAlpha=1;}
+function bT(x,y,l,col,a,r){r=r||13;const q=r/13;ctx.globalAlpha=a===undefined?1:cl(a);ctx.fillStyle=col;ctx.strokeStyle='#fff';ctx.lineWidth=1.4;ctx.beginPath();ctx.arc(x,y,r,0,6.28);ctx.fill();ctx.stroke();
+  // 表情在上、標籤在下：灰色（還沒被喚醒）閉眼，毒殺 T 細胞專注，其餘親切
+  drawFace(x,y-(l?3.4:1.5)*q,.78*q,col.indexOf('150,170,180')>=0?'sleep':l==='CD8'?'focus':'calm','#06202e',x*.7+y,!!l);
+  ctx.font=`700 ${(l.length>1?7.5:8.5)*q}px system-ui`;ctx.textAlign='center';ctx.fillStyle='#06202e';ctx.fillText(l,x,y+9.6*q);ctx.globalAlpha=1;}
 function bLab(x,y,s,col,size,a){ctx.globalAlpha=a===undefined?1:cl(a);ctx.font=`${size>13?600:400} ${size||13}px ${FONT}`;ctx.textAlign='center';ctx.fillStyle=col||'#cfe6e8';ctx.fillText(s,x,y);ctx.globalAlpha=1;}
-function bRod(x,y,rot){ctx.save();ctx.translate(x,y);ctx.rotate(rot);          // 與第 1 關相同外觀的桿菌
+function bRod(x,y,rot){ctx.save();ctx.translate(x,y);ctx.rotate(rot);ctx.scale(1.18,1.18);          // 與第 1 關相同外觀的桿菌（含鞭毛與表情）
+  ctx.strokeStyle='rgba(200,255,120,.55)';ctx.lineWidth=1.1;
+  for(const d of[-1,1]){ctx.beginPath();ctx.moveTo(-10,d*2);for(let q=1;q<=4;q++)ctx.lineTo(-10-q*3.4,d*2+Math.sin(T*9+x+q*1.3+d)*2.4);ctx.stroke();}
   const g=ctx.createLinearGradient(0,-5,0,5);g.addColorStop(0,'#dcff7a');g.addColorStop(1,'#6fb826');ctx.fillStyle=g;ctx.strokeStyle='#17300a';ctx.lineWidth=1.6;
-  ctx.beginPath();ctx.roundRect(-13,-6,26,12,6);ctx.fill();ctx.stroke();ctx.restore();}
+  ctx.beginPath();ctx.roundRect(-11,-5,22,10,5);ctx.fill();ctx.stroke();ctx.rotate(-rot);drawFace(0,-.5,.55,'sly','#17300a');ctx.restore();}
 function bSplit(){ctx.strokeStyle='rgba(150,220,225,.18)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(470,18);ctx.lineTo(470,302);ctx.stroke();}
 function bDim(x){ctx.fillStyle='rgba(6,18,27,.62)';ctx.fillRect(x,0,470,320);}
-function bFrag(x,y){ctx.fillStyle='#ff7ad1';ctx.strokeStyle='#fff';ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(x,y-6);ctx.lineTo(x+5,y);ctx.lineTo(x,y+6);ctx.lineTo(x-5,y);ctx.closePath();ctx.fill();ctx.stroke();}
+function bFrag(x,y){ctx.save();ctx.translate(x,y);                  // 抗原＝病毒的「特徵樣本」：畫成一張情報卡，不是會自己行動的角色
+  ctx.fillStyle='rgba(255,250,253,.96)';ctx.strokeStyle='#5a0f45';ctx.lineWidth=1.1;ctx.beginPath();ctx.roundRect(-7,-8.5,14,17,2.6);ctx.fill();ctx.stroke();
+  ctx.fillStyle='#ff7ad1';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(0,-5);ctx.lineTo(4,0);ctx.lineTo(0,5);ctx.lineTo(-4,0);ctx.closePath();ctx.fill();ctx.stroke();ctx.restore();}
 const GREY='rgba(150,170,180,.55)',TCC='rgba(127,196,255,.95)',BCC='rgba(150,235,200,.95)',DIM='#8fb3ba';
 // 字幕原則：先講故事與比喻，第一次出現的正式名詞放在「」裡，一步只帶一個新概念；「戰術：」那一步的數字直接取自 SCN。
 // 「部隊、偵察兵、演習」只是幫助理解的比喻（規則頁有說明），不是說免疫細胞有意識或指揮系統。
@@ -745,7 +751,7 @@ function bSyr(x,y,a){ctx.save();ctx.globalAlpha=cl(a);ctx.translate(x,y);ctx.fil
   ctx.beginPath();ctx.roundRect(-26,-8,40,16,3);ctx.fill();ctx.stroke();ctx.fillStyle='rgba(120,220,190,.95)';ctx.fillRect(-8,-6,20,12);
   ctx.beginPath();ctx.moveTo(14,0);ctx.lineTo(34,0);ctx.moveTo(-26,0);ctx.lineTo(-38,0);ctx.moveTo(-38,-8);ctx.lineTo(-38,8);ctx.stroke();ctx.restore();}
 function bVir2(x,y,a){ctx.save();ctx.globalAlpha=cl(a);ctx.translate(x,y);ctx.rotate(T*.3);ctx.fillStyle='#ffb054';ctx.strokeStyle='#6a3a00';ctx.lineWidth=1.6;   // 另一種病毒：外觀不同
-  ctx.beginPath();for(let i=0;i<12;i++){const an=i*Math.PI/6,r=i%2?13:22;ctx[i?'lineTo':'moveTo'](Math.cos(an)*r,Math.sin(an)*r);}ctx.closePath();ctx.fill();ctx.stroke();ctx.restore();}
+  ctx.beginPath();for(let i=0;i<12;i++){const an=i*Math.PI/6,r=i%2?13:22;ctx[i?'lineTo':'moveTo'](Math.cos(an)*r,Math.sin(an)*r);}ctx.closePath();ctx.fill();ctx.stroke();ctx.rotate(-T*.3);drawFace(0,-1,1.15,'sly','#6a3a00');ctx.restore();}
 function bBar(x,y,w,p,col){ctx.fillStyle='rgba(255,255,255,.1)';ctx.beginPath();ctx.roundRect(x,y,w,8,4);ctx.fill();if(p>0){ctx.fillStyle=col;ctx.beginPath();ctx.roundRect(x,y,Math.max(8,w*cl(p)),8,4);ctx.fill();}}
 const ANIMS=[
  {tab:'① 第一次遇到陌生敵人',caps:[
@@ -1091,7 +1097,8 @@ function showCompare(){
     <li>漿細胞、長壽命漿細胞與抗體曲線：按「查看說明」，在規則頁的「進階知識（選讀）」。</li>
    </ul>
   </div></div>
-  <div class="btns" style="margin-top:10px"><button class="pri" id="again">再玩一輪（新的成對戰場）</button><button id="retryB">重打第二場</button><button id="retryA">同一戰場從第一場重來</button><button id="rules">查看說明</button><button id="lv1">主選單</button></div>`;
+  <p class="note" style="margin:8px 0 0;text-align:center;color:#cfe6e8">已完成目前全部關卡，更多人體防禦故事將於未來版本推出。</p>
+  <div class="btns" style="margin-top:8px"><button class="pri" id="again">再玩一輪（新的成對戰場）</button><button id="retryB">重打第二場</button><button id="retryA">同一戰場從第一場重來</button><button id="rules">查看說明</button><button id="lv1">主選單</button></div>`;
   $('ov').classList.add('on');
   $('again').onclick=()=>start('A');$('retryB').onclick=()=>start('B');$('retryA').onclick=()=>start('A',RUN.seed);
   $('rules').onclick=()=>showBrief(ANIMS.length,true);$('lv1').onclick=()=>{location.href='../index.html';};
@@ -1136,6 +1143,39 @@ function drawAirway(){                                   // 氣道內腔與纖�
   for(let x=x0+6;x<x1;x+=9){const s=Math.sin(T*2.4+x*.05)*5;ctx.beginPath();ctx.moveTo(x,134);ctx.quadraticCurveTo(x+s*.4,125,x+s,117);ctx.stroke();}
   ctx.font='12px '+FONT;ctx.textAlign='left';ctx.fillStyle='rgba(190,225,235,.6)';ctx.fillText('呼吸道內腔（空氣這一側）',x0+8,102);ctx.textAlign='center';
 }
+// 角色表情（本關自包含的小工具）：只畫眼、眉、嘴，不改任何判定、位置或碰撞範圍。
+// mood：calm 親切｜focus 專注｜eat 張嘴｜full 吃飽｜sly 狡黠（只用在正在造成感染的病原體）｜worry 擔心｜hurt 不舒服｜pain 痛苦｜dead 失去活力｜sleep 尚未被喚醒
+// 擬人化只是視覺比喻：細胞與病毒沒有情緒或意識。
+function drawFace(x,y,s,mood,ink,ph,noMouth){
+  ctx.save();ctx.translate(x,y);ctx.scale(s,s);ctx.lineCap='round';ctx.lineJoin='round';ctx.setLineDash([]);ctx.shadowBlur=0;
+  ink=ink||'#3b2a1e';ctx.strokeStyle=ink;ctx.fillStyle=ink;ctx.lineWidth=1.25;
+  const blink=ph!==undefined&&(T+ph)%4.6<.14,ln=(a,b,c,d)=>{ctx.beginPath();ctx.moveTo(a,b);ctx.lineTo(c,d);ctx.stroke();};
+  for(const d of[-1,1]){ctx.save();ctx.scale(d,1);                       // 左右對稱：只寫右眼
+    if(mood==='sly'){ctx.beginPath();ctx.arc(5,0,2.7,-.4,Math.PI-.3);ctx.closePath();ctx.fillStyle='#fff';ctx.fill();ctx.lineWidth=.9;ctx.stroke();
+      ctx.fillStyle=ink;ctx.beginPath();ctx.arc(4.6,1,1.15,0,6.28);ctx.fill();}
+    else if(mood==='full'){ctx.beginPath();ctx.arc(5,.8,2.2,Math.PI,6.283);ctx.stroke();}
+    else if(mood==='sleep'){ctx.beginPath();ctx.arc(5,-.6,2.2,0,Math.PI);ctx.stroke();}
+    else if(mood==='dead'||blink)ln(3,0,7,0);
+    else if(mood==='pain'){ctx.beginPath();ctx.moveTo(7,-1.8);ctx.lineTo(3.4,0);ctx.lineTo(7,1.8);ctx.stroke();}
+    else{ctx.beginPath();ctx.arc(5,0,mood==='worry'?2.1:mood==='hurt'?1.6:1.9,0,6.28);ctx.fill();
+      if(ink[0]==='#'){ctx.fillStyle='rgba(255,255,255,.85)';ctx.beginPath();ctx.arc(4.3,-.7,.65,0,6.28);ctx.fill();}}
+    if(mood==='focus')ln(2.6,-3.2,7.6,-4.6);
+    else if(mood==='worry'||mood==='hurt'||mood==='pain')ln(2.8,-5,7.4,-3.4);
+    ctx.restore();}
+  if(!noMouth){ctx.beginPath();
+    if(mood==='calm')ctx.arc(0,3.6,3,.2*Math.PI,.8*Math.PI);
+    else if(mood==='focus'){ctx.moveTo(-2.2,6);ctx.lineTo(2.2,6);}
+    else if(mood==='full')ctx.arc(0,3.4,4,.15*Math.PI,.85*Math.PI);
+    else if(mood==='sly'){ctx.moveTo(-3,5.2);ctx.quadraticCurveTo(.6,7.6,3.8,4.2);}
+    else if(mood==='worry'){ctx.moveTo(-3,6.4);ctx.quadraticCurveTo(-1.5,4.9,0,6.4);ctx.quadraticCurveTo(1.5,7.9,3,6.4);}
+    else if(mood==='hurt'||mood==='pain')ctx.arc(0,8.6,3,1.2*Math.PI,1.8*Math.PI);
+    else if(mood==='dead'){ctx.moveTo(-1.8,6.2);ctx.lineTo(1.8,6.2);}
+    else if(mood==='eat'){ctx.ellipse(0,6.4,3,2.8,0,0,6.28);ctx.fillStyle='#7a2f3a';ctx.fill();}
+    ctx.stroke();
+    if(mood==='full'){ctx.fillStyle='rgba(255,130,110,.4)';for(const d of[-1,1]){ctx.beginPath();ctx.arc(d*8.6,3.4,2.1,0,6.28);ctx.fill();}}
+  }
+  ctx.restore();
+}
 function drawCell(t){
   const dead=t.st===2,inf=t.st===1,k=dead?.64:1,n=dead?9:7,pts=[];
   for(let a=0;a<n;a++){const an=-Math.PI/2+a*6.283/n+(dead?Math.sin(t.seed*7+a)*.18:0),
@@ -1149,7 +1189,7 @@ function drawCell(t){
   g.addColorStop(0,C[0]);g.addColorStop(1,C[1]);ctx.fillStyle=g;ctx.fill();
   const last=inf&&relLeft(t)<=1;
   ctx.strokeStyle=C[2];ctx.lineWidth=inf?2:1.6;ctx.setLineDash(dead||last?[7,5]:[]);ctx.stroke();ctx.setLineDash([]);
-  const nx=t.x+Math.cos(t.seed)*9,ny=t.y+Math.sin(t.seed)*9;
+  const nx=t.x+Math.cos(t.seed)*9,ny=t.y-9-Math.abs(Math.sin(t.seed))*8;   // 細胞核固定在上半部，下半部留給表情
   if(!dead){
     ctx.fillStyle=inf?'rgba(150,70,150,.55)':'rgba(70,170,190,.5)';
     ctx.beginPath();ctx.ellipse(nx,ny,11,9,t.seed,0,6.28);ctx.fill();
@@ -1165,6 +1205,8 @@ function drawCell(t){
     for(let q=0;q<left;q++){const x=t.x+(q-(left-1)/2)*11,y=t.y+R*.62;ctx.fillStyle='rgba(255,150,215,.95)';
       ctx.beginPath();ctx.moveTo(x,y-5);ctx.lineTo(x+4,y);ctx.lineTo(x,y+5);ctx.lineTo(x-4,y);ctx.closePath();ctx.fill();}
   }
+  // 表情：健康＝平靜、病毒在門口＝擔心、受感染＝不舒服（它是受害者，不是反派）、死亡＝失去活力
+  drawFace(t.x,t.y+(dead?15:12)*k,1.3*k,dead?'dead':inf?(last?'pain':'hurt'):t.vir>0?'worry':'calm',dead?'rgba(170,135,135,.55)':inf?'rgba(255,228,246,.82)':'rgba(222,248,246,.72)',t.seed);
   if(t.flash>0){blob(pts);ctx.fillStyle=`rgba(255,110,190,${t.flash*.55})`;ctx.fill();}
 }
 function drawVirion(x,y,s,alpha,ph){
@@ -1173,6 +1215,7 @@ function drawVirion(x,y,s,alpha,ph){
   for(let k=0;k<8;k++){const a=k*.785;ctx.beginPath();ctx.moveTo(Math.cos(a)*7,Math.sin(a)*7);ctx.lineTo(Math.cos(a)*11.5,Math.sin(a)*11.5);ctx.stroke();}
   const g=ctx.createRadialGradient(-2,-3,1,0,0,8);g.addColorStop(0,'#ffd0ef');g.addColorStop(1,'#e64fb4');
   ctx.fillStyle=g;ctx.strokeStyle='#5a0f45';ctx.lineWidth=1.4;ctx.beginPath();ctx.arc(0,0,7.5,0,6.28);ctx.fill();ctx.stroke();
+  if(s>=.7){ctx.rotate(-(ph||0)*.3);drawFace(0,-.9,.6,'sly','#5a0f45');}   // 太小就不畫表情
   ctx.lineCap='butt';ctx.restore();
 }
 function drawUnit(m){
@@ -1194,10 +1237,11 @@ function drawUnit(m){
   ctx.shadowColor=dc?'rgba(190,170,255,.6)':'rgba(255,225,170,.55)';ctx.shadowBlur=sel?20:10;ctx.fillStyle=g;ctx.fill();ctx.shadowBlur=0;
   ctx.strokeStyle='rgba(255,252,240,.95)';ctx.lineWidth=2;ctx.stroke();
   ctx.rotate(-m.ang);
-  if(dc){ctx.fillStyle='rgba(84,56,168,.85)';ctx.beginPath();ctx.ellipse(0,0,9,7.5,.4,0,6.28);ctx.fill();}
+  if(dc){ctx.fillStyle='rgba(84,56,168,.85)';ctx.beginPath();ctx.ellipse(0,-9.5,6,3.8,0,0,6.28);ctx.fill();drawFace(0,2.5,1.05,m.mood||'focus','#2a1a5c',m.ph);}   // 偵察兵：機警、認真
   else{
     ctx.fillStyle='rgba(132,96,190,.78)';ctx.strokeStyle='rgba(90,60,150,.8)';ctx.lineWidth=1;
-    ctx.beginPath();ctx.arc(-6,-9,10,Math.PI*.9,Math.PI*2.25);ctx.arc(-2,-5,5,Math.PI*.3,Math.PI*1.15,true);ctx.closePath();ctx.fill();ctx.stroke();
+    ctx.beginPath();ctx.arc(-10,-15,8,Math.PI*.9,Math.PI*2.25);ctx.arc(-6.8,-11.8,4,Math.PI*.3,Math.PI*1.15,true);ctx.closePath();ctx.fill();ctx.stroke();   // 細胞核縮小、上移，讓出表情的位置
+    drawFace(0,-2,1.3,m.mood||(m.gulp>.05||fx.some(f=>f.type==='gulp'&&f.m===m)?'eat':full?'full':sel||m.str>.08?'focus':'calm'),'#4a3220',m.ph);
     for(let k=0;k<CFG.CAP;k++){const vx=-12+k*12,vy=13+(k===1?4:0);ctx.beginPath();ctx.arc(vx,vy,6.2,0,6.28);
       if(k<m.stomach){ctx.fillStyle='rgba(110,50,90,.5)';ctx.fill();ctx.strokeStyle='rgba(90,40,70,.8)';ctx.lineWidth=1.2;ctx.stroke();drawVirion(vx,vy,.4,.95,T*3);}
       else{ctx.strokeStyle='rgba(170,120,80,.35)';ctx.lineWidth=1;ctx.stroke();}}
@@ -1269,14 +1313,13 @@ function drawFx(){
     }
     else if(f.type==='ctl'){                          // T 細胞從淋巴結方向衝入、接觸、離開
       const v=u<.6?ease(u/.6):1,x=LYM.x+(f.x+26-LYM.x)*v,y=LYM.y+(f.y-22-LYM.y)*v,a=u<.6?1:1-(u-.6)/.4;
-      ctx.fillStyle=`rgba(127,196,255,${.9*a})`;ctx.strokeStyle=`rgba(255,255,255,${a})`;ctx.lineWidth=1.6;ctx.beginPath();ctx.arc(x,y,13,0,6.28);ctx.fill();ctx.stroke();
-      ctx.font='700 10px system-ui';ctx.textAlign='center';ctx.fillStyle=`rgba(6,32,46,${a})`;ctx.fillText('CD8',x,y+4);
+      bT(x,y,'CD8','rgba(127,196,255,.95)',a,13);
     }
     else if(f.type==='fly'){                          // 樹突細胞帶著抗原飛往淋巴結
       const v=ease(u),x=f.x0+(LYM.x-f.x0)*v,y=f.y0+(LYM.y+20-f.y0)*v-Math.sin(u*3.14)*50,s=1-.6*v;
-      ctx.save();ctx.translate(x,y);ctx.scale(s,s);ctx.rotate(u*5);ctx.fillStyle='rgba(185,164,255,.92)';ctx.strokeStyle='#fff';ctx.lineWidth=1.6;ctx.beginPath();
-      for(let k=0;k<16;k++){const a=k*6.283/16,rr=k%2?14:34;ctx[k?'lineTo':'moveTo'](Math.cos(a)*rr,Math.sin(a)*rr);}ctx.closePath();ctx.fill();ctx.stroke();ctx.restore();
-      drawVirion(x,y,.5*s+.2,1,T*4);
+      ctx.save();ctx.translate(x,y);ctx.scale(s,s);ctx.rotate(Math.sin(u*9)*.3);ctx.fillStyle='rgba(185,164,255,.92)';ctx.strokeStyle='#fff';ctx.lineWidth=1.6;ctx.beginPath();
+      for(let k=0;k<16;k++){const a=k*6.283/16,rr=k%2?14:34;ctx[k?'lineTo':'moveTo'](Math.cos(a)*rr,Math.sin(a)*rr);}ctx.closePath();ctx.fill();ctx.stroke();drawFace(0,2.5,1.05,'focus','#2a1a5c');ctx.restore();
+      bFrag(x+24*s,y+8*s);                              // 帶走的是「特徵樣本」（抗原），不是整個病毒
     }
   }
   for(const p of parts){const u=p.life/p.max;ctx.fillStyle=`rgba(${p.col},${1-u})`;ctx.beginPath();ctx.arc(p.x,p.y,p.r*(1-u*.5),0,6.28);ctx.fill();}

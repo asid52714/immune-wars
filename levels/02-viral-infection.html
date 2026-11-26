@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>免疫系統大作戰 Immune Wars · 第 2 關 · Prototype v0.4</title>
+<title>免疫系統大作戰 Immune Wars · 第 2 關 · Prototype v0.7</title>
 <style>
   :root{
     --ink:#e6f4f4; --dim:#8fb3ba; --line:rgba(150,220,225,.22);
@@ -138,6 +138,10 @@
   .k2t{display:grid;grid-template-columns:1fr 1fr;gap:2px 30px;align-items:center;margin-bottom:6px;padding:7px 14px;border:1px solid rgba(150,220,225,.16);border-radius:12px;background:rgba(255,255,255,.03);font-size:13px;line-height:1.5;color:#d6eaec}
   .k2t>b{font-size:14px;color:#fff;letter-spacing:.08em;font-weight:600} .k2t span{display:flex;align-items:baseline;gap:7px}
   .k2t i{flex:0 0 9px;height:9px;border-radius:50%} .k2t em{font-style:normal;color:#aef;font-weight:600;white-space:nowrap}
+  .adv{display:grid;grid-template-columns:450px 1fr;gap:22px;align-items:start}
+  .adv svg{display:block;width:450px;height:250px;border-radius:12px;border:1px solid rgba(150,220,225,.16);background:rgba(4,14,22,.55)}
+  .adv ul{margin:0;font-size:13px;line-height:1.55} .adv h3{margin:0 0 6px;font-size:14px;letter-spacing:.1em;color:#fff;font-weight:600}
+  .adv .note{margin:8px 0 0}
   .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
   .mc{border:1px solid rgba(150,220,225,.16);border-radius:12px;padding:8px 14px 10px;background:rgba(255,255,255,.03)}
   .mc svg{display:block;width:100%;height:80px;margin-bottom:4px}
@@ -194,8 +198,8 @@
     <div><i style="background:rgba(214,96,170,.7);border:1px solid #ffa6e0"></i>受感染細胞（病毒工廠）</div>
     <div><i style="background:#ff7ad1;width:9px;height:9px;flex-basis:9px;margin:0 2.5px"></i>細胞外病毒</div>
     <div><i style="background:rgba(60,40,45,.9);border:1px dashed #a77"></i>死亡的細胞</div>
-    <div><i style="background:#f6d8a6;border:1px solid #fff"></i>巨噬細胞（先天）</div>
-    <div><i style="background:#b9a4ff;border:1px solid #fff"></i>樹突細胞（送抗原）</div>
+    <div><i style="background:#f6d8a6;border:1px solid #fff"></i>巨噬細胞（守衛）</div>
+    <div><i style="background:#b9a4ff;border:1px solid #fff"></i>樹突細胞（偵察兵）</div>
     <div style="margin-top:4px;color:var(--dim)">紅框＝回合結束將被感染<br>粉紅箭頭＝新病毒落點</div>
   </div>
   <div class="side" id="lymph"></div>
@@ -218,7 +222,7 @@
 <script>
 'use strict';
 /* =====================================================================
-   免疫系統大作戰 Immune Wars — Prototype v0.4（Level 02 呼吸道防線：病毒危機）
+   免疫系統大作戰 Immune Wars — Prototype v0.7（Level 02 呼吸道防線：病毒危機）
    單檔、離線、無外部相依。與第 1 關（01-skin-barrier.html）各自獨立，不共用程式。
    數值為娛樂性抽象模型，非真實生理數值。
    ===================================================================== */
@@ -569,15 +573,15 @@ function finish(){
 function lymph(){
   const el=$('lymph'),st=(cls,html)=>`<div class="st ${cls}"><i></i><span>${html}</span></div>`;
   if(!G.ag){
-    el.innerHTML=`<h3>淋巴結</h3>${st('now','<b>尚未啟動</b><br>等待樹突細胞帶來抗原')}${st('','T、B 細胞活化與增殖')}${st('','毒殺 T 細胞抵達')}${st('','漿細胞分泌抗體')}
-      <p>適應性免疫需要先「認出」這種病毒。</p>`;return;
+    el.innerHTML=`<h3>淋巴結</h3>${st('now','<b>尚未啟動</b><br>等待樹突細胞帶來抗原')}${st('','T、B 細胞被喚醒、增殖')}${st('','毒殺 T 細胞抵達')}${st('','抗體就緒')}
+      <p>後援（適應性免疫）要先拿到病毒的特徵樣本——抗原。</p>`;return;
   }
   const t=G.turn,tr=tAt(G),ar=abAt(G),cd=n=>n-t>0?`${n-t} 回合後（第 ${n} 回合）`:'';
-  el.innerHTML=`<h3>淋巴結</h3>${st('on',`樹突細胞已呈現抗原<br><small>第 ${G.ag} 回合取得</small>`)}
-    ${st(t>=tr?'on':'now','T、B 細胞活化與增殖'+(t>=ar?'':'<br><small>進行中…</small>'))}
+  el.innerHTML=`<h3>淋巴結</h3>${st('on',`樹突細胞已送達抗原<br><small>第 ${G.ag} 回合取得</small>`)}
+    ${st(t>=tr?'on':'now','T、B 細胞被喚醒、增殖'+(t>=ar?'':'<br><small>進行中…</small>'))}
     ${st(t>=tr?'on':'',`<b>毒殺 T 細胞</b><br>${t>=tr?`已抵達｜每回合 ${CFG.CTL_N} 次`:cd(tr)}`)}
-    ${st(t>=ar?'on':'',`<b>漿細胞分泌抗體</b><br>${t>=ar?`已就緒｜本回合 ${Math.min(CFG.AB_MAX,t-ar+1)} 次`:cd(ar)}`)}
-    <p>真實過程還需要輔助 T 細胞與多種活化訊號，這裡濃縮成倒數。</p>`;
+    ${st(t>=ar?'on':'',`<b>抗體</b><br>${t>=ar?`已就緒｜本回合 ${Math.min(CFG.AB_MAX,t-ar+1)} 次`:cd(ar)}`)}
+    <p>真實過程還有更多步驟，這裡濃縮成倒數。</p>`;
 }
 function hud(){
   if(!G)return;
@@ -688,24 +692,31 @@ const mainCtx=ctx,L=(a,b,u)=>a+(b-a)*u,cl=u=>Math.max(0,Math.min(1,u)),E=u=>ease
 function bCell(x,y,sc,st,by){ctx.save();ctx.translate(x,y);ctx.scale(sc,sc);drawCell({x:0,y:0,st,age:1,seed:x*.37+y,flash:0,by:by||''});ctx.restore();}
 function bUnit(x,y,sc,kind,stomach){const ph=G.phase;G.phase='over';ctx.save();ctx.translate(x,y);ctx.scale(sc,sc);   // phase 暫設 over：不畫戰場用的容量標籤
   drawUnit({id:-9,kind,x:0,y:0,stomach:stomach||0,ang:0,str:0,gulp:0,born:1,ph:1});ctx.restore();G.phase=ph;}
-function bT(x,y,l,col,a,r){ctx.globalAlpha=a===undefined?1:cl(a);ctx.fillStyle=col;ctx.strokeStyle='#fff';ctx.lineWidth=1.4;ctx.beginPath();ctx.arc(x,y,r||13,0,6.28);ctx.fill();ctx.stroke();
-  ctx.font='700 10px system-ui';ctx.textAlign='center';ctx.fillStyle='#06202e';ctx.fillText(l,x,y+3.5);ctx.globalAlpha=1;}
+function bT(x,y,l,col,a,r){r=r||13;const q=r/13;ctx.globalAlpha=a===undefined?1:cl(a);ctx.fillStyle=col;ctx.strokeStyle='#fff';ctx.lineWidth=1.4;ctx.beginPath();ctx.arc(x,y,r,0,6.28);ctx.fill();ctx.stroke();
+  // 表情在上、標籤在下：灰色（還沒被喚醒）閉眼，毒殺 T 細胞專注，其餘親切
+  drawFace(x,y-(l?3.4:1.5)*q,.78*q,col.indexOf('150,170,180')>=0?'sleep':l==='CD8'?'focus':'calm','#06202e',x*.7+y,!!l);
+  ctx.font=`700 ${(l.length>1?7.5:8.5)*q}px system-ui`;ctx.textAlign='center';ctx.fillStyle='#06202e';ctx.fillText(l,x,y+9.6*q);ctx.globalAlpha=1;}
 function bLab(x,y,s,col,size,a){ctx.globalAlpha=a===undefined?1:cl(a);ctx.font=`${size>13?600:400} ${size||13}px ${FONT}`;ctx.textAlign='center';ctx.fillStyle=col||'#cfe6e8';ctx.fillText(s,x,y);ctx.globalAlpha=1;}
-function bRod(x,y,rot){ctx.save();ctx.translate(x,y);ctx.rotate(rot);          // 與第 1 關相同外觀的桿菌
+function bRod(x,y,rot){ctx.save();ctx.translate(x,y);ctx.rotate(rot);ctx.scale(1.18,1.18);          // 與第 1 關相同外觀的桿菌（含鞭毛與表情）
+  ctx.strokeStyle='rgba(200,255,120,.55)';ctx.lineWidth=1.1;
+  for(const d of[-1,1]){ctx.beginPath();ctx.moveTo(-10,d*2);for(let q=1;q<=4;q++)ctx.lineTo(-10-q*3.4,d*2+Math.sin(T*9+x+q*1.3+d)*2.4);ctx.stroke();}
   const g=ctx.createLinearGradient(0,-5,0,5);g.addColorStop(0,'#dcff7a');g.addColorStop(1,'#6fb826');ctx.fillStyle=g;ctx.strokeStyle='#17300a';ctx.lineWidth=1.6;
-  ctx.beginPath();ctx.roundRect(-13,-6,26,12,6);ctx.fill();ctx.stroke();ctx.restore();}
+  ctx.beginPath();ctx.roundRect(-11,-5,22,10,5);ctx.fill();ctx.stroke();ctx.rotate(-rot);drawFace(0,-.5,.55,'sly','#17300a');ctx.restore();}
 function bSplit(){ctx.strokeStyle='rgba(150,220,225,.18)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(470,18);ctx.lineTo(470,302);ctx.stroke();}
 function bDim(x){ctx.fillStyle='rgba(6,18,27,.62)';ctx.fillRect(x,0,470,320);}
-function bFrag(x,y){ctx.fillStyle='#ff7ad1';ctx.strokeStyle='#fff';ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(x,y-6);ctx.lineTo(x+5,y);ctx.lineTo(x,y+6);ctx.lineTo(x-5,y);ctx.closePath();ctx.fill();ctx.stroke();}
+function bFrag(x,y){ctx.save();ctx.translate(x,y);                  // 抗原＝病毒的「特徵樣本」：畫成一張情報卡，不是會自己行動的角色
+  ctx.fillStyle='rgba(255,250,253,.96)';ctx.strokeStyle='#5a0f45';ctx.lineWidth=1.1;ctx.beginPath();ctx.roundRect(-7,-8.5,14,17,2.6);ctx.fill();ctx.stroke();
+  ctx.fillStyle='#ff7ad1';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(0,-5);ctx.lineTo(4,0);ctx.lineTo(0,5);ctx.lineTo(-4,0);ctx.closePath();ctx.fill();ctx.stroke();ctx.restore();}
 const ANIMS=[
- {tab:'① 病毒 vs 細菌',caps:[
-   '細菌和病毒都可能讓人生病，但它們增加數量的方式完全不同。',
-   '細菌：環境適合時，自己就能一分為二。',
-   '只要環境適合，細菌可以持續增殖。病毒在細胞外，數量不會增加。',
-   '病毒：必須先附著、進入宿主細胞。',
-   '進入之後，病毒利用細胞的設備複製自己。',
-   '新病毒釋放出來，再去感染其他健康細胞。',
-   '重點：細菌可以自行分裂；病毒必須依賴宿主細胞才能複製。'],
+ {tab:'① 兩種入侵者',caps:[
+   '會讓人生病的小東西不只一種。先認識兩種很不一樣的入侵者：會致病的細菌，和病毒。',
+   '細菌自己就是一個完整的細胞：環境適合時，一個能分裂成兩個。',
+   '兩個變四個、四個變八個。旁邊的病毒呢？待在細胞外面，數量不會增加。',
+   '病毒自己沒辦法複製。它得先黏上、再鑽進人體的細胞。',
+   '進去之後，它借用細胞裡的設備，把這個細胞變成製造新病毒的工廠。',
+   '新病毒跑出來，再去找下一個健康的細胞。',
+   '重點：細菌能自己分裂；病毒一定要靠細胞才能複製。被感染的細胞是受害者，不是壞人。',
+   '戰術：對付病毒要兩頭顧——擋住還在細胞外的病毒，也要處理已經變成工廠的細胞。'],
   draw(k,u){
    bSplit();bLab(235,36,'細菌','#d2ff63',17);bLab(705,36,'病毒','#ffb3e4',17);
    const P=(g,i)=>g===0?[235,165]:g===1?[165+140*i,165]:g===2?[130+70*i,165]:[130+70*(i>>1),135+60*(i&1)];
@@ -714,29 +725,30 @@ const ANIMS=[
    else for(let i=0;i<2<<g;i++){const a=P(g,i>>1),b=P(g+1,i);bRod(L(a[0],b[0],v),L(a[1],b[1],v),Math.sin(T*1.5+i)*.12);}
    bLab(235,285,'數量 ×'+(v<0?1<<g:v>.3?2<<g:1<<g),'#d2ff63',14);
    const hs=k>=4||(k===3&&u>.85)?1:0,ns=k>=6||(k===5&&u>.85)?1:0;
-   bCell(700,160,.8,hs);bCell(858,92,.55,ns);bCell(858,236,.55,ns);bLab(700,222,'宿主細胞','#8fb3ba',12);
+   bCell(700,160,.8,hs);bCell(858,92,.55,ns);bCell(858,236,.55,ns);bLab(700,222,'人體的細胞','#8fb3ba',12);
    if(k<3){drawVirion(560,160+Math.sin(T*2)*4,1.1,1,T);if(k>0)bLab(560,200,'在細胞外：不會增加','#8fb3ba',12,k===1?u*3:1);}
    if(k===3&&u<.85)drawVirion(L(560,655,E(u/.6)),160,1.1-.6*cl((u-.6)/.25),1-cl((u-.7)/.15),T);
    if(k===4)bLab(700,100,'複製中…','#ffb3e4',13,u*3);
    if(k===5&&u<.85){const a=E(u/.8);drawVirion(L(700,832,a),L(160,100,a),1,1,T);drawVirion(L(700,832,a),L(160,228,a),1,1,T);}
    if(k>=5)bLab(858,165,'再感染','#ffb3e4',12,k===5?(u-.7)*4:1);
   }},
- {tab:'② 啟動適應性免疫',caps:[
-   '病毒感染了呼吸道的上皮細胞。',
-   '先天免疫先上場：巨噬細胞等很快開始防禦，但不針對特定病毒。',
-   '樹突細胞攝取病毒的抗原——可以想成病毒的「特徵樣本」。',
-   '樹突細胞帶著抗原，離開感染部位，前往淋巴結。',
-   '在淋巴結，抗原被呈現給少數「剛好認得這種病毒」的 T、B 細胞。',
-   '被活化的 T、B 細胞開始大量增殖——這需要時間。',
-   '活化的 B 細胞分化為漿細胞，分泌抗體。',
-   '毒殺 T 細胞（CD8+）前往感染部位，參與控制感染。',
-   '重點：先天免疫先頂住；適應性免疫要時間準備，但能針對這種病毒。所以本關要儘早讓樹突細胞取得抗原。'],
+ {tab:'② 偵察兵帶回情報',caps:[
+   '病毒闖進呼吸道，感染了排在表面的細胞。',
+   '附近的守衛「巨噬細胞」馬上開始吞病毒。這種反應快、能辨認多種病原體共有特徵的防禦，叫做「先天免疫」。',
+   '偵察兵「樹突細胞」的任務不一樣：它採集病毒的「特徵樣本」——正式名稱是「抗原」。',
+   '偵察兵帶著這份情報離開前線，趕往集結地「淋巴結」。',
+   '淋巴結裡有各式各樣的 T 細胞、B 細胞，其中少數剛好認得這個抗原，被喚醒了。',
+   '被喚醒的細胞開始一個變兩個、兩個變四個——要湊夠數量，需要時間。',
+   'B 細胞這一隊，有些變成製造「抗體」的工廠。抗體不是細胞，是一種蛋白質。',
+   '另一隊「毒殺 T 細胞」趕往前線，專門處理已經被感染的細胞。',
+   '重點：守衛先頂住（先天免疫）；認得這種病毒的後援要時間準備（適應性免疫）。',
+   `戰術：儘早讓樹突細胞取得抗原。之後毒殺 T 細胞要 ${CFG.T_DELAY} 回合、抗體要 ${CFG.AB_DELAY} 回合才就緒——這段時間靠巨噬細胞爭取。`],
   draw(k,u){
    ctx.fillStyle='rgba(127,196,255,.08)';ctx.strokeStyle='rgba(127,196,255,.55)';ctx.lineWidth=1.5;ctx.beginPath();ctx.ellipse(770,150,150,112,0,0,6.28);ctx.fill();ctx.stroke();
-   bLab(770,28,'淋巴結','#cfe6e8',14);bLab(190,294,'呼吸道上皮（感染部位）','#8fb3ba',12);
+   bLab(770,28,'淋巴結（集結地）','#cfe6e8',14);bLab(190,294,'呼吸道上皮（感染部位）','#8fb3ba',12);
    const infd=k>0||u>.6;[70,130,190,250,310].forEach((x,i)=>bCell(x,245,.5,i===2&&infd?1:0));
    if(k===0&&u<.6)drawVirion(190,L(70,215,E(u/.6)),1,1,T);
-   bUnit(105,150,.55,'mac',k>1||(k===1&&u>.7)?1:0);bLab(105,112,'巨噬細胞','#ffeccb',12);
+   bUnit(105,150,.55,'mac',k>1||(k===1&&u>.7)?1:0);bLab(105,112,'巨噬細胞（守衛）','#ffeccb',12);
    if(k===0)drawVirion(40,L(60,150,E(u)),.9,cl(u*3),T);
    if(k===1&&u<.7)drawVirion(L(40,95,E(u/.7)),150,.9*(1-.5*cl((u-.4)/.3)),1,T);
    let dx=285,dy=160;if(k===3){const a=E(u);dx=L(285,640,a);dy=L(160,150,a)-Math.sin(a*3.14)*40;}else if(k>3){dx=640;dy=150;}
@@ -745,14 +757,14 @@ const ANIMS=[
    const tcl=[[735,100],[775,72],[700,62],[790,120]],bcl=[[735,205],[775,232],[700,243],[790,186]];
    if(k<5){bT(735,100,'T',grey);bT(735,205,'B',grey);
      if(k===4){ctx.strokeStyle=`rgba(205,190,255,${.8*cl(u*2)})`;ctx.lineWidth=2;ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(660,146);ctx.lineTo(722,104);ctx.moveTo(660,154);ctx.lineTo(722,201);ctx.stroke();ctx.setLineDash([]);
-       bT(735,100,'T',TC,u*1.6);bT(735,205,'B',BC,u*1.6);bLab(790,155,'認得這種病毒 → 活化','#fff',12.5,(u-.4)*3);}}
+       bT(735,100,'T',TC,u*1.6);bT(735,205,'B',BC,u*1.6);bLab(790,155,'剛好認得 → 被喚醒','#fff',12.5,(u-.4)*3);}}
    else{const n=k===5?1+Math.min(3,Math.floor(u*4)):4;
      for(let i=0;i<n;i++){bT(tcl[i][0],tcl[i][1],k>=7?'CD8':'T',TC);
-       if(k>=6){ctx.fillStyle='rgba(255,224,122,.9)';ctx.strokeStyle='#fff';ctx.lineWidth=1.3;ctx.beginPath();ctx.ellipse(bcl[i][0],bcl[i][1],16,12,0,0,6.28);ctx.fill();ctx.stroke();bLab(bcl[i][0],bcl[i][1]+4,'漿','#3a2c00',11);}
+       if(k>=6){ctx.fillStyle='rgba(255,224,122,.9)';ctx.strokeStyle='#fff';ctx.lineWidth=1.3;ctx.beginPath();ctx.ellipse(bcl[i][0],bcl[i][1],16,12,0,0,6.28);ctx.fill();ctx.stroke();bLab(bcl[i][0],bcl[i][1]+4,'工廠','#3a2c00',10.5);}
        else bT(bcl[i][0],bcl[i][1],'B',BC);}
      if(k===5)bLab(770,155,'增殖中… 需要時間','#fff',13);}
    if(k===3){ctx.strokeStyle='rgba(205,190,255,.35)';ctx.setLineDash([3,6]);ctx.beginPath();ctx.moveTo(300,150);ctx.quadraticCurveTo(470,70,620,150);ctx.stroke();ctx.setLineDash([]);}
-   bUnit(dx,dy,.55,'dc');bLab(dx,dy-32,'樹突細胞','#d9ccff',12);
+   bUnit(dx,dy,.55,'dc');bLab(dx,dy-32,'樹突細胞（偵察兵）','#d9ccff',12);
    if(k===2){const a=E(u/.8),x=L(200,dx+8,a),y=L(232,dy+4,a);bFrag(x,y);bLab(x+24,y+4,'抗原','#ffb3e4',12);}
    else if(k>2){bFrag(dx+8,dy+4);if(k===3)bLab(dx+34,dy+8,'抗原','#ffb3e4',12);}
    if(k>=6){const tx=[55,100,140,255,300,330],ty=[212,202,214,204,214,200];
@@ -760,19 +772,20 @@ const ANIMS=[
      bLab(470,262,'抗體','#ffe07a',13,k===6?u*3:1);}
    if(k>=7){const tg=[[225,206],[160,208]];for(let i=0;i<2;i++){const a=k===7?E(u*1.3-i*.15):1;bT(L(tcl[i][0],tg[i][0],a),L(tcl[i][1],tg[i][1],a)-(k===7?Math.sin(a*3.14)*30:0),'CD8',TC);}
      bLab(470,112,'毒殺 T 細胞','#7fc4ff',13,k===7?u*3:1);}
-   if(k>=4)bLab(470,314,'真實過程還需要輔助 T 細胞、共同刺激等活化訊號；這裡已簡化。','#8fb3ba',11.5);
+   if(k>=4)bLab(470,314,'真實過程還有更多步驟（見規則頁的「進階知識」）；這裡已簡化。','#8fb3ba',11.5);
   }},
- {tab:'③ 抗體與 T 細胞',caps:[
-   '情境 A：病毒還在細胞外，正要感染一個健康細胞。',
-   '中和抗體結合在病毒表面。',
-   '病毒附著、進入細胞的能力被擋住——新的感染被阻止了。',
-   '情境 B：病毒已經在細胞裡。抗體進不了細胞。',
-   '受感染的細胞持續產生新病毒。',
-   '毒殺 T 細胞（CD8+）辨識出這個受感染的細胞。',
-   '它促使這個細胞死亡：病毒來源關閉，但組織少了一個細胞。',
-   '重點：抗體主要阻止新的感染；毒殺 T 細胞主要清除已感染的細胞。它們不是人體唯一的抗病毒機制。'],
+ {tab:'③ 兩種工具，兩種任務',caps:[
+   '情況一：病毒還在細胞外面，正要闖進一個健康的細胞。',
+   '「抗體」登場。它是免疫系統製造的蛋白質，形狀像 Y，會黏在病毒表面。',
+   '被抗體貼滿的病毒，黏不上、也進不了細胞——新的感染被擋下來了。',
+   '情況二：病毒已經躲進細胞裡。抗體進不了細胞，拿它沒辦法。',
+   '這個細胞被迫不停製造新病毒。它是受害者，卻成了病毒的來源。',
+   '「毒殺 T 細胞」像特勤隊員，能認出哪個細胞已經被感染。',
+   '它讓這個細胞死亡：病毒的來源關掉了，但組織也少了一個細胞。',
+   '重點：抗體擋住細胞外的病毒；毒殺 T 細胞處理已被感染的細胞。人體對付病毒的方法不只這兩種。',
+   `戰術：抗體就緒後，用它擋下新的感染；毒殺 T 細胞每回合可清除 ${CFG.CTL_N} 個受感染細胞——每清一個，組織就少一個細胞。`],
   draw(k,u){
-   bSplit();bLab(235,36,'情境 A｜病毒還在細胞外','#ffe07a',15);bLab(705,36,'情境 B｜病毒已在細胞裡','#7fc4ff',15);
+   bSplit();bLab(235,36,'情況一｜病毒還在細胞外','#ffe07a',15);bLab(705,36,'情況二｜病毒已在細胞裡','#7fc4ff',15);
    // A：抗體中和
    bCell(345,165,.8,0);bLab(345,227,'健康細胞','#8fb3ba',12);
    const vx=k===0?L(80,200,E(u)):k===1?200:k===2?(u<.5?L(200,285,E(u*2)):L(285,245,E((u-.5)*2))):245;
@@ -793,8 +806,8 @@ const ANIMS=[
   }}];
 const capDur=s=>Math.max(3.8,1.8+s.length*.12);        // 每一步的停留秒數：字越多停越久
 function briefUi(){
-  if(!BA)return;const cap=BA.a.caps[BA.k],sum=cap.startsWith('重點：');
-  $('bcap').className=sum?'sum':'';$('bcap').innerHTML=sum?'<span><b>重點</b>'+cap.slice(2)+'</span>':'<span>'+cap+'</span>';
+  if(!BA)return;const cap=BA.a.caps[BA.k],sum=/^(重點|戰術)：/.test(cap);
+  $('bcap').className=sum?'sum':'';$('bcap').innerHTML=sum?'<span><b>'+cap.slice(0,2)+'</b>'+cap.slice(2)+'</span>':'<span>'+cap+'</span>';
   $('bdots').querySelectorAll('i').forEach((d,i)=>d.className=i<BA.k?'done':i===BA.k?'now':'');
   $('bplay').textContent=BA.done?'▶ 再看一次':BA.play?'⏸ 暫停':'▶ 播放';
   $('bstep').textContent=`${BA.k+1} / ${BA.a.caps.length}`;
@@ -836,24 +849,44 @@ function briefRules(){
    ['#ff9aa3','回合預告','紅框與粉紅箭頭是病毒的下一步，據此決定先後。']];
   return`<div class="k2t"><b>從知識到戰術</b>${K.map(k=>`<span><i style="background:${k[0]}"></i><em>${k[1]}</em>${k[2]}</span>`).join('')}</div>
   <div class="rules">${R.map(r=>`<div><b>${r[0]}</b><span>${r[1]}</span></div>`).join('')}</div>
-  <p class="note">在本關的簡化遊戲模型中，受感染的細胞最終都會死亡，兩種死法都算組織損失；真實人體中，部分受感染細胞可能在病毒清除後存活。回合數、釋放的病毒數、細胞死亡時間、吞噬容量、活化回合與使用次數都是遊戲規則，不是真實的生理規律（真實的適應性免疫以「天」計）。「下令」是遊戲操作，不是醫療處置。</p>`;
+  <p class="note">在本關的簡化遊戲模型中，受感染的細胞最終都會死亡，兩種死法都算組織損失；真實人體中，部分受感染細胞可能在病毒清除後存活。回合數、釋放的病毒數、細胞死亡時間、吞噬容量、活化回合與使用次數都是遊戲規則，不是真實的生理規律（真實的適應性免疫以「天」計）。「下令」是遊戲操作，不是醫療處置。「守衛、偵察兵、特勤隊員、工廠」與角色表情只是幫助理解的比喻：細胞和病毒沒有情緒或意識，免疫系統也沒有指揮中心。</p>`;
 }
-function showBrief(page,inGame){
+// 進階知識（選讀）：放在規則頁裡切換顯示，不是必讀內容
+function advHtml(){
+  const c=(x,y,r,f,t,s)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${f}" stroke="#fff" stroke-width="1.3"/><text x="${x}" y="${y+r+15}" text-anchor="middle" fill="#cfe6e8" font-size="11.5">${t}</text>${s?`<text x="${x}" y="${y+r+29}" text-anchor="middle" fill="#8fb3ba" font-size="10.5">${s}</text>`:''}`;
+  const a=d=>`<path d="${d}" fill="none" stroke="#cfe6e8" stroke-width="1.4" marker-end="url(#ah)"/>`;
+  return`<div class="adv"><div><h3>淋巴結裡發生的事（簡圖）</h3>
+   <svg viewBox="0 0 450 250"><defs><marker id="ah" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="#cfe6e8"/></marker></defs>
+    ${c(60,70,17,'rgba(185,164,255,.95)','樹突細胞','出示抗原')}${c(200,70,14,'rgba(170,215,255,.95)','輔助 T 細胞','給出協助訊號')}${c(350,50,14,'rgba(150,235,200,.95)','B 細胞','')}
+    ${c(350,150,15,'rgba(255,224,122,.95)','漿細胞','製造抗體')}${c(200,170,14,'rgba(127,196,255,.95)','毒殺 T 細胞','')}
+    ${a('M80 70H182')}${a('M217 66L333 53')}${a('M350 82V132')}${a('M200 116V152')}${a('M72 86L184 162')}
+    <text x="442" y="244" text-anchor="end" fill="#8fb3ba" font-size="10.5">概念示意，省略了許多步驟</text></svg>
+   <p class="note">這一頁是選讀內容，不看也不影響遊戲。</p></div>
+  <div><h3>想多知道一點</h3><ul>
+   <li class="k4">樹突細胞會把抗原的片段放在自己表面，「出示」給 T 細胞檢查，這叫做<b>抗原呈現</b>。</li>
+   <li class="k3">T 細胞要被喚醒，除了認得抗原，還需要額外的確認訊號（<b>共同刺激</b>），可以想成雙重確認。</li>
+   <li class="k3"><b>輔助 T 細胞</b>不直接清除病毒，而是釋放訊號，協助 B 細胞與毒殺 T 細胞的反應。動畫裡把它省略了。</li>
+   <li class="k4">B 細胞被喚醒後，一部分會轉變成<b>漿細胞</b>——大量製造抗體的細胞。抗體本身是蛋白質，不是細胞。</li>
+   <li>先天免疫不只有巨噬細胞，還包括干擾素、自然殺手細胞等；本關沒有呈現。</li>
+   <li class="k2">本關的遊戲化抽象：真實的適應性免疫以「天」計，這裡濃縮成回合倒數；角色的表情與「偵察兵、特勤隊員」等說法只是比喻。</li>
+  </ul></div></div>`;
+}
+function showBrief(page,inGame,adv){
   const N=ANIMS.length,last=page===N;
   let old=false;try{old=localStorage.getItem('iw2_brief')==='1';}catch(e){}
   BA=null;                                              // 換頁：先停掉原本的動畫
   $('card').className='card brief';
   $('card').innerHTML=`<div class="bh"><h1>免疫系統大作戰</h1><span>LEVEL 02｜呼吸道防線：病毒危機</span><a href="../index.html">◂ 返回主選單</a></div>
   <div class="tabs">${[...ANIMS.map(a=>a.tab),'④ 遊戲規則與戰術'].map((t,k)=>`<button data-p="${k}" class="${k===page?'on':''}">${t}</button>`).join('')}</div>
-  <div class="body">${last?briefRules():`<canvas id="bcv" width="1880" height="640"></canvas><div id="bcap"></div>
+  <div class="body">${last?(adv?advHtml():briefRules()):`<canvas id="bcv" width="1880" height="640"></canvas><div id="bcap"></div>
     <div class="bctl"><button id="bplay"></button><button id="bre">↺ 重新播放</button><div id="bdots"></div><span id="bstep"></span><span class="t">點橫條可跳到任一步</span></div>`}</div>
   <div class="btns">${inGame?'':`<button id="skip" class="${old?'pri':''}">${old?'直接開始（已看過）':'跳過教學'}</button>`}
-   ${page>0?'<button id="prev">上一段</button>':''}${last?'':`<button id="next" class="${inGame||old?'':'pri'}">下一段</button>`}
+   ${last?`<button id="adv">${adv?'◂ 回到規則':'進階知識（選讀）'}</button>`:''}${page>0?'<button id="prev">上一段</button>':''}${last?'':`<button id="next" class="${inGame||old?'':'pri'}">下一段</button>`}
    ${last||inGame?`<button class="${last&&old?'':'pri'}" id="go">${inGame?(G.result?'回到結算':'回到戰場'):'開始戰鬥'}</button>`:''}</div>`;
   $('ov').classList.add('on');
   $('card').querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>showBrief(+b.dataset.p,inGame));
   const on=(id,f)=>{const e=$(id);if(e)e.onclick=f;};
-  on('prev',()=>showBrief(page-1,inGame));on('next',()=>showBrief(page+1,inGame));on('skip',closeBrief);on('go',closeBrief);
+  on('adv',()=>showBrief(page,inGame,!adv));on('prev',()=>showBrief(page-1,inGame));on('next',()=>showBrief(page+1,inGame));on('skip',closeBrief);on('go',closeBrief);
   if(!last)startAnim(page);
 }
 function closeBrief(){
@@ -887,9 +920,10 @@ function showEnd(){
     <li class="k3">毒殺 T 細胞清除受感染的細胞。免疫反應本身也會損失細胞——病毒與免疫反應都可能造成組織傷害。</li>
   </ul>
   <p class="note">遊戲中的回合、數值、次數與「下令」都是為了好玩而做的簡化。真實的適應性免疫還需要輔助 T 細胞、活化訊號與淋巴組織；先天免疫還包括干擾素、自然殺手細胞等；初次感染的適應性免疫以「天」計。本關不涉及疫苗與免疫記憶，也不是醫療建議。</p>
-  <div class="btns"><button class="pri" id="again">再玩一局（新戰場）</button><button id="retry">重試同一戰場</button><button id="rules">查看說明</button><button id="lv1">主選單</button></div>`;
+  <div class="btns"><button class="pri" id="nextLv">進入第 3 關：免疫記憶與疫苗</button><button id="again">再玩一局（新戰場）</button><button id="retry">重試同一戰場</button><button id="rules">查看說明</button><button id="lv1">主選單</button></div>`;
   $('ov').classList.add('on');
   $('again').onclick=()=>start();$('retry').onclick=()=>start(G.seed);$('rules').onclick=()=>showBrief(ANIMS.length,true);$('lv1').onclick=()=>{location.href='../index.html';};
+  $('nextLv').onclick=()=>{location.href='03-immune-memory.html';};                 // 不自動跳轉：由玩家自己決定何時前往下一關
 }
 let games=0;
 function start(seed){
@@ -926,6 +960,39 @@ function drawAirway(){                                   // 氣道內腔與纖�
   for(let x=x0+6;x<x1;x+=9){const s=Math.sin(T*2.4+x*.05)*5;ctx.beginPath();ctx.moveTo(x,134);ctx.quadraticCurveTo(x+s*.4,125,x+s,117);ctx.stroke();}
   ctx.font='12px '+FONT;ctx.textAlign='left';ctx.fillStyle='rgba(190,225,235,.6)';ctx.fillText('呼吸道內腔（空氣這一側）',x0+8,102);ctx.textAlign='center';
 }
+// 角色表情（本關自包含的小工具）：只畫眼、眉、嘴，不改任何判定、位置或碰撞範圍。
+// mood：calm 親切｜focus 專注｜eat 張嘴｜full 吃飽｜sly 狡黠（只用在正在造成感染的病原體）｜worry 擔心｜hurt 不舒服｜pain 痛苦｜dead 失去活力｜sleep 尚未被喚醒
+// 擬人化只是視覺比喻：細胞與病毒沒有情緒或意識。
+function drawFace(x,y,s,mood,ink,ph,noMouth){
+  ctx.save();ctx.translate(x,y);ctx.scale(s,s);ctx.lineCap='round';ctx.lineJoin='round';ctx.setLineDash([]);ctx.shadowBlur=0;
+  ink=ink||'#3b2a1e';ctx.strokeStyle=ink;ctx.fillStyle=ink;ctx.lineWidth=1.25;
+  const blink=ph!==undefined&&(T+ph)%4.6<.14,ln=(a,b,c,d)=>{ctx.beginPath();ctx.moveTo(a,b);ctx.lineTo(c,d);ctx.stroke();};
+  for(const d of[-1,1]){ctx.save();ctx.scale(d,1);                       // 左右對稱：只寫右眼
+    if(mood==='sly'){ctx.beginPath();ctx.arc(5,0,2.7,-.4,Math.PI-.3);ctx.closePath();ctx.fillStyle='#fff';ctx.fill();ctx.lineWidth=.9;ctx.stroke();
+      ctx.fillStyle=ink;ctx.beginPath();ctx.arc(4.6,1,1.15,0,6.28);ctx.fill();}
+    else if(mood==='full'){ctx.beginPath();ctx.arc(5,.8,2.2,Math.PI,6.283);ctx.stroke();}
+    else if(mood==='sleep'){ctx.beginPath();ctx.arc(5,-.6,2.2,0,Math.PI);ctx.stroke();}
+    else if(mood==='dead'||blink)ln(3,0,7,0);
+    else if(mood==='pain'){ctx.beginPath();ctx.moveTo(7,-1.8);ctx.lineTo(3.4,0);ctx.lineTo(7,1.8);ctx.stroke();}
+    else{ctx.beginPath();ctx.arc(5,0,mood==='worry'?2.1:mood==='hurt'?1.6:1.9,0,6.28);ctx.fill();
+      if(ink[0]==='#'){ctx.fillStyle='rgba(255,255,255,.85)';ctx.beginPath();ctx.arc(4.3,-.7,.65,0,6.28);ctx.fill();}}
+    if(mood==='focus')ln(2.6,-3.2,7.6,-4.6);
+    else if(mood==='worry'||mood==='hurt'||mood==='pain')ln(2.8,-5,7.4,-3.4);
+    ctx.restore();}
+  if(!noMouth){ctx.beginPath();
+    if(mood==='calm')ctx.arc(0,3.6,3,.2*Math.PI,.8*Math.PI);
+    else if(mood==='focus'){ctx.moveTo(-2.2,6);ctx.lineTo(2.2,6);}
+    else if(mood==='full')ctx.arc(0,3.4,4,.15*Math.PI,.85*Math.PI);
+    else if(mood==='sly'){ctx.moveTo(-3,5.2);ctx.quadraticCurveTo(.6,7.6,3.8,4.2);}
+    else if(mood==='worry'){ctx.moveTo(-3,6.4);ctx.quadraticCurveTo(-1.5,4.9,0,6.4);ctx.quadraticCurveTo(1.5,7.9,3,6.4);}
+    else if(mood==='hurt'||mood==='pain')ctx.arc(0,8.6,3,1.2*Math.PI,1.8*Math.PI);
+    else if(mood==='dead'){ctx.moveTo(-1.8,6.2);ctx.lineTo(1.8,6.2);}
+    else if(mood==='eat'){ctx.ellipse(0,6.4,3,2.8,0,0,6.28);ctx.fillStyle='#7a2f3a';ctx.fill();}
+    ctx.stroke();
+    if(mood==='full'){ctx.fillStyle='rgba(255,130,110,.4)';for(const d of[-1,1]){ctx.beginPath();ctx.arc(d*8.6,3.4,2.1,0,6.28);ctx.fill();}}
+  }
+  ctx.restore();
+}
 function drawCell(t){
   const dead=t.st===2,inf=t.st===1,k=dead?.64:1,n=dead?9:7,pts=[];
   for(let a=0;a<n;a++){const an=-Math.PI/2+a*6.283/n+(dead?Math.sin(t.seed*7+a)*.18:0),
@@ -939,7 +1006,7 @@ function drawCell(t){
   g.addColorStop(0,C[0]);g.addColorStop(1,C[1]);ctx.fillStyle=g;ctx.fill();
   const last=inf&&relLeft(t)<=1;
   ctx.strokeStyle=C[2];ctx.lineWidth=inf?2:1.6;ctx.setLineDash(dead||last?[7,5]:[]);ctx.stroke();ctx.setLineDash([]);
-  const nx=t.x+Math.cos(t.seed)*9,ny=t.y+Math.sin(t.seed)*9;
+  const nx=t.x+Math.cos(t.seed)*9,ny=t.y-9-Math.abs(Math.sin(t.seed))*8;   // 細胞核固定在上半部，下半部留給表情
   if(!dead){
     ctx.fillStyle=inf?'rgba(150,70,150,.55)':'rgba(70,170,190,.5)';
     ctx.beginPath();ctx.ellipse(nx,ny,11,9,t.seed,0,6.28);ctx.fill();
@@ -955,6 +1022,8 @@ function drawCell(t){
     for(let q=0;q<left;q++){const x=t.x+(q-(left-1)/2)*11,y=t.y+R*.62;ctx.fillStyle='rgba(255,150,215,.95)';
       ctx.beginPath();ctx.moveTo(x,y-5);ctx.lineTo(x+4,y);ctx.lineTo(x,y+5);ctx.lineTo(x-4,y);ctx.closePath();ctx.fill();}
   }
+  // 表情：健康＝平靜、病毒在門口＝擔心、受感染＝不舒服（它是受害者，不是反派）、死亡＝失去活力
+  drawFace(t.x,t.y+(dead?15:12)*k,1.3*k,dead?'dead':inf?(last?'pain':'hurt'):t.vir>0?'worry':'calm',dead?'rgba(170,135,135,.55)':inf?'rgba(255,228,246,.82)':'rgba(222,248,246,.72)',t.seed);
   if(t.flash>0){blob(pts);ctx.fillStyle=`rgba(255,110,190,${t.flash*.55})`;ctx.fill();}
 }
 function drawVirion(x,y,s,alpha,ph){
@@ -963,6 +1032,7 @@ function drawVirion(x,y,s,alpha,ph){
   for(let k=0;k<8;k++){const a=k*.785;ctx.beginPath();ctx.moveTo(Math.cos(a)*7,Math.sin(a)*7);ctx.lineTo(Math.cos(a)*11.5,Math.sin(a)*11.5);ctx.stroke();}
   const g=ctx.createRadialGradient(-2,-3,1,0,0,8);g.addColorStop(0,'#ffd0ef');g.addColorStop(1,'#e64fb4');
   ctx.fillStyle=g;ctx.strokeStyle='#5a0f45';ctx.lineWidth=1.4;ctx.beginPath();ctx.arc(0,0,7.5,0,6.28);ctx.fill();ctx.stroke();
+  if(s>=.7){ctx.rotate(-(ph||0)*.3);drawFace(0,-.9,.6,'sly','#5a0f45');}   // 太小就不畫表情
   ctx.lineCap='butt';ctx.restore();
 }
 function drawUnit(m){
@@ -984,10 +1054,11 @@ function drawUnit(m){
   ctx.shadowColor=dc?'rgba(190,170,255,.6)':'rgba(255,225,170,.55)';ctx.shadowBlur=sel?20:10;ctx.fillStyle=g;ctx.fill();ctx.shadowBlur=0;
   ctx.strokeStyle='rgba(255,252,240,.95)';ctx.lineWidth=2;ctx.stroke();
   ctx.rotate(-m.ang);
-  if(dc){ctx.fillStyle='rgba(84,56,168,.85)';ctx.beginPath();ctx.ellipse(0,0,9,7.5,.4,0,6.28);ctx.fill();}
+  if(dc){ctx.fillStyle='rgba(84,56,168,.85)';ctx.beginPath();ctx.ellipse(0,-9.5,6,3.8,0,0,6.28);ctx.fill();drawFace(0,2.5,1.05,m.mood||'focus','#2a1a5c',m.ph);}   // 偵察兵：機警、認真
   else{
     ctx.fillStyle='rgba(132,96,190,.78)';ctx.strokeStyle='rgba(90,60,150,.8)';ctx.lineWidth=1;
-    ctx.beginPath();ctx.arc(-6,-9,10,Math.PI*.9,Math.PI*2.25);ctx.arc(-2,-5,5,Math.PI*.3,Math.PI*1.15,true);ctx.closePath();ctx.fill();ctx.stroke();
+    ctx.beginPath();ctx.arc(-10,-15,8,Math.PI*.9,Math.PI*2.25);ctx.arc(-6.8,-11.8,4,Math.PI*.3,Math.PI*1.15,true);ctx.closePath();ctx.fill();ctx.stroke();   // 細胞核縮小、上移，讓出表情的位置
+    drawFace(0,-2,1.3,m.mood||(m.gulp>.05||fx.some(f=>f.type==='gulp'&&f.m===m)?'eat':full?'full':sel||m.str>.08?'focus':'calm'),'#4a3220',m.ph);
     for(let k=0;k<CFG.CAP;k++){const vx=-12+k*12,vy=13+(k===1?4:0);ctx.beginPath();ctx.arc(vx,vy,6.2,0,6.28);
       if(k<m.stomach){ctx.fillStyle='rgba(110,50,90,.5)';ctx.fill();ctx.strokeStyle='rgba(90,40,70,.8)';ctx.lineWidth=1.2;ctx.stroke();drawVirion(vx,vy,.4,.95,T*3);}
       else{ctx.strokeStyle='rgba(170,120,80,.35)';ctx.lineWidth=1;ctx.stroke();}}
@@ -1059,14 +1130,13 @@ function drawFx(){
     }
     else if(f.type==='ctl'){                          // T 細胞從淋巴結方向衝入、接觸、離開
       const v=u<.6?ease(u/.6):1,x=LYM.x+(f.x+26-LYM.x)*v,y=LYM.y+(f.y-22-LYM.y)*v,a=u<.6?1:1-(u-.6)/.4;
-      ctx.fillStyle=`rgba(127,196,255,${.9*a})`;ctx.strokeStyle=`rgba(255,255,255,${a})`;ctx.lineWidth=1.6;ctx.beginPath();ctx.arc(x,y,13,0,6.28);ctx.fill();ctx.stroke();
-      ctx.font='700 10px system-ui';ctx.textAlign='center';ctx.fillStyle=`rgba(6,32,46,${a})`;ctx.fillText('CD8',x,y+4);
+      bT(x,y,'CD8','rgba(127,196,255,.95)',a,13);
     }
     else if(f.type==='fly'){                          // 樹突細胞帶著抗原飛往淋巴結
       const v=ease(u),x=f.x0+(LYM.x-f.x0)*v,y=f.y0+(LYM.y+20-f.y0)*v-Math.sin(u*3.14)*50,s=1-.6*v;
-      ctx.save();ctx.translate(x,y);ctx.scale(s,s);ctx.rotate(u*5);ctx.fillStyle='rgba(185,164,255,.92)';ctx.strokeStyle='#fff';ctx.lineWidth=1.6;ctx.beginPath();
-      for(let k=0;k<16;k++){const a=k*6.283/16,rr=k%2?14:34;ctx[k?'lineTo':'moveTo'](Math.cos(a)*rr,Math.sin(a)*rr);}ctx.closePath();ctx.fill();ctx.stroke();ctx.restore();
-      drawVirion(x,y,.5*s+.2,1,T*4);
+      ctx.save();ctx.translate(x,y);ctx.scale(s,s);ctx.rotate(Math.sin(u*9)*.3);ctx.fillStyle='rgba(185,164,255,.92)';ctx.strokeStyle='#fff';ctx.lineWidth=1.6;ctx.beginPath();
+      for(let k=0;k<16;k++){const a=k*6.283/16,rr=k%2?14:34;ctx[k?'lineTo':'moveTo'](Math.cos(a)*rr,Math.sin(a)*rr);}ctx.closePath();ctx.fill();ctx.stroke();drawFace(0,2.5,1.05,'focus','#2a1a5c');ctx.restore();
+      bFrag(x+24*s,y+8*s);                              // 帶走的是「特徵樣本」（抗原），不是整個病毒
     }
   }
   for(const p of parts){const u=p.life/p.max;ctx.fillStyle=`rgba(${p.col},${1-u})`;ctx.beginPath();ctx.arc(p.x,p.y,p.r*(1-u*.5),0,6.28);ctx.fill();}

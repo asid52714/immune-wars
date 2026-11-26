@@ -7,8 +7,8 @@
 
 A free, open-source, turn-based strategy game for learning how the human immune system works. Command immune cells, defend the body, and see for yourself what immunity can do, what it cannot, and what it costs.
 
-這是個人發起的公益科普專案，目前是**早期原型**（Prototype v0.6，三個關卡）。歡迎試玩，也歡迎指正醫學內容。
-*A personal, non-profit science-education project. This is an **early prototype** (v0.6, three levels). Playtesting and corrections are welcome.*
+這是個人發起的公益科普專案，目前是**早期原型**（Prototype v0.7，三個關卡，可以一關接一關連續遊玩）。歡迎試玩，也歡迎指正醫學內容。
+*A personal, non-profit science-education project. This is an **early prototype** (v0.7, three levels that can be played back to back). Playtesting and corrections are welcome.*
 
 ## 線上遊玩｜Play online
 
@@ -31,13 +31,25 @@ A free, open-source, turn-based strategy game for learning how the human immune 
 
 ### 設計理念｜Design approach
 
-**Animated Learning → Strategic Gameplay → Reflective Learning**
+**Story First → Concept Layering → Animated Learning → Strategic Gameplay → Reflective Learning**
 
-1. **動畫建立概念**：開戰前用簡短的動畫與圖文，先把這一關的醫學概念講清楚。
-2. **策略運用知識**：在回合制戰鬥裡，用剛學到的概念做決定、承擔後果。
-3. **戰後回顧**：結算畫面回顧這一局的決策與結果，並整理重點知識。
+1. **先講故事**：先用故事與生活化的比喻（城牆、守衛、偵察兵）讓人看懂發生了什麼事，再帶出正式的醫學名詞。
+2. **知識分層**：開戰前只需要掌握少數核心概念；較深入的機制與名詞放在規則頁的「進階知識（選讀）」。
+3. **動畫建立概念**：每一關開戰前都有三段簡短的故事動畫，可暫停、重播、跳過，遊戲中也能重看。
+4. **策略運用知識**：在回合制戰鬥裡，用剛學到的概念做決定、承擔後果。
+5. **戰後回顧**：結算畫面回顧這一局的決策與結果，並整理重點知識。
 
-*Short animated briefings introduce the concepts, turn-based battles put them to use, and a post-battle review connects your decisions to what happened.*
+**角色視覺化（Character-Based Visual Learning）**：三個關卡的細胞與病原體採用一致的角色造型，用外觀與表情幫助辨認「誰是誰、現在怎麼了」，不只依賴文字或顏色。
+
+- 巨噬細胞是守衛、樹突細胞是偵察兵、毒殺 T 細胞是特勤隊員；健康、受感染、受損的組織細胞有不同的表情。
+- 反派表情只畫在正在造成感染的細菌與病毒上——大多數細菌並不會讓人生病。
+- 受感染的細胞是受害者，不是壞人。
+- 抗原畫成一張「情報卡」（病毒的特徵樣本），不是另一種生物；抗體維持 Y 字形，它是蛋白質，不是細胞。
+- **表情與比喻只是教學用的視覺比喻**：細胞、細菌與病毒沒有情緒或意識，免疫系統也沒有指揮中心。
+
+設計時以沒有免疫學背景的高中生（例如社會組學生）也能理解為基本目標，並希望國小高年級學生也有機會看懂核心故事；後者目前只是設計方向，**還沒有找國小學生試玩驗證**。
+
+*Story first, then terminology; core ideas up front and deeper detail as optional reading; short animated briefings before each battle; turn-based battles that put the ideas to use; and a post-battle review. Cells and pathogens share one consistent character style across levels. Faces and metaphors are teaching devices only — cells and microbes have no feelings or intentions.*
 
 這是本專案採用的設計方法，尚未做過教育成效研究，不代表已證實的學習效果。
 *This is a design approach, not a claim of proven educational effectiveness.*
@@ -46,16 +58,18 @@ A free, open-source, turn-based strategy game for learning how the human immune 
 
 ### Level 01｜皮膚防線——傷口入侵 *(Skin barrier: wound infection)*
 
-細菌從傷口闖進組織。指揮巨噬細胞吞噬細菌，並拿捏發炎的力道：太弱擋不住，太強會傷到自己。
+皮膚破了洞，細菌趁機溜進來。帶領守衛「巨噬細胞」吞掉細菌，並拿捏發炎的力道：太弱擋不住，太強會傷到自己。
 
 - 皮膚是物理屏障，傷口是破口
 - 細菌的增殖與擴散
 - 巨噬細胞的吞噬作用
 - 發炎反應的兩面：協助防禦，也可能損傷組織
 
+開戰前有三段故事動畫（v0.7 起取代原本的靜態圖卡）：傷口與細菌、巨噬細胞、發炎的兩面。嗜中性球、單核球與組織胺等較深入的內容放在「進階知識（選讀）」。
+
 ### Level 02｜呼吸道防線——病毒危機 *(Airway defense: viral infection)*
 
-流感病毒把呼吸道上皮細胞變成病毒工廠。用先天免疫爭取時間，等適應性免疫到場：抗體處理細胞外的病毒，毒殺 T 細胞處理受感染的細胞。
+病毒會鑽進呼吸道的細胞，把它變成製造病毒的工廠。守衛（先天免疫）先爭取時間，偵察兵帶回情報，等後援（適應性免疫）到場：抗體處理細胞外的病毒，毒殺 T 細胞處理受感染的細胞。
 
 - 病毒必須依賴宿主細胞才能複製（和細菌的根本差異）
 - 先天免疫與適應性免疫的分工
@@ -63,7 +77,7 @@ A free, open-source, turn-based strategy game for learning how the human immune 
 - B 細胞、漿細胞與抗體中和
 - 細胞毒殺 T 細胞（CD8+）清除受感染細胞，以及隨之而來的組織損失
 
-開戰前有三段動畫教學（合計約兩分鐘，可暫停、重播、跳過）：病毒與細菌有什麼不同、先天免疫如何啟動適應性免疫、抗體與毒殺 T 細胞的分工。
+開戰前有三段故事動畫（可暫停、重播、跳過）：兩種入侵者（細菌與病毒）、偵察兵帶回情報、抗體與毒殺 T 細胞的分工。輔助 T 細胞、共同刺激、漿細胞等較深入的內容放在「進階知識（選讀）」。
 
 ### Level 03｜捲土重來——免疫記憶與疫苗 *(Immune memory and vaccination)*
 
@@ -80,8 +94,10 @@ A free, open-source, turn-based strategy game for learning how the human immune 
 
 第二場是「具有相應免疫記憶」的教學抽象模型，不代表任何特定品牌、種類或劑次的疫苗實際保護效果；個別玩家的戰果也不代表真實疫苗的效力。
 
-三個關卡都已由專案維護者親自試玩驗收；尚未做過大規模的外部試玩，也沒有做過針對學生族群的教育成效研究。
-*All three levels have been playtested and accepted by the maintainer; no large-scale external playtesting or study with students has been done yet.*
+每一關的結算畫面都可以直接前往下一關（不會自動跳轉，也沒有關卡解鎖或存檔）；也可以隨時從主選單任選關卡。
+
+三個關卡都已由專案維護者親自試玩驗收；v0.7 的教學與角色改版，維護者以 15 個檢核項目試玩評估，15 項全部符合。這是維護者個人的試玩結果：尚未做過大規模的外部試玩，沒有找國小學生驗證，也沒有做過針對學生族群的教育成效研究。
+*All three levels have been playtested and accepted by the maintainer (the v0.7 tutorial and character update met all 15 of the maintainer's checklist items). No large-scale external playtesting, no testing with primary-school pupils, and no study of educational effectiveness has been done yet.*
 
 ## 未來可能的主題｜Possible future topics
 
@@ -115,7 +131,7 @@ levels/
   03-immune-memory.html       第三關（單檔、自包含）
 ```
 
-基本操作：點選免疫細胞 → 點亮起的格子移動或行動 → 按「結束回合」（空白鍵）。每一關開始前都有簡報（第二、三關為動畫）與規則說明，遊戲中按右上角 `?` 可以重看。
+基本操作：點選免疫細胞 → 點亮起的格子移動或行動 → 按「結束回合」（空白鍵）。每一關開始前都有故事動畫與規則說明，遊戲中按右上角 `?` 可以重看；打完一關，結算畫面有前往下一關的按鈕。
 
 ## 科學正確性與醫學聲明｜Scientific accuracy and medical disclaimer
 
@@ -136,6 +152,8 @@ levels/
 - Bouvier NM, Palese P. *The biology of influenza viruses.* Vaccine. 2008. PMCID: PMC3074182.
 - Duan S, Thomas PG. *Balancing Immune Protection and Immune Pathology by CD8+ T-Cell Responses to Influenza Infection.* Front Immunol. 2016. PMCID: PMC4742794.
 - Dumm RE, Fiege JK, Waring BM, Kuo CT, Langlois RA, Heaton NS. *Non-lytic clearance of influenza B virus from infected cells preserves epithelial barrier function.* Nat Commun. 2019;10:779. <https://doi.org/10.1038/s41467-019-08617-z> — 用來支持「真實情況中，部分受感染細胞可能在病毒清除後存活」；這是實驗研究的結果，不能推論到所有人體感染情境。遊戲為了簡化，設定受感染細胞最終都會死亡。
+
+v0.7 新增的教學文字（發炎的紅腫熱痛、肥大細胞與組織胺、嗜中性球與單核球的到場先後、先天免疫辨認多種病原體共有的特徵、抗原呈現、輔助 T 細胞與漿細胞）對照的是上面已列出的 OpenStax *Microbiology* 17.4、17.5、18.1–18.4 與 *Anatomy and Physiology 2e* 21.2、21.3。
 
 第三關（免疫記憶與疫苗）另外參考：
 
