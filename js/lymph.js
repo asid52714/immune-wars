@@ -136,7 +136,7 @@
     ctx.globalAlpha = 1;
     A.card(DOCK.x, DOCK.y, 1, S.target);
     if (S.check && S.check.t > .28 && S.check.t < .8) for (let i = 0; i < 3; i++) { const ok = S.check.c.code[i] === S.target[i]; ctx.font = A.font(15, 700); ctx.textAlign = 'center'; ctx.fillStyle = ok ? P.ok : P.danger; ctx.fillText(ok ? '✓' : '✕', DOCK.x - 30 + i * 30, DOCK.y - 27); }
-    ctx.font = A.font(12); ctx.textAlign = 'center'; ctx.fillStyle = P.dim; ctx.fillText(tx('情報卡（病毒的特徵）', 'Intel card (the virus’s features)'), DOCK.x, DOCK.y + 38);
+    ctx.font = A.font(12); ctx.textAlign = 'center'; ctx.fillStyle = P.dim; ctx.fillText(tx('情報卡（病毒的特徵）', 'Intel card'), DOCK.x, DOCK.y + 38);
     A.dc(DOCK.x - 96, DOCK.y, .95, { ph: S.t }); ctx.font = A.font(12); ctx.fillStyle = P.dim; ctx.fillText(tx('偵察兵', 'Scout'), DOCK.x - 96, DOCK.y + 42);
     if (!IW.save.relax && S.phase !== 'intro') { ctx.font = A.font(19, 600); ctx.fillStyle = P.ink; ctx.fillText((S.phase === 'search' ? S.time : S.found).toFixed(1), DOCK.x + 98, DOCK.y + 5); ctx.font = A.font(12); ctx.fillStyle = P.dim; ctx.fillText(tx('秒', 'seconds'), DOCK.x + 98, DOCK.y + 38); }
     if (S.check) A.lymph(S.check.c.x, S.check.c.y, 19, { code: S.check.c.code, mem: S.check.c.mem, t: S.t, shake: S.check.c.shake, mood: S.check.t > .3 ? (S.check.ok ? 'happy' : 'sad') : 'o', glow: S.check.ok && S.check.t > .3 });

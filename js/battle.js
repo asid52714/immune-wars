@@ -9,7 +9,7 @@
   const W = 470, H = 610, R = 40, HW = Math.sqrt(3) * R, OX = (W - HW * 6.5) / 2 + HW / 2, OY = 102, ROWH = 60;
   const B = IW.battle = { W, H, R, HW, OY, ROWH };
   let root = null, cv = null, ctx = null, G = null, M = null, DEF = null, ST = null, stageK = 0, T = 0, raf = 0, last = 0;
-  let fx = [], parts = [], hover = -1, armed = null, hoverAct = null, hq = [], hCur = null, hMin = 0, hEnd = 0, hShown = null, cardView = null, lastInfo = -2;
+  let infoUntil = 0, fx = [], parts = [], hover = -1, armed = null, hoverAct = null, hq = [], hCur = null, hMin = 0, hEnd = 0, hShown = null, cardView = null, lastInfo = -2;
   const seen = new Set();
   Object.defineProperties(B, { G: { get: () => G }, T: { get: () => T }, ST: { get: () => ST }, DEF: { get: () => DEF }, stage: { get: () => stageK },
     hover: { get: () => hover }, preview: { get: () => armed || hoverAct }, armed: { get: () => armed }, root: { get: () => root } });
@@ -18,12 +18,12 @@
   B.open = function (def, k) {
     B.close(); DEF = def; M = def.mode; seen.clear();
     root = document.createElement('div'); root.className = 'bt';
-    root.innerHTML = `<div class="side sideL"><div class="top"><button class="ic" id="bBack" aria-label="menu">◂</button><div class="ttl"><b id="bTitle"></b><span id="bTurn"></span></div>
+    root.innerHTML = `<div class="side sideL"><div class="top"><button class="ic" id="bBack" aria-label="menu">◂</button><div class="ttl"><b id="bTitle"></b><span class="tl"><span id="bTurn"></span></span></div>
         <button class="ic" id="bHelp">?</button><button class="ic" id="bSpeed"></button><button class="ic" id="bMute"></button><button class="ic" id="bLang"></button></div>
-      <div id="pips"></div><div id="gauges"></div><div id="goal"></div></div>
+      <div class="prow"><div id="ap"></div><div id="pips"></div></div><div id="gauges"></div><div id="goal"></div></div>
       <div class="field" id="field"><canvas id="cv"></canvas><div id="banner"></div></div>
       <div class="side sideR"><div id="hint" aria-live="polite"></div><div id="info"></div>
-        <div class="bar2"><div id="acts"></div><div id="ap"></div><button id="bEnd"></button></div></div>
+        <div class="bar2"><div id="acts"></div><button id="bEnd"></button></div></div>
       <div class="ov" id="ov"><div class="card" id="card"></div></div><div class="ln" id="ln"></div>`;
     $('app').innerHTML = ''; document.body.appendChild(root);
     cv = $('cv'); ctx = cv.getContext('2d');
@@ -41,7 +41,7 @@
     cv.addEventListener('click', e => {
       const i = tileAt(e); if (IW.touch) hover = i;
       if (G && G.phase === 'player' && !G.result && !B.busy && !$('ov').classList.contains('on')) M.tap(G, i);
-      lastInfo = -2; showInfo();
+      lastInfo = -2; showInfo(); if (IW.touch) infoUntil = performance.now() + 4500;
     });
     addEventListener('resize', fit); addEventListener('keydown', onKey); addEventListener('pointerdown', onDown, true);
     if (window.ResizeObserver) (B._ro = new ResizeObserver(fit)).observe($('field'));
@@ -121,11 +121,12 @@
     $('pips').innerHTML = h.pips.map(p => `<i class="${p.cls || ''}"${p.m ? ` data-m="${p.m}"` : ''} title="${IW.esc(p.title || '')}"></i>`).join('');
     $('gauges').innerHTML = h.gauges.map(g => `<div class="g${g.warn ? ' warn' : ''}" title="${IW.esc(g.title || '')}"><div class="row"><span>${g.label}</span><em>${g.val}</em></div>
       <div class="bar">${g.next !== undefined ? `<u style="width:${IW.clamp(g.next, 0, 1) * 100}%;background:${g.color}"></u>` : ''}<s style="width:${IW.clamp(g.frac, 0, 1) * 100}%;background:${g.color}"></s></div></div>`).join('');
-    $('goal').innerHTML = (ST.goal ? '<b>' + pick(ST.goal) + '</b>' + (h.goal ? '<br>' : '') : '') + (h.goal || '');
+    const pg = ST.goal ? '<b>' + pick(ST.goal) + '</b>' : '', warn = /class="w"/.test(h.goal || '');   // 有警告時警告排前面（手機只顯示一兩行）
+    $('goal').innerHTML = warn ? h.goal + (pg ? ' ' + pg : '') : pg + (pg && h.goal ? '<br>' : '') + (h.goal || '');
     const hide = ST.hide || {};
     $('acts').innerHTML = h.acts.filter(a => !hide[a.id]).map(a => `<button class="act${a.on ? ' on' : ''}${armed === a.id ? ' armed' : ''}" data-id="${a.id}"${a.disabled || !pl ? ' disabled' : ''}>
       ${a.color ? `<span class="dot" style="background:${a.color}"></span>` : ''}<span>${a.label}${a.sub ? `<br><small>${a.sub}</small>` : ''}</span></button>`).join('');
-    $('ap').innerHTML = `<span>${tx('行動', 'AP')}</span>` + Array.from({ length: G.cfg.AP }, (_, k) => `<i class="${k < G.ap ? 'on' : ''}"></i>`).join('');
+    $('ap').title = tx('行動點數', 'Action points'); $('ap').innerHTML = Array.from({ length: G.cfg.AP }, (_, k) => `<i class="${k < G.ap ? 'on' : ''}"></i>`).join('');
     const be = $('bEnd'); be.disabled = !pl; be.innerHTML = tx('結束回合', 'End turn') + (IW.touch ? '' : `<small>${tx('空白鍵', 'Space')}</small>`);
     be.classList.toggle('pulse', pl && (G.ap === 0 || !!h.endPulse)); be.classList.toggle('danger', !!h.endDanger);
     $('banner').textContent = G.phase === 'enemy' ? pick(M.banner) : '';
@@ -150,13 +151,14 @@
     if (force) hq.unshift({ key, text }); else hq.push({ key, text });
     if (hq.length > 4) hq.length = 4; return true;
   };
+  const narrow = () => getComputedStyle($('info')).display === 'none';   // 手機直向：格子說明併入提示框
   function hintTick() {
     if (!G) return; const now = performance.now();
     if (hCur && (now > hEnd || (hq.length && now > hMin))) hCur = null;
-    if (!hCur && hq.length) { hCur = hq.shift(); hMin = now + 2600; hEnd = now + 7000; }
+    if (!hCur && hq.length) { hCur = hq.shift(); hMin = now + 2600; hEnd = now + 7000; infoUntil = 0; }
     const pv = (armed || hoverAct) && G.phase === 'player' && M.preview ? M.preview(G, armed || hoverAct) : null;
-    const txt = pv ? pv + (armed ? tx('<br><b>再點一次按鈕執行</b>，點別處取消。', '<br><b>Tap the button again to do it</b>, or tap elsewhere to cancel.') : '')
-      : hCur ? pick(hCur.text) : (G.phase === 'player' && !G.result && !B.busy ? ((ST.guide && ST.guide(G)) || M.guide(G, ST) || '') : '');
+    const txt = pv ? pv + (armed ? tx(' <b>再點一次執行</b>，點別處取消。', ' <b>Tap again to do it</b>, elsewhere to cancel.') : '')
+      : hCur && now < hMin ? pick(hCur.text) : narrow() && now < infoUntil && hover >= 0 && G.phase === 'player' ? (M.info(G, hover) || '') : hCur ? pick(hCur.text) : (G.phase === 'player' && !G.result && !B.busy ? ((ST.guide && ST.guide(G)) || M.guide(G, ST) || '') : '');
     if (txt !== hShown) { hShown = txt; $('hint').innerHTML = txt; }
   }
 

@@ -68,16 +68,16 @@
     const area = SK.areaOf(G, u.tile), C = SK.clone(G); (pro ? SK.actPromote : SK.actCalm)(C, C.units.find(o => o.id === u.id));
     const f = SK.forecast(C), b = G.fc, T0 = i => G.tiles[i], out = []; pv = { area, lv: {} };
     for (const i of area) pv.lv[i] = [T0(i).inf, C.tiles[i].inf];
-    out.push(tx(`<b>${name}</b>（1 點）：周圍 ${area.length} 格發炎${pro ? '各 +1 級' : `各 −${G.cfg.CALM} 級`}。`, `<b>${name}</b> (1 AP): the ${area.length} tiles around the cell go ${pro ? 'up 1 level' : `down ${G.cfg.CALM} levels`}.`));
+    out.push(tx(`<b>${name}</b>：周圍 ${area.length} 格${pro ? '各 +1 級' : `各 −${G.cfg.CALM} 級`}。`, `<b>${name}</b>: ${area.length} tiles ${pro ? '+1 level' : `−${G.cfg.CALM} levels`}.`));
     if (pro) {
-      if (!area.some(i => T0(i).bac > 0)) out.push(tx('範圍內沒有細菌，只能當援軍的路標。', 'No bacteria in range, so it would only be a signpost for reinforcements.'));
-      if (b.reinf === 0 && f.reinf > 0) out.push(tx('援軍下回合會循訊號抵達。', 'Reinforcements will follow the signal and arrive next turn.'));
+      if (!area.some(i => T0(i).bac > 0)) out.push(tx('範圍內沒有細菌。', 'No bacteria in range.'));
+      if (b.reinf === 0 && f.reinf > 0) out.push(tx('援軍下回合會來。', 'Reinforcements come next turn.'));
     } else {
       const rel = area.filter(i => T0(i).bac === 3 && T0(i).inf > 0 && C.tiles[i].inf === 0).length;
       if (rel) out.push(`<span class="w">${tx(`${rel} 個滿載菌落會恢復擴散。`, `${rel} full ${rel > 1 ? 'colonies' : 'colony'} will start spreading again.`)}</span>`);
       if (b.reinf > 0 && f.reinf === 0) out.push(`<span class="w">${tx('援軍會失去路標。', 'Reinforcements will lose their signpost.')}</span>`);
     }
-    out.push(tx(`回合結束的組織損傷：${b.dB + b.dI} → <b>${f.dB + f.dI}</b>`, `Tissue damage at end of turn: ${b.dB + b.dI} → <b>${f.dB + f.dI}</b>`) + (f.dI > b.dI ? ` <span class="w">${tx('（過度發炎）', '(excessive inflammation)')}</span>` : ''));
+    out.push(tx(`回合結束損傷 ${b.dB + b.dI} → <b>${f.dB + f.dI}</b>`, `End-of-turn damage ${b.dB + b.dI} → <b>${f.dB + f.dI}</b>`) + (f.dI > b.dI ? ` <span class="w">${tx('（過度發炎）', '(excessive inflammation)')}</span>` : ''));
     return out.join(' ');
   };
   M.cancel = () => { pv = null; };
@@ -182,8 +182,8 @@
         { label: tx('細菌', 'Bacteria'), val: (fl !== L ? `${L} <small>→ ${fl}</small>` : L) + ` <small>/ ${c.LOAD_MAX}</small>`, frac: L / c.LOAD_MAX, next: fl / c.LOAD_MAX, color: P.bac, warn: fl >= c.LOAD_MAX * .75 },
         { label: tx('發炎', 'Inflammation'), val: over ? tx('過度！', 'Excessive!') : I === 0 ? tx('沒有', 'None') : tx('適度', 'Moderate'), frac: I / 18, color: P.flame, warn: over }],
       goal: f.join(' '),
-      acts: [{ id: 'pro', label: tx('促進發炎', 'Boost inflammation'), sub: tx('1 點', '1 AP'), color: P.flame, disabled: !(G.ap > 0) },
-        { id: 'calm', label: tx('調節發炎', 'Calm inflammation'), sub: tx('1 點', '1 AP'), color: '#5bb5e0', disabled: !(G.ap > 0 && (!u || u.kind !== 'mac' || SK.canCalm(G, u))) }],
+      acts: [{ id: 'pro', label: tx('促進發炎', 'Boost'), sub: tx('1 點', 'inflammation'), color: P.flame, disabled: !(G.ap > 0) },
+        { id: 'calm', label: tx('調節發炎', 'Calm'), sub: tx('1 點', 'inflammation'), color: '#5bb5e0', disabled: !(G.ap > 0 && (!u || u.kind !== 'mac' || SK.canCalm(G, u))) }],
       endDanger: !!bad
     };
   };
@@ -210,7 +210,7 @@
     const g = c.createLinearGradient(0, 566, 0, H); g.addColorStop(0, '#f6c3c3'); g.addColorStop(1, '#eba5a8'); c.fillStyle = g; c.fillRect(0, 568, W, H - 568);
     c.strokeStyle = P.bloodDk; c.lineWidth = 2; c.beginPath(); c.moveTo(0, 568); c.lineTo(W, 568); c.stroke();
     for (let i = 0; i < 7; i++) { const x = ((T * 26 + i * 74) % (W + 40)) - 20; A.rbc(x, 584 + (i % 3) * 8, .95, i); }
-    c.font = A.font(11.5); c.textAlign = 'right'; c.fillStyle = '#8c3a44'; c.fillText(label, W - 8, 604);
+    c.font = A.font(11.5, 600); c.textAlign = 'right'; c.lineWidth = 3; c.strokeStyle = 'rgba(253,240,240,.9)'; c.strokeText(label, W - 8, 604); c.fillStyle = '#8c3a44'; c.fillText(label, W - 8, 604);
   }
   M.vessel = vessel;
   M.drawTile = function (G, t, T) {

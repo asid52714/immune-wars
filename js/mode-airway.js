@@ -146,7 +146,7 @@
   };
   M.newTurn = function (G) {
     pend = -1;
-    if (G.tAt && G.turn === G.tAt) { IW.sfx('arrive'); B.ftext(110, H - 54, tx('毒殺 T 細胞抵達', 'Cytotoxic T cells arrive'), P.hema); B.hint('tarrive', [`毒殺 T 細胞抵達！按下方的「毒殺 T 細胞」，再點受感染的細胞。每回合 ${G.cfg.CTL_N} 次。`, `Cytotoxic T cells have arrived! Press “Cytotoxic T” below, then tap an infected cell. ${G.cfg.CTL_N} uses per turn.`], true); }
+    if (G.tAt && G.turn === G.tAt) { IW.sfx('arrive'); B.ftext(110, H - 54, tx('毒殺 T 細胞抵達', 'Cytotoxic T cells arrive'), P.hema); B.hint('tarrive', [`毒殺 T 細胞抵達！按下方的「毒殺 T 細胞」，再點受感染的細胞。每回合 ${G.cfg.CTL_N} 次。`, `Cytotoxic T cells have arrived! Press “T cells” below, then tap an infected cell. ${G.cfg.CTL_N} uses per turn.`], true); }
     if (G.abAt && G.turn === G.abAt) { if (G.turn !== G.tAt) IW.sfx('arrive'); B.ftext(W - 120, H - 54, tx('抗體就緒', 'Antibodies ready'), '#8a5a12'); B.hint('abarrive', ['漿細胞開始分泌抗體！按「抗體」，再點有細胞外病毒的區域。濃度會逐回合上升。', 'Plasma cells have started making antibodies! Press “Antibodies”, then tap an area with free viruses. The supply rises turn by turn.'], G.turn !== G.tAt); }
   };
 
@@ -162,7 +162,7 @@
     f.push(!G.ag ? (G.units.some(u => u.kind === 'dc') ? `<span class="w">${tx('後援還沒啟動：偵察兵還沒取得情報。', 'Backup not started: the scout has no intel yet.')}</span>` : '')
       : G.turn < G.tAt ? tx(`後援在路上：T 細胞第 ${G.tAt} 回合、抗體第 ${G.abAt} 回合。`, `Backup on the way: T cells on turn ${G.tAt}, antibodies on turn ${G.abAt}.`)
         : G.turn < G.abAt ? tx(`T 細胞已抵達；抗體第 ${G.abAt} 回合就緒。`, `T cells are here; antibodies ready on turn ${G.abAt}.`) : '');
-    const wait = at => !G.ag ? tx('還沒有情報', 'no intel yet') : G.turn < at ? tx(`第 ${at} 回合`, `turn ${at}`) : tx('這回合用完了', 'used up this turn');
+    const wait = at => !G.ag ? tx('還沒有情報', 'no intel yet') : G.turn < at ? tx(`第 ${at} 回合`, `turn ${at}`) : tx('這回合用完', 'used this turn');
     return {
       turn: tx(`回合 ${G.turn} / ${c.TURNS}`, `Turn ${G.turn} / ${c.TURNS}`),
       pips: Array.from({ length: c.TURNS }, (_, k) => { const n = k + 1; return { cls: n < G.turn ? 'done' : n === G.turn ? 'now' : '', m: n === G.tAt && n === G.abAt ? 'T·Y' : n === G.tAt ? 'T' : n === G.abAt ? 'Y' : '' }; }),
@@ -171,8 +171,8 @@
         { label: tx('受感染細胞', 'Infected'), val: fc && fc.nInf !== nI ? `${nI} <small>→ ${fc.nInf}</small>` : nI, frac: nI / 12, next: fc ? fc.nInf / 12 : undefined, color: P.sickEdge, warn: nI >= 8 },
         { label: tx('細胞外病毒', 'Free virus'), val: fc && fc.nVir !== nV ? `${nV} <small>→ ${fc.nVir}</small>` : nV, frac: nV / 14, next: fc ? fc.nVir / 14 : undefined, color: P.vir }],
       goal: f.filter(Boolean).join(' '),
-      acts: [{ id: 'ab', label: tx('抗體', 'Antibodies') + (G.ab ? ' ×' + G.ab : ''), sub: G.ab ? tx('中和一片細胞外病毒', 'neutralize free virus in an area') : wait(G.abAt), color: P.gold, on: aim === 'ab', disabled: !AW.canAb(G) },
-        { id: 'ctl', label: tx('毒殺 T 細胞', 'Cytotoxic T') + (G.ctl ? ' ×' + G.ctl : ''), sub: G.ctl ? tx('清除一個受感染的細胞', 'clear one infected cell') : wait(G.tAt), color: P.tcell, on: aim === 'ctl', disabled: !AW.canCtl(G) }],
+      acts: [{ id: 'ab', label: tx('抗體', 'Antibodies') + (G.ab ? ' ×' + G.ab : ''), sub: G.ab ? tx('中和細胞外病毒', 'vs free virus') : wait(G.abAt), color: P.gold, on: aim === 'ab', disabled: !AW.canAb(G) },
+        { id: 'ctl', label: tx('毒殺 T 細胞', 'T cells') + (G.ctl ? ' ×' + G.ctl : ''), sub: G.ctl ? tx('清除受感染細胞', 'vs infected cells') : wait(G.tAt), color: P.tcell, on: aim === 'ctl', disabled: !AW.canCtl(G) }],
       endDanger: !!bad
     };
   };
@@ -281,8 +281,8 @@
       { kind: 'practice', seed: 7, cfg: { TURNS: 5, BUDGET: 10 }, preset: { units: [['mac', 26]], inf: { 8: 2, 10: 3 }, vir: { 13: 2, 14: 1, 19: 2, 16: 1, 17: 2, 22: 1 }, ready: { t: 1, ab: -1 } },
         goal: ['練習 3：後援都到了。抗體對付細胞外的，T 細胞對付細胞裡的', 'Practice 3: backup is here. Antibodies for viruses outside cells, T cells for the ones inside'], won: ['兩種工具，兩種任務', 'Two tools, two jobs'],
         say: ['B 細胞被選出來之後變成「漿細胞」，分泌大量「抗體」。抗體是蛋白質，不是細胞：它黏住細胞外的病毒，讓病毒進不了細胞，但它自己也進不了細胞。細胞裡的病毒工廠，仍然要靠毒殺 T 細胞。', 'Once selected, B cells become plasma cells and secrete large amounts of antibodies. Antibodies are proteins, not cells: they stick to viruses outside cells so the viruses cannot get in, but they cannot get inside cells either. Virus factories inside cells still need cytotoxic T cells.'],
-        next: ['開始正式戰鬥 ▸', 'Start the real battle ▸'], lost: ['按「抗體」再點病毒聚集的地方；按「毒殺 T 細胞」再點灰紫色的細胞。', 'Press “Antibodies” and tap where viruses cluster; press “Cytotoxic T” and tap a grey-violet cell.'],
-        guide: G => { if (G.ap === 0 || aim) return ''; return AW.nVir(G) && G.ab ? tx('按下方的「抗體」，再點病毒最密的地方：一次中和一整片。', 'Press “Antibodies” below, then tap where the viruses are densest: one use clears a whole area.') : AW.nInf(G) && G.ctl ? tx('按「毒殺 T 細胞」，再點受感染的細胞。', 'Press “Cytotoxic T”, then tap an infected cell.') : ''; } },
+        next: ['開始正式戰鬥 ▸', 'Start the real battle ▸'], lost: ['按「抗體」再點病毒聚集的地方；按「毒殺 T 細胞」再點灰紫色的細胞。', 'Press “Antibodies” and tap where viruses cluster; press “T cells” and tap a grey-violet cell.'],
+        guide: G => { if (G.ap === 0 || aim) return ''; return AW.nVir(G) && G.ab ? tx('按下方的「抗體」，再點病毒最密的地方：一次中和一整片。', 'Press “Antibodies” below, then tap where the viruses are densest: one use clears a whole area.') : AW.nInf(G) && G.ctl ? tx('按「毒殺 T 細胞」，再點受感染的細胞。', 'Press “T cells”, then tap an infected cell.') : ''; } },
       { kind: 'battle', cfg: {}, scn: { virus: 'A', key: 'first' } }],
     onBattleEnd(G, s) { const c = IW.save.ch.airway = IW.save.ch.airway || {}; c.plays = (c.plays || 0) + 1; unlock(); if (G.result.win) { c.done = true; c.stars = Math.max(c.stars || 0, s.stars); if (!IW.save.mem.A || IW.save.mem.A.from === 'borrowed') IW.save.mem.A = { from: 'infection' }; if (!IW.save.hist.first || !IW.save.hist.first.win) IW.save.hist.first = rec(G); IW.sfx('card'); } IW.store(); },
     endButtons(G) {
