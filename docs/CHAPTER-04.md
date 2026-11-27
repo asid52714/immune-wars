@@ -1,8 +1,10 @@
 # 第 4 章設計報告｜Chapter 4 design report
 
-> **狀態：候選版本，尚未發布。** 分支 `feat/chapter-04-antibiotic-resistance`，基線是正式版 v0.10（`3c858f6`）。這一章還沒有經過維護者試玩驗收，也沒有任何外部玩家玩過；線上的正式版本仍是 v0.10。
+> **狀態：已隨 Prototype v0.11 正式發布（2026-11-27）。** 維護者試玩驗收 10 項全部通過；沒有外部玩家測試、沒有醫學專業審查、英文未經母語人士審查、沒有教育成效研究。驗收紀錄與發布前最後的修正在文末「人工驗收與正式發布」。開發分支 `feat/chapter-04-antibiotic-resistance` 保留，基線是 v0.10（`3c858f6`）。
 >
-> *Status: release candidate, not released. Based on v0.10. Not yet playtested or accepted by the maintainer. This report covers what Chapter 4 is, why it is built this way, how it was tested, what was checked against sources, and what is still unverified. A short English summary is at the end.*
+> 以下各節是候選版本階段寫的，保留原樣當作歷史紀錄；其中「沒有真人玩過」「尚未驗收」這類句子，描述的是當時的狀態。
+>
+> *Status: released as part of Prototype v0.11 (2026-11-27) after the maintainer playtested it and accepted it on all ten checks. No external playtest, no medical expert review, no native-speaker review of the English, no study of learning outcomes. The sections below were written at the candidate stage and are kept as a record. This report covers what Chapter 4 is, why it is built this way, how it was tested, what was checked against sources, and what is still unverified. A short English summary is at the end.*
 
 這份文件給審查的人看：做了什麼、為什麼這樣做、怎麼測的、哪些地方沒有把握。
 
@@ -287,13 +289,46 @@ open index.html          # 或用瀏覽器直接開啟這個檔案
 
 **兩劑療程這項修改之後，沒有再請審查者看第三次。** 它的規則與流程由我自己的 112 項自動檢查與模擬覆蓋。
 
+## ChatGPT 獨立程式碼審查（候選版本 `efd15e4`）
+
+候選版本推送之後，ChatGPT 直接讀取 GitHub 上的原始碼、這份報告與版本差異，提出三項發現。逐項重現後都成立；修正只動文字與顯示，沒有改規則層、平衡或兩劑療程的機制。
+
+| | 重現結果 | 修正 |
+|---|---|---|
+| A. 兩劑療程與教學文字不一致 | **成立。** 練習 2 一路按「結束回合」到第一劑之後，場上還有 5 隻怕藥的細菌、1 隻條紋菌，提示卻寫「只剩條紋菌了」。細菌階段的提示「怕藥的細菌都不在了」只檢查有沒有用藥，沒有檢查場上是否還有怕藥的細菌。這是上一輪改成兩劑療程時沒有跟著改的文字 | 提示依場上實際狀態分支：第一劑後還有怕藥的細菌時，說的是「第一劑殺掉一半，條紋菌一隻也沒少」與「療程中怕藥的細菌停止分裂」；確定只剩條紋菌才說「只剩」。練習 1、練習 2 的結語與正式戰鬥的結算，改成依實際發生的事（有沒有打到第二劑、誰吞掉了什麼）寫，不再一律說「兩劑」 |
+| B. 格子資訊與實際增殖行為不一致 | **成立。** 療程中，只有怕藥細菌的格子，說明仍寫「回合結束會分裂成 2 隻」；規則層在療程中並不讓它分裂 | 格子說明依細菌組成（只有怕藥的／只有條紋的／兩種都有）與用藥狀態（療程前／療程中／療程後）分別描述。兩種都有、而且還沒用藥的格子，註明新的一隻有沒有條紋是隨機的。藥送到前一回合，狀態列的細菌數預測標成「約」，因為它受分裂時的隨機性影響。擴散箭頭加上同樣的條件 |
+| C. 主選單菌群與重玩情境 | **部分成立：不是存檔污染，是沒有說明。** 章節完成後再進入第 4 章，會重玩第二道傷口，戰場用的是那一場開戰前的皮膚（例如 2 隻條紋菌），主選單顯示的是打完之後的皮膚（4 隻），開場卡卻把前者標成「現在」。逐項檢查存檔：重玩打贏不會讓條紋菌越疊越多，吃藥與不吃藥的兩筆紀錄各自保留、互不覆蓋 | 保留既有機制，只加說明：完成後重新進入時，開場卡標明這是重玩、回到的是第二道傷口開戰之前的皮膚；從結算頁回到較早的時間點而還沒打完時，主選單的皮膚卡註明顯示的是那個時間點的皮膚 |
+
+驗證只針對受影響的路徑，Chromium（手機尺寸、中文）與 WebKit（手機尺寸、英文）各跑一次：第一劑與第二劑之後的提示、三種細菌組成乘三種用藥狀態的格子說明（並和規則層的實際結果對照）、提前吞掉突變株或在第二劑之前清光時的結語、完成後重玩的說明與存檔、吃藥與不吃藥的比較紀錄。每個引擎 25 項，共 50 項通過，JavaScript 錯誤 0。前一輪的 112 項流程檢查中，受這次修改影響的兩組手機流程（Chromium 中文、WebKit 英文，各 28 項）也重跑了一次，全部通過。平衡模擬與科學查證沿用前一輪的結果，沒有重跑。
+
+## 人工驗收與正式發布（v0.11）
+
+**維護者試玩驗收：10 項全部通過。** 維護者用私人試玩版（內容是候選版本 `efd15e4`）親自玩完第 4 章，逐項確認：
+
+1. 整體遊戲體驗好玩。
+2. 三個練習容易理解。
+3. 能理解抗藥性細菌為何存活並增加。
+4. 能理解抗生素在必要時的重要性。
+5. 能理解感冒時亂吃抗生素的後果。
+6. 皮膚菌群的變化容易辨認。
+7. 兩場戰鬥的差異有感。
+8. 手機操作及閱讀體驗可以接受。
+9. 第四章與前三章自然連貫。
+10. 願意將第四章納入正式版本。
+
+沒有其他修改意見。這是一個人的試玩判斷，不是外部玩家測試；手機試玩用的是維護者自己的手機，不代表所有機型都驗證過。前面「已知限制」寫的「沒有真人玩過」到這裡為止不再成立，其餘各項（沒有實機矩陣、英文、醫學專業審查、教育成效）仍然成立。
+
+**試玩的版本與發布的版本差在哪裡。** 維護者試玩的是 `efd15e4`；正式發布的版本多了上一節 ChatGPT 審查的三項修正，以及版本文字從「候選版」改成正式版。這些修改只動提示、格子說明、結語、重玩說明與主選單註記的文字與顯示條件：`js/rules.js` 沒有任何改動，兩劑療程、數值、星數門檻、存檔欄位與流程都和試玩的版本相同。因此沿用這次的 10/10 驗收，沒有請維護者重新完整試玩。
+
+**這一章留下來的設計準則。** 涉及醫療行為的教育遊戲，要審查「最佳策略實際在教玩家什麼」；機制給錯了誘因，免責聲明救不回來。第一個候選版本就是這樣被否決的（見「被推翻的第一版」）。
+
 ## English summary
 
-**Chapter 4, "The Ones That Got Away": antibiotics and resistance.** Release candidate on branch `feat/chapter-04-antibiotic-resistance`; not yet playtested by the maintainer.
+**Chapter 4, "The Ones That Got Away": antibiotics and resistance.** Released in Prototype v0.11 (2026-11-27). Developed on branch `feat/chapter-04-antibiotic-resistance`.
 
 - **Idea.** The lymph node in Chapter 2 is selection working for the player: a virus's features single out the T cell that recognizes it, and it multiplies. Chapter 4 is the same principle the other way round: the antibiotic spares the bacteria it cannot kill, and they multiply. Nobody "learns" anything; the differences were there beforehand.
 - **Play.** Three short practices (the drug; a mutation that appears before any drug is used and is the only thing left afterwards; the row of bacteria on the skin), then a deep wound, a choice about taking a roommate's leftover antibiotics for a cold, and a second wound seeded from whatever the skin now carries.
 - **No antibiotic button.** The drug is prescribed, arrives by itself on a fixed turn and runs a fixed course. The first candidate let the player time it; an independent AI review showed that the winning strategy was then to hold back a prescribed drug, so that design was thrown out. The only drug decision the player makes is the one real people actually make.
 - **Science.** Nineteen statements were checked by an AI agent against OpenStax, CDC, WHO and several papers (9 supported, 10 reworded, none wrong). This is not a medical review. Game-only abstractions are listed in the in-game "What this game simplifies" page.
-- **Testing.** Automated play-throughs in Chromium and WebKit at four viewport/language/input combinations (112 checks), rules-layer simulation for balance, and two rounds of independent AI review. The second round confirmed the blocker was gone and raised three further points, which led to the two-dose course; that last change has not been reviewed a third time. No human has played it, no real device has been used, the English has not been reviewed by a native speaker, and the sound has not been heard.
+- **Testing.** Automated play-throughs in Chromium and WebKit at four viewport/language/input combinations (112 checks), rules-layer simulation for balance, and two rounds of independent AI review. The second round confirmed the blocker was gone and raised three further points, which led to the two-dose course; that last change has not been reviewed a third time. At the candidate stage no human had played it; the maintainer has since playtested it on their own phone and accepted it on all ten checks (one person, one phone, not an external playtest). A source review by ChatGPT then found three places where on-screen text disagreed with the rules; they were fixed in text and display only, with 50 targeted checks passing in Chromium and WebKit, and the rules, balance and save format are identical to the build that was playtested. No device matrix has been tested, the English has not been reviewed by a native speaker, and the sound has not been heard.
 - **Least certain decision.** Taking the antibiotic out of the player's hands is right for the message, but it means the player never touches the thing the chapter is named after. Whether that plays well is a question only human playtesting can answer.

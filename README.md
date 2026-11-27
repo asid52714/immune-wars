@@ -7,8 +7,8 @@
 
 A free, open-source, turn-based strategy game for learning how the human immune system works.
 
-這是個人發起的公益科普專案，目前是**早期原型**（Prototype v0.10 — One Body, Many Battles：三章連成同一個身體的經歷，繁體中文與英文雙語，電腦與手機瀏覽器都能玩）。歡迎試玩，也歡迎指正醫學內容與英文用語。
-*A personal, non-profit science-education project. This is an **early prototype** (v0.10 — One Body, Many Battles: three chapters that form one body's story, in Traditional Chinese and English, on desktop and phone browsers). Playtesting and corrections, including to the English, are welcome.*
+這是個人發起的公益科普專案，目前是**早期原型**（Prototype v0.11 — Antibiotics and Resistance：四章連成同一個身體的經歷，繁體中文與英文雙語，電腦與手機瀏覽器都能玩）。歡迎試玩，也歡迎指正醫學內容與英文用語。
+*A personal, non-profit science-education project. This is an **early prototype** (v0.11 — Antibiotics and Resistance: four chapters that form one body's story, in Traditional Chinese and English, on desktop and phone browsers). Playtesting and corrections, including to the English, are welcome.*
 
 ## 線上遊玩｜Play online
 
@@ -47,10 +47,20 @@ v0.10 是一次完整的產品改版，取代 v0.9 成為之後的開發基線�
 
 進度與記憶冊只存在這台裝置的瀏覽器（localStorage），不使用帳號、Cookie 或任何連線。主選單有「清除進度」。
 
-## 第 4 章（v0.11 候選版本）｜Chapter 4 (v0.11 candidate)
+## v0.11 新增第 4 章｜New in v0.11: Chapter 4
 
-> **這個分支是候選版本，尚未發布。** 線上的正式版本仍是 v0.10（三章）。第 4 章還沒有經過維護者試玩驗收，也沒有任何外部玩家玩過。
-> *This branch is a release candidate. The live game is still v0.10 (three chapters). Chapter 4 has not yet been playtested or accepted by the maintainer.*
+v0.11 在 v0.10 的三章之後加入第 4 章，前三章的規則沒有改動。這一章的研究、設計與實作由維護者授權 Claude Code 自主完成，再經獨立審查與維護者試玩後發布。驗證過什麼、沒驗證過什麼，如實列在這裡：
+
+- **維護者人工驗收：10 項全部通過。** 維護者親自玩完第 4 章，逐項確認：好玩、三個練習容易理解、看得懂抗藥性細菌為什麼存活並增加、看得懂抗生素在必要時的重要性、看得懂感冒時亂吃抗生素的後果、皮膚菌群的變化容易辨認、兩場戰鬥的差異有感、手機操作與閱讀可以接受、與前三章自然連貫、願意納入正式版本。這是一個人的試玩判斷，不是外部玩家測試。
+- **人工手機試玩通過。** 這是維護者自己的手機，不代表所有手機型號都驗證過。
+- **獨立審查。** 開發期間由沒有參與設計的 AI 代理人審查兩輪：第一輪指出原本「玩家自己決定何時用藥」的設計，最佳打法會變成延後醫師開的藥，因此整個改掉（戰場上不再有抗生素按鈕）。候選版本另由 ChatGPT 讀取原始碼，指出三個說明文字與實際規則不一致的地方，都已確認並修正。經過與修正見 [docs/CHAPTER-04.md](docs/CHAPTER-04.md)。
+- **自動化測試**在電腦上用 Chromium 與 WebKit 跑完第 4 章的完整流程（112 項檢查全部通過），最後一輪修正另有 50 項針對性檢查通過。**這不等於實機驗證**：iPhone、Android 實機與 Firefox 都沒有逐一測過。
+- **英文尚未經英語母語人士審查。**
+- **醫學內容**由 AI 輔助對照公開教材與公衛機構資料查核，**尚未經正式的醫學專業審查**。
+- **沒有做過教育成效研究。** 「看得懂」是維護者的試玩感受，不是研究結論。
+- 遊戲裡的回合、劑數與數值都是為了好玩而做的簡化，列在遊戲內的「這款遊戲簡化了什麼」。
+
+*__About v0.11:__ adds Chapter 4 after the three chapters of v0.10, whose rules are unchanged. The chapter was researched, designed and built by Claude Code working autonomously under the maintainer's authorization, then reviewed independently and playtested by the maintainer, who accepted it on all ten checks (fun, clear practices, why resistant bacteria survive and increase, why antibiotics matter when needed, what taking them for a cold costs, readable skin flora, two battles that feel different, acceptable on a phone, fits the earlier chapters, willing to release). That is one person's judgment on their own phone, not an external playtest and not a claim about every phone model. Independent AI review during development threw out the first design (letting the player time the drug rewarded delaying a prescribed antibiotic); a later source review by ChatGPT found three places where on-screen text disagreed with the rules, all confirmed and fixed. Automated checks passed in Chromium and WebKit on a desktop computer (112 flow checks, plus 50 targeted checks for the last fixes), which is not the same as testing on real devices. The English has not been reviewed by a native speaker; the medical content was checked with AI assistance and has **not** had a formal expert review; there has been no study of learning outcomes.*
 
 **第 4 章｜漏網之魚：抗生素與抗藥性。** 傷口太深，細菌多到巨噬細胞忙不過來，這次有抗生素幫忙。藥一送到，它殺得死的細菌一次死光，但有幾隻這種藥對它沒用，要靠巨噬細胞處理。藥沒有改變細菌，只決定了誰留下來。第 1 章畫在皮膚外面的那一排細菌，在這一章成為這個身體的一部分：每一個療程都會讓皮膚上幾個怕藥的細菌被藥殺不死的取代，而下一次闖進傷口的細菌，就是從那裡來的。
 
@@ -62,16 +72,16 @@ v0.10 是一次完整的產品改版，取代 v0.9 成為之後的開發基線�
 
 ## 內容｜What is in it
 
-整個遊戲是同一個身體的三段經歷，大約 20 到 30 分鐘可以玩完一輪。每一章先用幾個半分鐘的小練習帶出規則，一次只多一條，然後才是正式戰鬥。沒有需要先看完的教學影片。
+整個遊戲是同一個身體的四段經歷，大約半小時到四十分鐘可以玩完一輪。每一章先用幾個半分鐘的小練習帶出規則，一次只多一條，然後才是正式戰鬥。沒有需要先看完的教學影片。
 
 | | 你會遇到的事 | 玩完會帶走的概念 |
 |---|---|---|
 | **第 1 章｜皮膚防線** | 傷口讓細菌進來。巨噬細胞吞不完，於是用發炎求援，嗜中性球從血管趕來。發炎拖太久，連正常組織都受損。 | 吞噬作用；發炎是幫手也有代價；最先大量趕到的是嗜中性球 |
 | **第 2 章｜病毒來了** | 病毒鑽進細胞，巨噬細胞碰不到。偵察兵把情報送到淋巴結，由你在一群 T 細胞裡找出受體吻合的那一個。找得越久，後援越晚到。 | 病毒要進細胞才能複製；株系選擇；毒殺 T 細胞與抗體各管一種任務 |
 | **第 3 章｜捲土重來** | 同一種病毒又來了，這次淋巴結裡有你上次留下的記憶細胞。接著是另一種病毒，你要決定先不先接種疫苗。 | 免疫記憶是專一的；疫苗是在沒有損失的時候先準備 |
-| **第 4 章｜漏網之魚**（候選版本） | 很深的傷口，醫師開的抗生素一次殺光它殺得死的細菌，剩下幾隻要靠巨噬細胞。感冒時室友遞來抗生素，吃或不吃。之後又一道傷口。 | 抗生素對細菌有效、對病毒無效；抗藥性是篩選出來的，不是細菌學會的；變得有抗藥性的是細菌不是人；抗生素也會殺到無害的常在菌 |
+| **第 4 章｜漏網之魚** | 很深的傷口，醫師開的抗生素一次殺光它殺得死的細菌，剩下幾隻要靠巨噬細胞。感冒時室友遞來抗生素，吃或不吃。之後又一道傷口。 | 抗生素對細菌有效、對病毒無效；抗藥性是篩選出來的，不是細菌學會的；變得有抗藥性的是細菌不是人；抗生素也會殺到無害的常在菌 |
 
-*One body, three episodes, about 20–30 minutes for a full run. Each chapter opens with a few half-minute practice stages that add one rule at a time, then the real battle. There is no tutorial video to sit through.*
+*One body, four episodes, roughly 30–40 minutes for a full run. Each chapter opens with a few half-minute practice stages that add one rule at a time, then the real battle. There is no tutorial video to sit through.*
 
 **語言**：繁體中文與英文，隨時可以切換，切換不會影響進行中的戰局。英文尚未經英語母語人士審查。
 **裝置**：電腦（滑鼠）與手機（觸控，直向為主，橫向也能玩）。戰場本身是直向的場景：體表在上、血管在下。
@@ -89,7 +99,7 @@ v0.10 是一次完整的產品改版，取代 v0.9 成為之後的開發基線�
 ## 專案結構｜Project layout
 
 ```
-index.html            單一頁面：主選單與三章都在這裡
+index.html            單一頁面：主選單與四章都在這裡
 css/game.css          樣式與版面（手機直向／橫向／桌面）
 js/core.js            語言、存檔、音效、小工具
 js/art.js             所有角色與場景的畫法
@@ -98,11 +108,11 @@ js/battle.js          戰鬥外殼：版面、輸入、回合流程、提示、�
 js/lymph.js           淋巴結小玩法
 js/mode-skin.js       第 1 章的畫面、操作與練習關卡
 js/mode-airway.js     第 2、3 章的畫面、操作、練習關卡與流程
-js/mode-abx.js        第 4 章的畫面、操作、練習關卡與流程（候選版本）
+js/mode-abx.js        第 4 章的畫面、操作、練習關卡與流程
 js/app.js             主選單、記憶冊、圖鑑、說明頁與頁面切換
 levels/*.html         舊版關卡網址的轉址頁
 docs/REDESIGN.md      v0.10 改版的設計報告：理由、測試結果、畫面與已知限制
-docs/CHAPTER-04.md    第 4 章候選版本的設計報告：理由、平衡、測試、科學查證與自我批判
+docs/CHAPTER-04.md    第 4 章的設計報告：理由、平衡、測試、科學查證與自我批判
 ```
 
 全部用傳統 `<script>` 標籤載入，沒有建置步驟。
@@ -149,7 +159,7 @@ v0.10 新增或改寫的敘述（嗜中性球與膿、白血球的細胞核形�
 
 這一批是由 AI 助手開啟原始頁面逐條比對的結果（16 條敘述：13 條有直接支持、3 條加註後採用），**不是醫學專業審查**。Janeway *Immunobiology* 的線上版本這次沒有讀到。
 
-第 4 章（抗生素與抗藥性，候選版本）另外對照：
+第 4 章（抗生素與抗藥性）另外對照：
 
 - OpenStax, *Microbiology* — 11.5 Mutations；14.1 History of Chemotherapy and Antimicrobial Discovery；14.2；14.3 Mechanisms of Antibacterial Drugs；14.5 Drug Resistance；21.1 Anatomy and Normal Microbiota of the Skin and Eyes。
 - U.S. Centers for Disease Control and Prevention — *About Antimicrobial Resistance* <https://www.cdc.gov/antimicrobial-resistance/about/index.html>；*Antibiotic Do's and Don'ts* <https://www.cdc.gov/antibiotic-use/about/index.html>；*About Microbial Ecology* <https://www.cdc.gov/antimicrobial-resistance/about/about-microbial-ecology.html>；*Staphylococcus aureus Basics* <https://www.cdc.gov/staphylococcus-aureus/about/index.html>。
@@ -185,7 +195,7 @@ v0.10 新增或改寫的敘述（嗜中性球與膿、白血球的細胞核形�
 
 ## 關於開發方式｜How this project is built
 
-本專案由個人發起及維護，結合人類的產品設計、遊戲試玩、知識審查與 AI 輔助軟體開發。v0.9 以前的程式碼主要由 AI 協作工具（ChatGPT 與 Claude Code）依維護者的設計與回饋產出。v0.10 的產品設計與主要實作，則是維護者授權 Claude Code 自主完成、再由維護者試玩驗收與 ChatGPT 獨立審查後發布的；維護者負責產品方向、遊戲體驗驗收及發布決策。
+本專案由個人發起及維護，結合人類的產品設計、遊戲試玩、知識審查與 AI 輔助軟體開發。v0.9 以前的程式碼主要由 AI 協作工具（ChatGPT 與 Claude Code）依維護者的設計與回饋產出。v0.10 的產品設計與主要實作，則是維護者授權 Claude Code 自主完成、再由維護者試玩驗收與 ChatGPT 獨立審查後發布的；v0.11 的第 4 章延續同樣的做法：維護者決定主題，Claude Code 自主研究、設計與實作，ChatGPT 獨立審查，維護者試玩驗收後發布。維護者負責產品方向、遊戲體驗驗收及發布決策。
 
 *A personal project combining human product design, playtesting, and content review with AI-assisted software development. Most of the code was produced with AI tools (ChatGPT and Claude Code) under the maintainer's direction; the maintainer is responsible for product direction, acceptance of the gameplay, and release decisions.*
 

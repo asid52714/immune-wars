@@ -71,7 +71,7 @@
   // 醫師開的抗生素：不是玩家的按鈕。第一劑殺一半、讓怕藥的細菌停止分裂；下一回合第二劑清完
   async function drugFx(G) {
     const ev = G.drugEv, nS = ev.kill.reduce((n, e) => n + e.n, 0), nR = AX.nR(G), left = AX.load(G) - nR; G.drugEv = null; IW.sfx('calm');
-    if (!ev.last) { B.mark('drug'); G.rAtDrug = nR; }
+    if (!ev.last) { B.mark('drug'); G.rAtDrug = nR; } else G.dose2 = 1;
     B.ftext(W / 2, H - 70, ev.last ? tx('第二劑', 'Second dose') : tx('抗生素送到', 'The antibiotic arrives'), DRUG);
     for (let k = 0; k < 18; k++) { const x = 16 + Math.random() * (W - 32), r0 = Math.random() * 6; B.fly({ x0: x, y0: H - 26, x1: x + (Math.random() - .5) * 50, y1: 76 + Math.random() * 90, dur: .5 + Math.random() * .4, draw: (px, py, q) => A.pill(px, py, r0 + q * 4, .95, 1 - q * .55) }); }
     await IW.wait(560); if (B.G !== G) return;
@@ -105,7 +105,16 @@
       else if (AX.moveTargets(G, sel).has(i)) L.push(tx('<b>點一下：移動到這裡</b>（1 點）', '<b>Tap: move here</b> (1 AP)'));
     }
     if (u) L.push(tx(`<b>巨噬細胞</b>　體內 ${u.stomach}/${G.cfg.CAP}${u.stomach >= G.cfg.CAP ? '（飽了）' : ''}，回合結束消化 ${G.cfg.DIGEST} 隻。藥對細菌有沒有效，對它沒有差別。`, `<b>Macrophage</b>  holding ${u.stomach}/${G.cfg.CAP}${u.stomach >= G.cfg.CAP ? ' (full)' : ''}; digests ${G.cfg.DIGEST} at end of turn. Whether a drug works on a bacterium makes no difference to it.`));
-    if (t.b.length) L.push(tx(`<b>細菌 ×${t.b.length}</b>${nr ? `（條紋 ${nr}：這種抗生素對它無效）` : ''}　`, `<b>Bacteria ×${t.b.length}</b>${nr ? ` (${nr} striped: this antibiotic does not work on them)` : ''}  `) + (t.b.length === 3 ? tx('回合結束會擴散，並損傷這格組織。', 'will spread at end of turn and damage this tile.') : tx('回合結束會分裂成 ' + (t.b.length + 1) + ' 隻。', `will grow to ${t.b.length + 1} at end of turn.`)));
+    if (t.b.length) {
+      const n = t.b.length, ns = n - nr, on = AX.drugOn(G), next = !G.drug && G.turn === G.cfg.DRUG_AT - 1;      /* on：這回合的細菌階段藥還在，怕藥的不分裂、不擴散 */
+      let w = tx(`<b>細菌 ×${n}</b>${nr ? `（條紋 ${nr}：這種抗生素對它無效）` : ''}　`, `<b>Bacteria ×${n}</b>${nr ? ` (${nr} striped: this antibiotic does not work on them)` : ''}  `);
+      if (on && !nr) w += tx('療程中：不再分裂、擴散。下一劑會把它清掉。', 'On the course: no dividing or spreading. The next dose clears it.');
+      else if (n === 3) w += (on ? tx('回合結束會損傷這格組織，並有一隻條紋菌往箭頭擴散。', 'will damage this tile at end of turn, and one striped bacterium spreads along the arrow.') : tx('回合結束會擴散，並損傷這格組織。', 'will spread at end of turn and damage this tile.'));
+      else if (on) w += tx(`回合結束條紋菌分裂，變成 ${n + 1} 隻；怕藥的不再分裂，下一劑清掉。`, `the striped divide to make ${n + 1} at end of turn; the sensitive do not divide and the next dose clears them.`);
+      else w += tx('回合結束會分裂成 ' + (n + 1) + ' 隻。', `will grow to ${n + 1} at end of turn.`) + (nr && ns ? tx('新的一隻有沒有條紋，看是哪一隻分裂（隨機）。', ' Whether the new one is striped depends on which one divides (random).') : '');
+      if (next && ns) w += tx(`下回合第一劑：這格怕藥的死掉一半（無條件進位）。`, ' Next turn’s first dose kills half the sensitive ones here (rounded up).');
+      L.push(w);
+    }
     if (t.hp < 3) L.push(tx(['組織已壞死', '組織嚴重受損', '組織受損'], ['Tissue dead', 'Tissue badly damaged', 'Tissue damaged'])[t.hp]);
     if (t.scab) L.push(tx('已經結痂的傷口：細菌是結痂之前闖進來的', 'A scabbed-over wound: the bacteria got in before it closed'));
     if (!L.length) L.push(tx('健康的組織細胞', 'Healthy tissue cell'));
@@ -140,7 +149,8 @@
       IW.tone(880, 440, .18, 'triangle', .07); IW.tone(1320, 1760, .22, 'sine', .05, .16);
       api.hint('mut', [(G.drug ? '' : '<b>現在並沒有在用藥。</b>') + '細菌分裂時要抄一份 DNA，偶爾會抄錯，這叫<b>突變</b>。極少數抄錯，剛好讓某種藥對它失效。', (G.drug ? '' : '<b>No drug is in use right now.</b> ') + 'Copying its DNA, a bacterium sometimes slips: a <b>mutation</b>. Very rarely a slip makes a drug useless against it.'], true);
     }
-    if (G.drug && gr.some(e => e.r)) api.hint('release', ['怕藥的細菌都不在了，條紋菌有了空間與養分，繼續分裂。子代帶著和親代一樣的基因。', 'With the others gone, the striped ones have room and nutrients and keep dividing. Offspring carry the parent’s gene.']);
+    const nSens = AX.load(G) - AX.nR(G);
+    if (G.drug && gr.some(e => e.r)) { if (!nSens) api.hint('release', ['怕藥的細菌都不在了，條紋菌有了空間與養分，繼續分裂。子代帶著和親代一樣的基因。', 'With the others gone, the striped ones have room and nutrients and keep dividing. Offspring carry the parent’s gene.']); else api.hint('release1', ['療程中，怕藥的細菌停止分裂，條紋菌照常分裂。子代帶著和親代一樣的基因。', 'During the course the sensitive bacteria stop dividing; the striped ones divide as usual. Offspring carry the parent’s gene.']); }
     else if (gr.length) api.hint('divide', ['細菌在條件合適的組織裡，一分為二不斷增殖。', 'Where conditions are right, bacteria keep multiplying by dividing in two.']);
     B.hud(); await api.wait(mu.length ? 900 : gr.length ? 480 : 50); if (!api.alive()) return;
     const dm = AX.phaseDamage(G, fl);
@@ -173,7 +183,7 @@
       pips: Array.from({ length: c.TURNS }, (_, k) => { const t = k + 1; return { cls: t < G.turn ? 'done' : t === G.turn ? 'now' : '', m: t >= c.DRUG_AT && t < c.DRUG_AT + c.COURSE ? tx('藥', 'Rx') : '', title: t === c.DRUG_AT ? tx('抗生素在這一回合送到', 'The antibiotic arrives on this turn') : '' }; }),
       gauges: [
         { label: tx('組織健康', 'Tissue'), val: Math.round(hp * 100) + '%', frac: hp, color: P.teal, warn: hp < .35, title: tx('遊戲化的整體損傷預算，歸零即失敗。', 'A game-style damage budget; zero means defeat.') },
-        { label: tx('細菌', 'Bacteria'), val: (fc && fc.load !== L ? `${L} <small>→ ${fc.load}</small>` : L), frac: L / c.LOAD_MAX, next: fc ? fc.load / c.LOAD_MAX : undefined, color: P.bac, warn: (fc ? fc.load : L) >= c.LOAD_MAX * .75 },
+        { label: tx('細菌', 'Bacteria'), val: (fc && fc.load !== L ? `${L} <small>→ ${!G.drug && G.turn === c.DRUG_AT - 1 ? tx('約 ', '~') : ''}${fc.load}</small>` : L), frac: L / c.LOAD_MAX, next: fc ? fc.load / c.LOAD_MAX : undefined, color: P.bac, warn: (fc ? fc.load : L) >= c.LOAD_MAX * .75 },
         { label: tx('條紋菌', 'Striped'), val: `${nR} <small>${tx('皮膚', 'skin')} ${n.R}/${G.flora.length}</small>`, frac: nR / Math.max(1, L), color: P.gold, title: tx('這種抗生素對條紋菌無效。後面的數字是皮膚上的條紋菌：下一次闖進傷口的細菌從那裡來。', 'This antibiotic does not work on striped bacteria. The second number is the striped ones on the skin, where the next wound’s bacteria will come from.') }],
       goal: f.join(' '), acts: [], endDanger: !!bad
     };
@@ -207,7 +217,7 @@
   M.drawOver = function (G, T) {
     const c = B.ctxOf(), pl = G.phase === 'player', sel = selU(G), fc = G.fc;
     if (pl && fc) for (const t of G.tiles) {
-      if (t.b.length === 3 && t.spreadTo >= 0) { const to = G.tiles[t.spreadTo]; A.arrow(t.x, t.y, to.x, to.y, P.bacDk, T); }
+      if (t.b.length === 3 && t.spreadTo >= 0 && !(AX.drugOn(G) && !t.b.includes(1))) { const to = G.tiles[t.spreadTo]; A.arrow(t.x, t.y, to.x, to.y, P.bacDk, T); }
       if (fc.dmg[t.i]) A.badge(t.x + 22, t.y - 26, '−1', '#fff', P.danger, 11.5);
     }
     if (pl && sel && G.ap > 0) {
@@ -249,8 +259,8 @@
     const why = { tissue: tx('組織損傷過重', 'Too much tissue damage'), overrun: tx('感染失控', 'Infection out of control'), timeout: tx('感染仍未受控', 'Infection still not under control') }[r.why];
     const few = G.drug && G.killed < G.rAtDrug;
     let insight = !G.drug ? tx('抗生素還沒送到，這一場就結束了。', 'This one ended before the antibiotic arrived.')
-      : tx(`抗生素第 ${G.drugAt} 回合送到，${G.killed ? `兩劑共殺死 <b>${G.killed}</b> 隻` : '<b>一隻也沒殺死</b>'}；它對 <b>${G.rAtDrug}</b> 隻條紋菌無效。巨噬細胞一共吞掉 ${G.eaten} 隻（其中條紋 ${G.eatenR} 隻）。`, `The antibiotic arrived on turn ${G.drugAt} and killed ${G.killed ? `<b>${G.killed}</b> over its two doses` : '<b>none</b>'}; it did nothing to the <b>${G.rAtDrug}</b> striped. Macrophages engulfed ${G.eaten} in all (${G.eatenR} striped).`)
-      + (few ? tx('這次闖進來的細菌，多數是這種藥對付不了的那一型，所以藥能幫的有限。', ' Most of the bacteria that got in this time were the kind this drug does not work on, so it could only do so much.') : r.win ? tx('藥處理多數，巨噬細胞處理漏網的。', ' The drug handled the many; the macrophages handled the ones that got away.') : tx('時間軸上的虛線是條紋菌：怕藥的細菌消失之後，它們沒有對手，越長越多。', ' The dashed line on the timeline is the striped bacteria: once the others were gone they had no competition and kept growing.'));
+      : tx(`抗生素第 ${G.drugAt} 回合送到，${G.killed ? `${G.dose2 ? '兩劑共' : ''}殺死 <b>${G.killed}</b> 隻` : '<b>一隻也沒殺死</b>'}；它對 <b>${G.rAtDrug}</b> 隻條紋菌無效。巨噬細胞一共吞掉 ${G.eaten} 隻（其中條紋 ${G.eatenR} 隻）。`, `The antibiotic arrived on turn ${G.drugAt} and killed ${G.killed ? `<b>${G.killed}</b>${G.dose2 ? ' over its two doses' : ''}` : '<b>none</b>'}; it did nothing to the <b>${G.rAtDrug}</b> striped. Macrophages engulfed ${G.eaten} in all (${G.eatenR} striped).`)
+      + (few ? tx('這次闖進來的細菌，多數是這種藥對付不了的那一型，所以藥能幫的有限。', ' Most of the bacteria that got in this time were the kind this drug does not work on, so it could only do so much.') : r.win ? tx('藥處理多數，巨噬細胞處理漏網的。', ' The drug handled the many; the macrophages handled the ones that got away.') : G.dose2 ? tx('時間軸上的虛線是條紋菌：怕藥的細菌消失之後，它們沒有對手，越長越多。', ' The dashed line on the timeline is the striped bacteria: once the others were gone they had no competition and kept growing.') : tx('時間軸上的虛線是條紋菌：藥傷不到它們。', ' The dashed line on the timeline is the striped bacteria: the drug could not touch them.'));
     if (r.win && G.drug) insight += tx(`這個療程（${c.COURSE} 回合）讓皮膚上的條紋菌 <b>${a} → ${b}</b>。這個代價是固定的，和你打得快慢無關。`, ` This course (${c.COURSE} turns) took the striped bacteria on the skin from <b>${a} to ${b}</b>. That cost is fixed; it does not depend on how fast you were.`);
     if (G.mut) insight += tx(` 第 ${G.mutAt} 回合有細菌在分裂時抄錯，生出條紋的子代${G.mutAt < G.drugAt || !G.drug ? '——那時還沒有用藥' : ''}。`, ` On turn ${G.mutAt} a dividing bacterium made a copying error and produced a striped offspring${G.mutAt < G.drugAt || !G.drug ? ', before any drug was in use' : ''}.`);
     let extra = G.key === 'p' ? '' : M.floraSvg([[tx('開戰時', 'At the start'), G.flora0], [tx(r.win ? '現在' : '結束時', r.win ? 'Now' : 'At the end'), G.flora]]) + (!r.win ? `<p class="note">${tx('這一場沒有守住，重打時皮膚上的細菌會回到開戰時的樣子。', 'This attempt was lost; when you replay it, the skin goes back to how it was at the start.')}</p>` : `<p class="note">${tx('畫紅線的位子原本住著怕藥的細菌，現在是條紋菌。闖進傷口的細菌來自皮膚，所以這會影響下一次。', 'Spots underlined in red used to hold drug-sensitive bacteria and now hold striped ones. Bacteria that enter a wound come from the skin, so this affects next time.')}${few ? tx('這一次藥能幫的已經有限；真實世界裡，醫師會改用別種抗生素。', ' This time the drug could only do so much; in real life a doctor would switch to a different antibiotic.') : tx('這一次的感染需要抗生素，這個代價是值得的。', ' This infection needed the antibiotic, and the cost was worth paying.')}</p>`);
@@ -311,16 +321,16 @@
     stages: [
       { kind: 'practice', seed: 11, cfg: Object.assign({}, PC, { TURNS: 4 }), flora: 'CCSCCSCCCSCS', preset: { scabs: [2], units: [['mac', 20]], bac: { 7: 'SSS', 8: 'SSS', 13: 'SS', 14: 'SS' } },
         goal: ['練習 1：細菌太多了', 'Practice 1: too many bacteria'], won: ['抗生素：體外來的幫手', 'Antibiotics: help from outside the body'],
-        say: G => tx(`兩劑殺死 ${G.killed} 隻。抗生素不是免疫系統的一部分，是從體外來的藥。它攻擊細菌才有的構造（例如細胞壁，或細菌自己的蛋白質工廠），所以能殺細菌，又不太傷到你的細胞。很多抗生素原本就是微生物製造的：青黴素來自一種黴菌。`, `${G.killed} killed in two doses. An antibiotic is not part of the immune system; it is a drug from outside the body. It attacks structures that bacteria have (the cell wall, for example, or the bacterium’s own protein factories), which is why it can kill bacteria while doing little harm to your cells. Many antibiotics were first made by microbes: penicillin comes from a mold.`),
+        say: G => tx(`抗生素殺死 ${G.killed} 隻${G.eaten ? `，巨噬細胞吞掉 ${G.eaten} 隻` : ''}。抗生素不是免疫系統的一部分，是從體外來的藥。它攻擊細菌才有的構造（例如細胞壁，或細菌自己的蛋白質工廠），所以能殺細菌，又不太傷到你的細胞。很多抗生素原本就是微生物製造的：青黴素來自一種黴菌。`, `The antibiotic killed ${G.killed}${G.eaten ? ` and the macrophage engulfed ${G.eaten}` : ''}. An antibiotic is not part of the immune system; it is a drug from outside the body. It attacks structures that bacteria have (the cell wall, for example, or the bacterium’s own protein factories), which is why it can kill bacteria while doing little harm to your cells. Many antibiotics were first made by microbes: penicillin comes from a mold.`),
         next: ['但不是每一隻都會死 ▸', 'But not every one dies ▸'], lost: ['抗生素第 2 回合就會送到，兩劑清完。先吞幾隻，再按「結束回合」。', 'The antibiotic arrives on turn 2 and takes two doses. Engulf a few, then press “End turn”.'],
         guide: G => G.ap === 0 ? '' : G.turn > 1 ? (G.drug && !selU(G) ? tx('剩下的不再分裂了。繼續吞，或按「結束回合」等第二劑。', 'The rest have stopped dividing. Keep engulfing, or press “End turn” for the second dose.') : '') : !selU(G) && !acts ? tx('點選巨噬細胞，吞掉身邊的細菌。它一口只能吞一隻。', 'Select the macrophage and engulf the bacteria next to it. It takes one per bite.') : acts >= 2 ? tx('來不及的。醫師開了抗生素，下一回合送到：按「結束回合」。', 'It cannot keep up. The antibiotic a doctor prescribed arrives next turn: press “End turn”.') : '' },
       { kind: 'practice', seed: 12, cfg: Object.assign({}, PC, { TURNS: 7, DRUG_AT: 3 }), flora: 'CCSCCSCCCSCS', preset: { scabs: [3], units: [['mac', 25]], bac: { 8: 'SSS', 9: 'SS', 14: 'SS', 16: 'S' }, mutate: { turn: 1, tile: 16 } },
         goal: ['練習 2：留意細菌分裂', 'Practice 2: watch them divide'], won: ['藥沒有改變細菌，只決定誰留下來', 'The drug did not change the bacteria; it decided which were left'],
         say: G => tx('那隻條紋菌是第 1 回合分裂時抄錯才出現的，那時還沒有用藥。抗生素沒有製造它，也沒有「教會」它什麼。', 'The striped bacterium appeared from a copying error on turn 1, before any drug was in use. The antibiotic did not create it or “teach” it anything.')
-          + (!G.rAtDrug ? tx('你在藥送到之前就讓巨噬細胞把它吞掉了。要是沒吞掉，藥會殺光其他細菌，只留下它。', ' You had the macrophage engulf it before the drug arrived. Had it been left, the drug would have killed all the others and spared only that one.') : tx('藥把別的都殺掉，只有它被留了下來。', ' The drug killed all the others, and that one was left.') + (G.rMax >= 3 ? tx(`對手消失之後，它一路長到 ${G.rMax} 隻，每一隻都帶著同樣的基因。`, ` With its competitors gone it grew to ${G.rMax}, every one carrying the same gene.`) : tx('你趁它還只有一兩隻就吞掉了；放著不管，它的後代會佔滿對手留下的空間。', ' You engulfed it while there were only one or two; left alone, its offspring would have filled the space its competitors left.'))),
+          + (!G.rAtDrug ? tx('你在藥送到之前就讓巨噬細胞把它吞掉了。要是沒吞掉，藥會殺光其他細菌，只留下它。', ' You had the macrophage engulf it before the drug arrived. Had it been left, the drug would have killed all the others and spared only that one.') : (G.dose2 ? tx('兩劑下來，藥把別的都殺掉，只有它被留了下來。', ' Over two doses the drug killed all the others, and that one was left.') : tx('藥殺掉了別的細菌，卻始終傷不到它。', ' The drug killed the others but never touched that one.')) + (G.rMax >= 3 ? tx(`對手消失之後，它一路長到 ${G.rMax} 隻，每一隻都帶著同樣的基因。`, ` With its competitors gone it grew to ${G.rMax}, every one carrying the same gene.`) : tx('你趁它還只有一兩隻就吞掉了；放著不管，它的後代會佔滿對手留下的空間。', ' You engulfed it while there were only one or two; left alone, its offspring would have filled the space its competitors left.'))),
         next: ['抗生素還會殺到誰？ ▸', 'What else does the antibiotic kill? ▸'], lostTitle: ['細菌佔滿了', 'The bacteria took over'],
         lost: ['藥殺光了它殺得死的細菌之後，剩下的條紋菌沒有對手，越長越多。藥一送到，就讓巨噬細胞去吞有條紋的。', 'Once the drug had killed everything it could, the striped bacteria that were left had no competition and kept growing. As soon as the drug arrives, send the macrophage after the striped ones.'],
-        guide: G => { if (G.ap === 0) return ''; if (G.turn === 1) return acts ? '' : tx('抗生素第 3 回合才到。先讓巨噬細胞靠近細菌，再按「結束回合」。', 'The drug arrives on turn 3. Move the macrophage closer, then press “End turn”.'); if (!G.drug && AX.nR(G)) return tx('有一隻長出了條紋。猜猜看：下一回合藥送到，誰會留下來？', 'One now has stripes. Guess: when the drug arrives next turn, which will be left?'); if (G.drug && AX.nR(G) && !selU(G)) return tx('只剩條紋菌了。點選巨噬細胞去吞它，別讓它長滿。', 'Only striped ones are left. Engulf them before they fill the space.'); return ''; } },
+        guide: G => { if (G.ap === 0) return ''; if (G.turn === 1) return acts ? '' : tx('抗生素第 3 回合才到。先讓巨噬細胞靠近細菌，再按「結束回合」。', 'The drug arrives on turn 3. Move the macrophage closer, then press “End turn”.'); if (!G.drug && AX.nR(G)) return tx('有一隻長出了條紋。猜猜看：下一回合藥送到，誰會留下來？', 'One now has stripes. Guess: when the drug arrives next turn, which will be left?'); if (G.drug && AX.nR(G) && !selU(G)) return AX.load(G) > AX.nR(G) ? tx('第一劑殺掉一半，條紋菌一隻也沒少。趁它還少，點選巨噬細胞去吞它。', 'The first dose killed half, and not one striped. Engulf the striped while there are few.') : tx('只剩條紋菌了。點選巨噬細胞去吞它，別讓它長滿。', 'Only striped ones are left. Engulf them before they fill the space.'); return ''; } },
       { kind: 'practice', seed: 13, cfg: Object.assign({}, PC, { TURNS: 7 }), flora: 'CCSCRCSCCSCS', preset: { scabs: [1, 4], units: [['mac', 19], ['mac', 22]], bac: { 7: 'SSR', 10: 'SSR', 13: 'SS', 16: 'SS' } },
         goal: ['練習 3：留意最上面那一排', 'Practice 3: watch the top row'], won: ['抗生素分不出誰是住戶', 'An antibiotic cannot tell who the residents are'],
         say: G => tx(`一個療程下來，皮膚上的條紋菌從 ${cen(G.flora0).R} 個變成 ${cen(G.flora).R} 個。皮膚上本來就住著很多細菌，大多數是無害的住戶；它們佔著位子，別的細菌就不容易擴張。抗生素流遍全身，連它們一起殺，空出來的位子被條紋菌補上。這個代價每個療程都一樣，所以抗生素要留給真正需要它的感染，像這一次。`, `Over one course, striped bacteria on the skin went from ${cen(G.flora0).R} to ${cen(G.flora).R}. Many bacteria live on the skin all the time, most of them harmless residents; because they hold the space, others cannot easily expand. An antibiotic goes everywhere and kills them too, and striped bacteria take the spots they leave. Every course costs this much, which is why antibiotics are kept for infections that really need them, like this one.`),
@@ -339,8 +349,9 @@
           if (skipPre) { skipPre = false; return; }
           await B.ask(() => ({ html: `<h2>${tx('又過了一陣子', 'Some time later')}</h2><h1>${tx('又一道傷口', 'Another wound')}</h1>
             <p>${tx('闖進傷口的細菌來自你的皮膚：伺機菌裡條紋的比例越高，進來的條紋菌越多。醫師看過之後，開了和上次同一種抗生素。', 'The bacteria that enter a wound come from your skin: the larger the striped share of the opportunists, the more striped ones get in. A doctor has seen it and prescribed the same antibiotic as last time.')}</p>
-            ${M.floraSvg([[tx('第一道傷口前', 'Before wound 1'), M.base()], [tx('現在', 'Now'), G.flora]])}
-            <p>${tx(`現在皮膚上的伺機菌，有 <b>${pct(G.flora)}%</b> 是這種抗生素對付不了的（第一道傷口之前是 ${pct(M.base())}%）。這次闖進來 ${G.load0} 隻，其中 <b>${G.nR0}</b> 隻有條紋。`, `Of the opportunists on your skin now, <b>${pct(G.flora)}%</b> are ones this antibiotic does not work on (before the first wound it was ${pct(M.base())}%). This time ${G.load0} got in, <b>${G.nR0}</b> of them striped.`)}</p>
+            ${M.floraSvg([[tx('第一道傷口前', 'Before wound 1'), M.base()], [c.done ? tx('這一場開戰前', 'Before this one') : tx('現在', 'Now'), G.flora]])}
+            ${c.done ? `<p class="note">${tx('<b>重玩。</b>你已經打完這一章；這裡回到第二道傷口開戰之前的皮膚，不是主選單上現在的樣子。重玩不會讓皮膚上的條紋菌越疊越多。', '<b>Replay.</b> You have finished this chapter; this goes back to the skin as it was before the second wound, not as the menu shows it now. Replaying does not pile up more striped bacteria on the skin.')}</p>` : ''}
+            <p>${tx(`${c.done ? '那時' : '現在'}皮膚上的伺機菌，有 <b>${pct(G.flora)}%</b> 是這種抗生素對付不了的（第一道傷口之前是 ${pct(M.base())}%）。這次闖進來 ${G.load0} 隻，其中 <b>${G.nR0}</b> 隻有條紋。`, `Of the opportunists on your skin ${c.done ? 'at that point' : 'now'}, <b>${pct(G.flora)}%</b> are ones this antibiotic does not work on (before the first wound it was ${pct(M.base())}%). This time ${G.load0} got in, <b>${G.nR0}</b> of them striped.`)}</p>
             <div class="btns"><button class="pill pri" id="go">${tx('開始 ▸', 'Begin ▸')}</button></div>`, on: { go: () => 1 } }));
         } }],
     onBattleEnd(G, s) {
